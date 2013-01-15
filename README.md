@@ -10,7 +10,7 @@
 
 ### Keyword: *t*
 
-Set path to your master todo list in config.py (one_filepath). When you type **t** keyword Alfred will display all tags from that list.
+Set path to your master todo list in config.py (one_filepath). When you type **t** keyword Alfred will display all task from that list.
 
 ![All tasks][basic]
 
