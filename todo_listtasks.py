@@ -7,14 +7,14 @@ import re
 class AlfredList(object):
     def __init__(self):
         self.items = []
-        self.pattern = '<item arg="{0}" uid="u{0}"><title>{1}</title><subtitle>{2}</subtitle><icon>iconT.png</icon></item>'
+        self.pattern = '<item arg="{0}" uid="u{0}" valid="{3}"><title>{1}</title><subtitle>{2}</subtitle><icon>iconT.png</icon></item>'
 
-    def append(self, arg, title, subtitle):
-        self.items.append((arg, title, subtitle))
+    def append(self, arg, title, subtitle, valid='yes'):
+        self.items.append((arg, title, subtitle, valid))
 
     def __str__(self):
         items = "".join(
-            [self.pattern.format(arg, title, subtitle) for arg, title, subtitle in self.items]
+            [self.pattern.format(arg, title, subtitle, valid) for arg, title, subtitle, valid in self.items]
             )
         return '<items>' + items + '</items>'
 

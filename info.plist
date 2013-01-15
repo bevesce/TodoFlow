@@ -362,7 +362,7 @@ try:
 	open(path, 'r')
 except:
 	a = AlfredList()
-	a.append('', 'File not found', '')
+	a.append('', 'File not found', '', valid='no')
 	print a
 else:
 	print list_file(path, '')
