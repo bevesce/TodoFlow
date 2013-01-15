@@ -2,6 +2,9 @@
 
 [Alfred][] 2 (beta) workflow for interacting with plain text todo lists with [TaskPaper][] syntax.
 
+
+**[Download][]**
+
 ## Basic usage
 
 
@@ -51,3 +54,4 @@ All configs (except one) are stored in config.py and are commented there. If you
 [basic]: http://bvsc.nazwa.pl/img/TodoFlow/basic.png
 [query]: http://bvsc.nazwa.pl/img/TodoFlow/query.png
 [regexp]: http://bvsc.nazwa.pl/img/TodoFlow/regexp.png
+[Download]: https://github.com/bevesce/TodoFlow/raw/master/TodoFlow.alfredworkflow
