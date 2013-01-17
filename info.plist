@@ -231,7 +231,7 @@ add(path, """{query}""")
 				<key>keyword</key>
 				<string>t</string>
 				<key>text</key>
-				<string>Add task '{query}' for today</string>
+				<string>Add task '{query}'</string>
 				<key>withspace</key>
 				<true/>
 			</dict>
