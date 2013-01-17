@@ -1,27 +1,8 @@
 import sys
 from config import only_tagged_today, today_tag, max_items_from_file, tasks_msg
 from utils import is_not_done_task, format_line, create_arg
+from alfredlist import AlfredItemsXML as AlfredList
 import re
-
-
-class AlfredList(object):
-    def __init__(self):
-        self.items = []
-        self.pattern = '<item arg="{0}" uid="nouid" valid="{3}"><title>{1}</title><subtitle>{2}</subtitle><icon>iconT.png</icon></item>'
-
-    def append(self, arg, title, subtitle, valid='yes'):
-        self.items.append((arg, title, subtitle, valid))
-
-    def __str__(self):
-        items = "".join(
-            [self.pattern.format(arg, title, subtitle, valid) for arg, title, subtitle, valid in self.items]
-            )
-        return '<items>' + items + '</items>'
-
-    def __add__(self, other):
-        new_alist = AlfredList()
-        new_alist.items = self.items + other.items
-        return new_alist
 
 
 def list_file(path, query='', max_items=0, subtitle=tasks_msg):
