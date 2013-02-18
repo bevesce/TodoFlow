@@ -1,5 +1,25 @@
-from todolist_lexer import *
-from todolist import *
+# DONE
+"""
+# Parser of todo list.
+
+Top-down parser of grammar that is almost LL(1).
+Conflict is resolved by prefering production 7 over 5.
+
+## Grammar:
+
+    1. TodoList -> Item TodoList .
+    2. Item     -> Task SubTasks
+    3.           | Project SubTasks
+    4.           | Note SubTasks
+    5.           | indent TodoList dedent
+    6.           | NewLineItem
+    7. SubTasks -> indent TodoList dedent
+    8.           | .
+
+"""
+
+from todolist_lexer import Lexer
+from todolist import TodoList, NewLineItem, Task, Project, Note
 
 
 class Parser(object):
@@ -7,53 +27,57 @@ class Parser(object):
         self.lexer = lexer
 
     @staticmethod
-    def from_file(filepath):
+    def list_from_file(filepath):
         with open(filepath, 'r') as f:
             tlist = Parser(Lexer(f.readlines())).parse()
             tlist.source = filepath
             return tlist
 
     def parse(self):
-        self.ii = 0
-
         def todolist():
-            self.ii += 1
-            # if self.ii > 100:
-            #     return TodoList()
-            top_type = self.lexer.top().type
-            if top_type == '$':
+            """parse list"""
+            type_on_top = self.lexer.top().type
+            new_item = None
+
+            type_to_constructor = {
+                'task': Task,
+                'project-title': Project,
+                'note': Note,
+            }
+
+            if type_on_top == 'newline':
+                self.lexer.pop()
+                new_item = NewLineItem()
+            elif type_on_top in type_to_constructor:
+                new_item = parse_item(type_to_constructor[type_on_top])
+            elif type_on_top == 'indent':  # begining of sublist
+                new_item = parse_sublist()
+            elif type_on_top in ('dedent', '$'):
                 return TodoList()
 
-            p = None
-            if top_type == 'newline':
-                self.lexer.pop()
-                p = NewLineItem()
-            elif top_type == 'task':
-                p = parse_item(constructor=Task)
-            elif top_type == 'project-title':
-                p = parse_item(constructor=Project)
-            elif top_type == 'note':
-                p = parse_item(constructor=Note)
-            elif top_type == 'indent':
-                self.lexer.pop()
-                p = todolist()
-                top_type = self.lexer.top().type
-                if top_type == 'dedent':
-                    self.lexer.pop()
-            elif top_type in ('dedent', '$'):
-                return TodoList()
-            return TodoList([p]) + todolist()
+            return TodoList([new_item]) + todolist()
 
         def parse_item(constructor):
+            """parse Project, Task or Note with subtasks"""
             lex = self.lexer.pop()
-            top_type = self.lexer.top().type
             sub_tasks = None
-            if top_type == 'indent':
+            type_on_top = self.lexer.top().type
+            if type_on_top == 'indent':
+                sub_tasks = parse_sublist()
+            return constructor(
+                lex.text,
+                lex.line_no,
+                lex.indent_level,
+                sub_tasks,
+                )
+
+        def parse_sublist():
+            """parse part that begins with indent token"""
+            self.lexer.pop()
+            sublist = todolist()
+            type_on_top = self.lexer.top().type
+            if type_on_top == 'dedent':  # don't eat $
                 self.lexer.pop()
-                sub_tasks = todolist()
-                top_type = self.lexer.top().type
-                if top_type == 'dedent':
-                    self.lexer.pop()
-            return constructor(lex.text[0:-1], lex.line_no, lex.indent_level, sub_tasks)
+            return sublist
 
         return todolist()
