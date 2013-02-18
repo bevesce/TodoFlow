@@ -2,8 +2,8 @@ from cgi import escape
 
 
 class AlfredItemsXML(object):
-    def __init__(self, items=None):
-        self.items = items or []
+    def __init__(self):
+        self.items = []
         self.pattern = '<item arg="{0}" uid="nouid" valid="{3}"><title>{1}</title><subtitle>{2}</subtitle><icon>iconT.png</icon></item>'
 
     def append(self, arg, title, subtitle, valid='yes'):

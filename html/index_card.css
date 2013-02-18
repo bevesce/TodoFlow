@@ -1,0 +1,102 @@
+body {
+    width: 5.5cm;
+    border-left: 1px solid #D6D6D6;
+    color: black;
+    font-family: "Palatino" "Book Antiqua", serif;
+    font-size: 0.4cm;
+}
+
+.whole {
+    border-right: 0.5cm solid #D6D6D6;
+}
+
+ul{
+    display: table;
+    padding: 0;
+    margin-left: 0;
+    list-style-type: none;
+}
+
+li {
+    display: inline-block;
+    width: 5.5cm;
+    border-top: 1px dashed #838383;
+
+}
+
+.task0, .task1, .task2, .task3, .task4 {
+    display: inline-block;
+    margin-left: 0.2cm;
+    padding-right: 1cm;
+    padding-top: 0.2em;
+    padding-bottom: 0.2em;
+}
+
+
+.note0, .note1, .note2, .note3, .note4{
+    display: table-cell;
+    padding-top: 0.2em;
+    padding-bottom: 0.2em;
+    font-style: italic;
+    padding-left: 0.2cm;
+
+}
+
+
+.project0, .project1, .project2, .project3, .project4 {
+    display: table-cell;
+    width: 5cm;
+    padding-right: 0.5cm;
+    padding-left: 0.2cm;
+    color: #262626;
+    font-family: "Futura" "Calibri" "Helvetica Neue" sans-serif;
+    font-weight: bold;
+}
+
+.project0 {
+    font-size: 1.0em;
+}
+
+.project1 {
+    font-size: 0.9em;
+}
+
+.project2 {
+    font-size: 0.8em;
+}
+
+.project3 {
+    font-size: 0.7em;
+}
+
+.project4 {
+    font-size: 0.6em;
+}
+
+
+.task1, .note1 {
+    padding-left: 0;
+}
+
+.task2, .note2 {
+    padding-left: 0.2cm;
+}
+
+.task3, .note3 {
+    padding-left: 0.4cm;
+}
+
+.task4, .note4 {
+    padding-left: 0.6cm;
+}
+
+.done {
+    color: #626262;
+    text-decoration: line-through;
+}
+
+.tag {
+    font-style: italic;
+    font-weight: normal;
+    color: #5F82FF;
+}
