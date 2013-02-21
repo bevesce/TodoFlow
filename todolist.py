@@ -1,5 +1,5 @@
 import re
-from alfredlist import AlfredItemsXML
+from alfredlist import AlfredItemsList
 from datetime import date
 from filterpredicate import predicate as compile_predicate
 
