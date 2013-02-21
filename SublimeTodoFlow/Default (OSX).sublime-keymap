@@ -1,0 +1,23 @@
+[
+    { "keys": ["super+ctrl+enter"], "command": "task", "context":
+    [
+         { "key": "selector", "operator": "equal", "operand": "text.todoflow", "match_all": true }
+    ]
+    },
+    { "keys": ["super+enter"], "command": "new_task", "context":
+    [
+         { "key": "selector", "operator": "equal", "operand": "text.todoflow", "match_all": true }
+    ]
+    },
+    { "keys": ["super+ctrl+,"], "command": "change_type", "context":
+    [
+         { "key": "selector", "operator": "equal", "operand": "text.todoflow", "match_all": true }
+    ]
+    },
+    { "keys": ["super+ctrl+."], "command": "add_tag", "context":
+    [
+         { "key": "selector", "operator": "equal", "operand": "text.todoflow", "match_all": true }
+    ]
+    }
+
+]
