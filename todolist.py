@@ -1,12 +1,15 @@
 import re
+from cgi import escape
+import config
 from alfredlist import AlfredItemsList
 from datetime import date
-from filterpredicate import predicate as compile_predicate
+from filterpredicate import parse_predicate
+import colors
 
 
 class TodoList(object):
     items_by_id = {}
-    current_id = 0
+    _current_id = 0
 
     def __init__(self, items=None, set_new_parent=True):
         self.items = items if items else []
@@ -26,13 +29,17 @@ class TodoList(object):
 
     @classmethod
     def assign_id(cls, item):
-        cls.items_by_id[cls.current_id] = item
-        cls.current_id += 1
-        return cls.current_id - 1
+        cls.items_by_id[cls._current_id] = item
+        cls._current_id += 1
+        return cls._current_id - 1
+
+    # rocognizes words in parentheses ended
+    # with white space or with eol
+    tag_param_pattern = r"(\([^(\s]*\))(\s|$)"
 
     @staticmethod
     def get_tag_param(text, tag):
-        match = re.search(' @' + tag + r"(\(([^\(\s]*)\)){0,1}(\s|$|\n)", text)
+        match = re.search(' @' + tag + TodoList.tag_param_pattern, text)
         if match:
             return match.group(2)
         return None
@@ -43,10 +50,9 @@ class TodoList(object):
 
     @classmethod
     def do(cls, id_no):
-        date_after_done = True
         cls.items_by_id[id_no].tag(
             'done',
-            date.today().isoformat() if date_after_done else None
+            date.today().isoformat() if config.date_after_done else None
             )
 
     @classmethod
@@ -58,21 +64,27 @@ class TodoList(object):
         cls.items_by_id[id_no].remove_self_from_parent()
 
     def filter(self, predicate):
+        # parse predicate if it's in string
         if isinstance(predicate, str):
-            predicate = compile_predicate(predicate)
-        filtered_items = []
-        for item in self.items:
-            filtered_item = item.filter(predicate)
-            if filtered_item:
-                filtered_items.append(filtered_item)
+            predicate = parse_predicate(predicate)
+
+        filtered_items_with_None = [
+            item.filter(predicate) for item in self.items
+        ]
+        filtered_items = [
+            item for item in filtered_items_with_None if item
+        ]
         new_list = TodoList(filtered_items)
         return new_list
 
     def as_plain_text(self, colored=False, with_ids=False, indent=True):
-        return "\n".join(item.as_plain_text(colored, with_ids, indent) for item in self.items)
+        items_texts_list = [
+            item.as_plain_text(colored, with_ids, indent) for item in self.items
+        ]
+        return "\n".join(items_texts_list)
 
     def as_alfred_xml(self, include_projects=False, additional_arg=None):
-        al = AlfredItemsXML()
+        al = AlfredItemsList()
         for item in self.items:
             al_item = item.as_alfred_xml(include_projects, additional_arg)
             if al_item:
@@ -82,20 +94,23 @@ class TodoList(object):
     def as_countdown(self, colored=False):
         today = date.today().isoformat()
         only_due = self.filter('(@due and not @done) or (@due >=' + today + ')')
-        items = [item.as_countdown(colored) for item in only_due.items if item.as_countdown()]
+        items_with_None = [item.as_countdown(colored) for item in only_due.items]
+        items = [item for item in items_with_None if item]
         items.sort()
-        return '\n'.join([item for item in items if item])
+        return '\n'.join([items])
 
-    def as_markdown(self, done_emphasis=True):
-        items_md = "\n".join([item.as_markdown(done_emphasis) for item in self.items])
-        return items_md
+    def as_markdown(self, emphasise_done=True):
+        return "\n".join(
+            [item.as_markdown(emphasise_done) for item in self.items]
+        )
 
     def as_html(self):
         items_html = "\n".join([item.as_html() for item in self.items])
         return "<ul>" + items_html + "</ul>"
 
     def as_full_html(self, css_style=None):
-        return """<head>
+        return """
+<head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     {1}
 </head>
@@ -116,11 +131,15 @@ class TodoList(object):
             item.add_parent(parent)
 
     def find_project_id_by_title(self, title):
+        """
+        returns id of first project of given title in list
+        returns None when there is no such item
+        """
         filtered = self.filter('content = ' + title + ' and type ="project"')
         for item in filtered.items:
             if item.title.content == title:
                 return item.title._id
-            else:
+            else:  # check sub tasks recursively
                 if item.sub_tasks:
                     q = item.sub_tasks.find_project_id_by_title(title)
                     if q:
@@ -128,27 +147,9 @@ class TodoList(object):
         return None
 
     def remove_tag(self, tag):
+        """removes every occurrence of given tag in list"""
         for item in self.items:
             item.remove_tag(tag)
-
-    def remove_done_from_parents(self):
-        for item in self.items:
-            if item.is_done():
-                print item.parent_list.as_plain_text()
-                item.remove_self_from_parent()
-                if item.sub_tasks:
-                    item.sub_tasks.remove_done_from_parents(self)
-
-    def archive(self):
-        archive_id = self.find_project_id_by_title('Archive')
-        if not archive_id:
-            archive_project = Project(line='Archive:')
-            archive_id = archive_project.title._id
-            self.items.append(archive_project)
-        self.remove_done_from_parents()
-        done_tasks = self.filter("@done and not project = Archive")
-        # done_tasks.add_parents_tag()
-        TodoList.items_by_id[archive_id].prepend_subtasks(done_tasks)
 
     def __nonzero__(self):
         return bool(self.items)
@@ -167,9 +168,6 @@ class TodoList(object):
 
     def __str__(self):
         return "\n".join([str(s) for s in self.items])
-
-import colors
-from cgi import escape
 
 
 class ItemTitle(object):
@@ -320,7 +318,7 @@ class Item(object):
             'note': True,
             'task': True,
         }
-        a = AlfredItemsXML()
+        a = AlfredItemsList()
         if self.type != 'project' or include_projects:
             a.append(
                 arg=str(self.title._id) + ((';' + additional_arg) if additional_arg else ''),
@@ -405,10 +403,10 @@ class Project(Item):
 
         self.title.colors['text_color'] = colors.blue
 
-    def as_markdown(self, done_emphasis=True):
+    def as_markdown(self, emphasise_done=True):
         indent = '#' * min(self.title.indent_level + 1, 5) + ' '
         text = modify_tags(self.title.text, '**', '**')
-        if self.is_done() and done_emphasis:
+        if self.is_done() and emphasise_done:
             text = '*' + text + '*'
         title = '\n' + indent + text + '\n\n'
         sub_tasks = ''
@@ -429,11 +427,11 @@ class Task(Item):
         self.title.colors['prefix_color'] = colors.blue
         self.title.colors['text_color'] = colors.defc
 
-    def as_markdown(self, done_emphasis=True):
+    def as_markdown(self, emphasise_done=True):
         indent_level = self.markdown_indent_level()
         indent = '\t' * indent_level + '- '
         text = modify_tags(self.title.text, '**', '**')
-        if self.is_done() and done_emphasis:
+        if self.is_done() and emphasise_done:
             text = '*' + text + '*'
         title = indent + text
         sub_tasks = ''
@@ -451,7 +449,7 @@ class Note(Item):
         self.type = 'note'
         self.title.colors['text_color'] = colors.yellow
 
-    def as_markdown(self, done_emphasis=True):
+    def as_markdown(self, emphasise_done=True):
         indent = '\t' * max(self.title.indent_level, 1)
         text = modify_tags(self.title.text, '**', '**')
         title = '\n' + indent + text
@@ -557,4 +555,5 @@ def modify_tags(text, prefix, postfix):
 
 def remove_tag_from_text(text, tag):
     tag_pattern = re.compile('@' + tag + '(\([^)]*\)|)')
+    # text = text.replace('  ', ' ')
     return re.sub(tag_pattern, '', text)

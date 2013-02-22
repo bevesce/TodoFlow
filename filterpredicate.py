@@ -36,6 +36,7 @@ E4    -> Argument op Words
 Words -> word Words
        | .
 
+those rules are not part of slr automaton:
 op     -> = | != | < | <= | >= | > | matches | contains | $ .
 Tag    -> @ word | EndTag.
 EndTag -> (Words) | epsilon.
@@ -50,6 +51,7 @@ class Token(object):
     tag_prefix = '@'
 
     def __init__(self, text=None):
+        # long switch-case / if:elif chain
         self.text = text
         # set type of token
         if not text:
@@ -111,7 +113,7 @@ class Lexer(object):
                 add_token(collected)
                 collected = ''
             elif input_text[idx] in ('(', ')'):
-                # parenthesises seperate and have semantic meaning
+                # parenthesises seperate
                 add_token(collected)
                 collected = ''
                 add_token(input_text[idx])
@@ -139,10 +141,10 @@ class Lexer(object):
                 collected = ''
                 next_quotation_mark_idx = input_text.find('"', idx + 1)
                 if next_quotation_mark_idx == -1:
-                    # when there is no matching quoatation mark
+                    # when there is no matching quotation mark
                     # end of the input is assumed
                     add_token(input_text[idx:] + '"')
-                    idx = text_length - 1  # finish in next iteration of loop
+                    idx = text_length - 1  # sets idx to that value so loop finishes in next iteration
                 else:
                     add_token(input_text[idx:next_quotation_mark_idx + 1])
                     idx = next_quotation_mark_idx
@@ -185,7 +187,10 @@ class Parser(object):
         self.parsing_table[self.stack[-2]][state]()
 
     def create_parsing_table(self):
-        """long functions with declaration of parsing table and parser actions"""
+        """long functions with declaration of parsing table and parser actions
+        parser runs mostly only once so there is no need to put object defined here
+        in memory for longer time
+        """
         def shift_gen(state_no):
             def shift():
                 """puts lexem and state number on stack"""
@@ -208,7 +213,8 @@ class Parser(object):
             return self.stack[-1]
 
         # reductions, name of the functions contains information about production
-        # -> is changedd to __, terminals and nonterminals are separated by _
+        # -> is changed to __, terminals and nonterminals are separated by _
+        # left side of production is preceded by `r`
 
         def rS__E1():
             self.stack.pop()
@@ -335,6 +341,7 @@ class Parser(object):
             self.stack.append(TagPredicate(tag))
             self.goto('E4')
 
+        # generated code
         self.parsing_table = {
             0: {
                 "$": rWords__epsilon,
@@ -858,8 +865,9 @@ class NotPredicate(object):
     def __str__(self):
         return "not {0}".format(self.negated)
 
-
+# all operation except == are case insensitive
 op_functions = {
+    '==': lambda x, y: x == y,
     '=': lambda x, y: x.lower() == y.lower(),
     '!=': lambda x, y: x.lower() != y.lower(),
     '<': lambda x, y: x.lower() < y.lower(),
@@ -882,7 +890,8 @@ class ArgOpPredicate(object):
         self.op = op.text
 
     def test(self, item):
-        if self.left_side[0] == '@':  # tag
+        # long switch-case / if:elif chain
+        if self.left_side[0] == '@':
             tag_search = ' ' + self.left_side + '\(([^\()]*)\)'
             match = re.search(tag_search, item.title.text)
             if match:
@@ -892,13 +901,13 @@ class ArgOpPredicate(object):
                 left_side = ''
             else:
                 return False
-            # print item.text, left_side, self.right_side, op_functions[self.op](left_side, self.right_side)
             r = op_functions[self.op](left_side, self.right_side)
             return r
 
         elif self.left_side == 'project':
             while item.parent_item:
-                if op_functions[self.op](item.parent_item.title.content, self.right_side):
+                if op_functions[self.op](item.parent_item.title.content, self.right_side) and \
+                   item.parent_item.type == 'project':
                     return True
                 else:
                     item = item.parent_item
@@ -928,6 +937,7 @@ class PlusDescendants(object):
         self.predicate = predicate
 
     def test(self, item):
+        # if predicate is true for any parent it's also true for self
         while item:
             if self.predicate.test(item):
                 return True
@@ -972,5 +982,5 @@ class Item(object):
         self.project = project
 
 
-def predicate(text):
+def parse_predicate(text):
     return Parser(Lexer(text)).parse()
