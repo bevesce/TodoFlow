@@ -35,7 +35,7 @@ class TodoList(object):
 
     # rocognizes words in parentheses ended
     # with white space or with eol
-    tag_param_pattern = r"(\([^(\s]*\))(\s|$)"
+    tag_param_pattern = r"(\(([^(\s]*)\))(\s|\n|$)"
 
     @staticmethod
     def get_tag_param(text, tag):
@@ -97,7 +97,7 @@ class TodoList(object):
         items_with_None = [item.as_countdown(colored) for item in only_due.items]
         items = [item for item in items_with_None if item]
         items.sort()
-        return '\n'.join([items])
+        return '\n'.join(items)
 
     def as_markdown(self, emphasise_done=True):
         return "\n".join(
@@ -529,20 +529,20 @@ def remove_trailing_tags(line):
 
 
 def extract_content(typ, line):
-    if typ == 'task':
-        return remove_trailing_tags(line.strip()[2:])
-    elif typ == 'note':
-        return remove_trailing_tags(line.strip())
+    text = extract_text(line)
+    if typ in ('task', 'note'):
+        return remove_trailing_tags(text)
     elif typ == 'project':
-        splitted = line.strip().split(':')
+        splitted = text.split(':')
         return ':'.join(splitted[0:-1])
 
 
 def extract_text(typ, line):
+    stripped = line.strip()
     if typ == 'task':
-        return line.strip()[2:]
-    else:
-        return line.strip()
+        return stripped[2:]
+    return stripped
+
 
 tag_pattern = re.compile(r' (@[^\(\s]*(\([^)]*\)|))')
 
