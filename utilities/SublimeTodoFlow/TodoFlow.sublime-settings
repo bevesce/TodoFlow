@@ -1,0 +1,10 @@
+{
+	"extensions":
+	[
+		"taskpaper",
+		"todo"
+	],
+	"trim_trailing_white_space_on_save": false,
+	"translate_tabs_to_spaces": false,
+	"highlight_line": true
+}

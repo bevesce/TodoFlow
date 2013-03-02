@@ -1,0 +1,26 @@
+ProjectA:
+	ProjectB:
+		- task1 @due(2013-04-12)
+			- task2
+	- task6 @due(2013-04-13)
+		- task7
+	ProjectC:
+		- task8 @due(2013-04-13) @done
+ProjectD:
+	- task11 @done(2013-04-12)
+ProjectE:
+	- task10
+	- task17
+		- task18
+ProjectF:
+	note6
+	- task27
+		note3
+	- task30 @today @done
+		note0
+ProjectG: @done(2013-02-27)
+	ProjectH:
+note9
+	note10
+- task26
+	note1

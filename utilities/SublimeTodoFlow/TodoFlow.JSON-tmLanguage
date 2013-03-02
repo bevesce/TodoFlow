@@ -1,0 +1,27 @@
+{ "name": "TodoFlow",
+  "scopeName": "text.todoflow",
+  "fileTypes": ["todo", "taskpaper"],
+  "patterns": [
+        {
+          "comment": "done item",
+          "name": "comment",
+          "match": ".* @done[\\s|(].*"
+        },
+        {
+          "comment": "task marker",
+          "name": "constant.language",
+          "match": "^\t*- "
+        },
+        {
+          "comment": "tag",
+          "name": "keyword",
+          "match": "((?<=\\s)|^)(@[^\\(\\s]*(\\(([^)]*)\\)|(?=(\\s|$))))"
+        },
+        {
+          "comment": "project",
+          "name": "entity.name.function",
+          "match": "^.*:($| )"
+        }
+  ],
+  "uuid": "2b7f1af8-da55-4dd7-b8f4-a81ec8e86bda"
+}
