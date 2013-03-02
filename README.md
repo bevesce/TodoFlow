@@ -2,9 +2,9 @@
 
 # Overview #
 
-Topy module provides API for interacting with todo lists in plain text files with [taskpaperlike][] format with powerful [query syntax][query]. It provides functions to modify lists and to convert them to markdown, html and XML used in [Alfred2][] workflow. See [utilities][] for examples of what can be done with it.
+Topy module provides API for interacting with todo lists in plain text files with [taskpaperlike][] format with powerful query syntax. It provides functions to modify lists and to convert them to markdown, html and XML used in [Alfred2][] workflow. See utilities for examples of what can be done with it.
 
-You can jump straight to Alfred2 [workflow]s if you here for that.
+You can jump straight to Alfred2 workflows if you here for that.
 
 # Usage #
 
@@ -14,7 +14,7 @@ Use *from_file* and *from_files** functions to create object that represents tod
 
 \* when creating one list from multiple files each list is packed into project with title identical to name of source file.
 
-##### topy.lists [active lists] #####
+##### topy.lists #####
 
 Provides functions to add, remove and retrieve globally available list of path to active todo lists. Those paths are stored in tab-separated text file, its location can be specified in config.py.  
 
@@ -32,7 +32,7 @@ For more read comments in source files.
 - Tag is word preceded by '@' with eventual parameter in parenthesis (e.g. **@today**, **@done(2013-03-01)**).
 - Structure of list is defined by indentation levels of items.
 
-## Query Syntax [query] ##
+## Query Syntax ##
 
 You can filter items in the list by searching for the words, tags (e.g. **@today**) or using argument-operator-value syntax.
 
@@ -57,7 +57,7 @@ Both task1 and task2 have index 0, subproject and task3 have index 1, task4 has 
 
 - tag - parameter of tag
 
-##### Operators: 
+##### Operators: #####
 
 - =
 - !=
@@ -74,7 +74,7 @@ Full grammar is in filterpredicate.py source file.
 
 # Instalation & Configuration #
 
-For now I'm not providing *setup.py*, so to use it from anywhere you need to add directory that contains topy folder to python path. Main configuration file is in *topy/config.py*, options are described there. Several [utilities][] require additional configuration.
+For now I'm not providing *setup.py*, so to use it from anywhere you need to add directory that contains topy folder to python path. Main configuration file is in *topy/config.py*, options are described there. Several utilities require additional configuration.
 
 # Utilities #
 
@@ -111,13 +111,13 @@ Some examples what can be done with this module and other tools for working with
 
 SublimeText 2 package, read more in [its readme][SublimeReadme].
 
-## TodoFlow2 Alfred 2 Workflow [workflow] ##
+## TodoFlow2 Alfred 2 Workflow ##
 
 *Requires additional configuration of paths in config.py inside workflow folder*
 
 ##### *q* keyword
 
-Displays all tasks in [active lists][], you can filter them by typing [query][].
+Displays all tasks in [active lists][], you can filter them by typing query.
 
 - ↩ - tags task as **@done**
 - ⌘+↩ - copies task without trailing tags to clipboard
@@ -143,17 +143,17 @@ Examples:
 
 
 Displays list of all projects in [active lists][].
-Type task and hit ↩ to append task to selected project, you can filter projects by typing [query][] after ';'.
+Type task and hit ↩ to append task to selected project, you can filter projects by typing query after ';'.
 
 ![alfred-a][]
 
 ##### *remove list* keywords #####
 
-- ↩ - remove list from [active lists][]
+- ↩ - remove list from active lists
 
 ##### *add list* file action #####
 
-Adds list to [active lists][]
+Adds list to active lists
 
 ##### icons #####
 
@@ -273,7 +273,7 @@ Prints out number of items in Inbox.todo.
 [@bevesce][]
 
 [taskpaperlike]: http://www.hogbaysoftware.com/products/taskpaper
-[SublimeReadme]: https://github.com/bevesce
+[SublimeReadme]: https://github.com/bevesce/TodoFlow/tree/master/utilities/SublimeTodoFlow
 [Day One]: http://dayoneapp.com
 [tp_screen_shot]: http://bvsc.nazwa.pl/img/TodoFlow/tp.png "tp iTerm screenshot"
 [nerd_tools]: http://bvsc.nazwa.pl/img/TodoFlow/nerdtool.png "NerdTool screenshot"
