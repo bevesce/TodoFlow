@@ -11,7 +11,7 @@ import fileslist as lists
 from topy.config import quick_query_abbreviations as abbreviations
 from topy.config import quick_query_abbreviations_conjuction as conjuction
 import os.path
-import src.todolist as todolist
+import todolist as todolist
 
 
 def from_file(path):
