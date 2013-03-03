@@ -15,6 +15,11 @@ SublimeText2 package for working with todo lists in plain text files with [taskp
 
 ![sublime5][]
 
+- ⌘+⌃+⌥+↑ / *super+ctrl+alt+↑* - increase date (or insert today if cursor is not on date), what is increased (year, month, day) depends  on what part of date cursor is on 
+- ⌘+⌃+⌥+↓ / *super+ctrl+alt+↓* - decrease date
+
+![dategif][]
+
 # File format [format]#
 
 Package automatically works with files with .todo and .taskpaper extension.
@@ -35,3 +40,4 @@ Package automatically works with files with .todo and .taskpaper extension.
 [sublime3]: http://bvsc.nazwa.pl/img/TodoFlow/sublime1.png
 [sublime4]: http://bvsc.nazwa.pl/img/TodoFlow/sublime4.png
 [sublime5]: http://bvsc.nazwa.pl/img/TodoFlow/sublime5.png
+[dategif]: http://bvsc.nazwa.pl/img/TodoFlow/dateincr.gif
