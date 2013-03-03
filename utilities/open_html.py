@@ -33,7 +33,7 @@ parser.add_argument(
     type=str,
     action='store',
     nargs=1,
-    default=None,
+    default=[None],
     help="css stylesheet, only valid with --html"
     )
 
