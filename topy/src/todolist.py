@@ -38,11 +38,15 @@ class TodoList(object):
         cls.items_by_id[id_no].tag(
             'done',
             date.today().isoformat() if config.date_after_done else None
-            )
+        )
+
+    @classmethod
+    def get_item(cls, id_no):
+        return cls.items_by_id[id_no]
 
     @classmethod
     def get_content(cls, id_no):
-        return cls.items_by_id[id_no].title.content
+        return cls.items_by_id[id_no].get_content()
 
     @classmethod
     def remove(cls, id_no):
@@ -289,6 +293,21 @@ class ItemTitle(object):
         self.line = remove_tag_from_text(self.line, tag)
         self.content = remove_tag_from_text(self.content, tag)
 
+    def has_tag(self, tag):
+        return bool(re.search("(^| )" + tag + "($| |\()", self.text))
+
+    def has_tags(self, tags):
+        return all(self.has_tag(tag) for tag in tags)
+
+    def has_any_tags(self, tags):
+        return any(self.has_tag(tag) for tag in tags)
+
+    def get_tag_param(self, tag):
+        tag_search = '(^|(?<=\s))' + tag + r'\(([^)]*)\)'
+        match = re.search(tag_search, self.text)
+        if match:
+            return match.group(2)
+
     def is_done(self):
         return bool(re.search(done_tag, self.line))
 
@@ -314,6 +333,9 @@ class Item(object):
 
     def __str__(self):
         return self.as_plain_text()
+
+    def get_content(self):
+        return self.title.content
 
     def copy(self):
         new = self.empty()
@@ -354,6 +376,18 @@ class Item(object):
         self.title.remove_tag(tag)
         if self.sub_tasks:
             self.sub_tasks.remove_tag(tag)
+
+    def has_tag(self, tag):
+        return self.title.has_tag(tag)
+
+    def has_tags(self, tags):
+        return self.title.has_tags(tags)
+
+    def has_any_tags(self, tags):
+        return self.title.has_any_tags(tags)
+
+    def get_tag_param(self, tag):
+        return self.title.get_tag_param(tag)
 
     def parents_to_str(self):
         parents_contents = []
@@ -455,17 +489,17 @@ class Item(object):
             sub_tasks=(
                 ('\n' + self.sub_tasks.as_plain_text(
                             colored, with_ids, indent
-                        )
+                )
                 )
                 if self.sub_tasks else ''
-                ),
+            ),
             # colors
             ident_color=actual_colors['ident_color'],
             prefix_color=actual_colors['prefix_color'],
             text_color=actual_colors['text_color'],
             postfix_color=actual_colors['postfix_color'],
             def_color=(colors.defc if colored else '')
-            )
+        )
 
         return ptext
 
@@ -479,7 +513,7 @@ class Item(object):
                 title=self.title.text,
                 subtitle=self.parents_to_str(),
                 icon='done' if self.is_done() else self.type
-                )
+            )
         if self.sub_tasks:
             al += self.sub_tasks.as_alfred_xml(
                 include_projects,
@@ -493,7 +527,7 @@ class Item(object):
 
         time_left = date_to_countdown(
             get_tag_param(self.title.line, 'due')
-            )
+        )
 
         actual_colors = get_actual_colors(
             self.title.colors,

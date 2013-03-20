@@ -120,7 +120,11 @@ SublimeText 2 package, read more in [its readme][SublimeReadme].
 Displays all tasks in [active lists][], you can filter them by typing query.
 
 - ↩ - tags task as **@done**
-- ⌘+↩ - copies task without trailing tags to clipboard
+- ⌘+↩ - **new, kinda experimental feature** performs action depending on tags of task, at the moment to change behaviour you need to modify tag_dependand_action function in main.py
+	- if task has tag **@file** or **@web** tries to open parameter of that tag
+	- if taks has tag **@search** or **@research** opens Alfred2 with query *g {content of task}*
+	- if task has tag **@download** or **@tvseries** opens Alfred2 with query  *pb {content of task}*
+	- always puts content of task to clipboard
 - fn+↩ - removes task from list
 
 ![alfred-q][]

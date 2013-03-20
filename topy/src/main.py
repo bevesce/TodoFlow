@@ -11,7 +11,9 @@ import fileslist as lists
 from topy.config import quick_query_abbreviations as abbreviations
 from topy.config import quick_query_abbreviations_conjuction as conjuction
 import os.path
+import subprocess
 import todolist as todolist
+from filterpredicate import TagPredicate
 
 
 def from_file(path):
@@ -54,6 +56,36 @@ def remove(item_id):
 
 def get_content(item_id):
     return TodoList.get_content(item_id)
+
+
+def tag_dependand_action(item_id):
+    item = TodoList.get_item(item_id)
+    if item.has_tag('@web'):
+        action.open(item.get_tag_param('@web'))
+    if item.has_tag('@file'):
+        action.open(item.get_tag_param('@file'))
+    if item.has_any_tags(['@download', '@tvseries']):
+        action.alfread_search('pb ' + item.get_content())
+    if item.has_any_tags(['@search', '@research']):
+        action.alfread_search('g ' + item.get_content())
+    action.put_to_clipboard(item.get_content())
+
+
+class action():
+    @staticmethod
+    def open(to_open):
+        subprocess.call('open "{0}"'.format(to_open), shell=True)
+
+    @staticmethod
+    def alfread_search(query):
+        subprocess.call(
+            'osascript -e "tell application \\"Alfred 2\\" to search \\"{0}\\""'.format(query),
+            shell=True
+        )
+
+    @staticmethod
+    def put_to_clipboard(text):
+        subprocess.call('echo ' + text + ' | pbcopy', shell=True)
 
 
 def add_new_subtask(item_id, new_item):

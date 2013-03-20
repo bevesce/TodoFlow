@@ -985,7 +985,7 @@ class TagPredicate(object):
         self.tag = tag.text
 
     def test(self, item):
-        return bool(re.search("(^| )" + self.tag + "($| |\()", item.title.text))
+        return item.has_tag(self.tag)
 
     def __str__(self):
         return self.tag
