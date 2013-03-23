@@ -39,7 +39,8 @@ class Token(object):
             return False
         if line[-1] == ' ':  # trailing space after `:`
             return False
-
+        if splitted[1][0] != '@':
+                return False
         # only tags are allowed after `:`
         after_colon = splitted[-1].split('@')
         only_tags_after_colon = all([
