@@ -246,6 +246,13 @@ At the moment no tasks are removed from Onhold.todo.
 
 Joins several of other scripts. Launchd runs it for me at the and of the day. 
 
+### reminders_to_topy ###
+
+Imports items from *Inbox* list in Reminders.app to Inbox file,
+some path must be adjusted in AppleScript *reminders_to_topy.applescript*.
+
+It allows to put items into Inbox with Siri on iOS (just put reminder in *Inbox* list and import it when on Mac or set this script in launchd).
+
 ## NerdTool / GeekTools ##
 
 Scripts I use to put todo lists on Desktop with Nerdtools.
