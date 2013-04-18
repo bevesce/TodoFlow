@@ -48,7 +48,7 @@ def tvcal(inbox_file):
             if today <= dt <= tommorow and not fixed_summary in inbox_text:
                 to_inbox.append(
                     '\t- ' + fixed_summary + \
-                    ' @at(' + str(dt) + ')'
+                    ' @at(' + str(dt) + ') @tvseries'
                     )
     if len(to_inbox) > 1:
         inbox_file.write('\n' + '\n'.join(to_inbox))

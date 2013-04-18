@@ -1,5 +1,5 @@
 tell application "Mail"
-	set inbox_path to "/path/to/inbox.todo"  -- set it up!
+	set inbox_path to "/path/to/inbox.todo" -- set it up!
 	set person_tag to " @osoba("
 	set mail_tag to " @mail("
 	set in_tag to " @in("
