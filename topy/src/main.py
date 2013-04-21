@@ -32,6 +32,7 @@ def from_files(paths):
         paths = paths.split('\t')
     items = []
     for path in paths:
+        path = path.rstrip()
         tlist = from_file(path)
         tlist.indent()
         # set file name as project title
