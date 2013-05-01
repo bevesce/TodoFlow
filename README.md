@@ -4,7 +4,11 @@
 
 Topy module provides API for interacting with todo lists in plain text files with [taskpaperlike][] format with powerful query syntax. It provides functions to modify lists and to convert them to markdown, html and XML used in [Alfred2][] workflow. See utilities for examples of what can be done with it.
 
-You can jump straight to Alfred2 workflows if you here for that.
+# Changelog #
+
+- 2013-05-02 - start of changelog
+- 2013-05-02 - added editing from topy and Alfred workflow
+- 2013-05-02 - better encoding handling
 
 # Usage #
 
@@ -230,7 +234,7 @@ Creates entry in [Day One][] with tasks that were done today.
 
 ### tvcal ###
 
-Adds titles of tv series that will air in upcoming 24 hours to Inbox.todo, requires account at <http://www.pogdesign.co.uk/cat/>
+Adds titles of tv series that will air in upcoming 24 hours to Inbox.todo, requires account at <http://www.pogdesign.co.uk/cat/> and icalendar python module.
 
 ### update_lists ###
 
