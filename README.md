@@ -244,8 +244,6 @@ And bookmarklet that gets page title and url and launches this action in Drafts 
 
 	javascript:if(window.getSelection()!='')%7Bvar%20selected=encodeURIComponent(window.getSelection());var%20selected='%250A%250A%253E%2520'+selected.replace(/%250A/g,'%250A%253E%2520');%7Delse%7Bvar%20selected='';%7Dlocation.href='drafts://x-callback-url/create?'+'text='+encodeURIComponent(document.title)+'%20@web('+encodeURIComponent(location.href)+')'+selected+'&action='+'Inbox'+'&x-success='+encodeURIComponent(location.href);
 
-<a href="javascript:if(window.getSelection()!='')%7Bvar%20selected=encodeURIComponent(window.getSelection());var%20selected='%250A%250A%253E%2520'+selected.replace(/%250A/g,'%250A%253E%2520');%7Delse%7Bvar%20selected='';%7Dlocation.href='drafts://x-callback-url/create?'+'text='+encodeURIComponent(document.title)+'%20@web('+encodeURIComponent(location.href)+')'+selected+'&action='+'Inbox'+'&x-success='+encodeURIComponent(location.href);)">Draggable link</a>
-
 ### log_to_day_one ###
 
 Creates entry in [Day One][] with tasks that were done today.
