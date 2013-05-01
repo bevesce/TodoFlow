@@ -6,9 +6,10 @@ Topy module provides API for interacting with todo lists in plain text files wit
 
 # Changelog #
 
-- 2013-05-02 - start of changelog
+- 2013-05-02 - added version for Pythonista iOS app
 - 2013-05-02 - added editing from topy and Alfred workflow
 - 2013-05-02 - better encoding handling
+- 2013-05-02 - start of changelog
 
 # Usage #
 
@@ -256,6 +257,28 @@ Imports items from *Inbox* list in Reminders.app to Inbox file,
 some path must be adjusted in AppleScript *reminders_to_topy.applescript*.
 
 It allows to put items into Inbox with Siri on iOS (just put reminder in *Inbox* list and import it when on Mac or set this script in launchd).
+
+### itopy, utopy, qtopy ###
+
+Version of script to use in [Pythonista](http://omz-software.com/pythonista/) iOS app. Most of the source was marged to not clutter scripts list in app.  Requires [seamless dropbox](https://github.com/bevesce/Seamless-Dropbox)
+
+**itopy** - the main code, 
+
+**utopy** - marged version of *update_lists*
+
+**qtopy** is for quering and interactiong with lists. This is [Drafts](http://agiletortoise.com/drafts/) action to start this script with draft as the query:
+
+	drafts://x-callback-url/import_action?type=URL&name=itopy&url=pythonista%3A%2F%2Fqtopy%3Faction%3Drun%26args%3D%5B%5Bdraft%5D%5D
+
+After quering script keeps running end waits for input:
+
+- **d item_id** tags item as done
+- **c item_id** puts content of item to clipboard
+- **m item_1_id > item_2_id** removes item 1 from current position and appends it to subtask of item 2
+- **a item_id** tag dependant action, with x-url schemes it can be pretty powerfull
+	- *@search* and *research* - search for content of item with Bang On iOS app
+	- *@web* opens browser with parameter of the tag as url
+	- *@mail* open Mail app with content of tag *@osoba* as address	
 
 ## NerdTool / GeekTools ##
 
