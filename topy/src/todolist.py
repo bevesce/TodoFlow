@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """
 Module defines main objects of todolist structure:
 - TodoList
@@ -52,6 +54,10 @@ class TodoList(object):
     def remove(cls, id_no):
         cls.items_by_id[id_no].remove_self_from_parent()
 
+    @classmethod
+    def edit(cls, id_no, new_content):
+        cls.items_by_id[id_no].edit(new_content)
+
     def __init__(self, items=None):
         self.items = items if items else []
         self.set_parent_list(self.items)
@@ -87,13 +93,15 @@ class TodoList(object):
         return TodoList(self.deep_copy_of_items())
 
     def to_file(self, path):
+        text = self.as_plain_text(
+            colored=False,
+            with_ids=False,
+            indent=True
+        ).code('utf-8')
+
         with open(path, 'w') as f:
-            f.write(self.as_plain_text(
-                colored=False,
-                with_ids=False,
-                indent=True
-                )
-            )
+            f.write(text)
+
 
     def copy_of_items(self):
         return [item.copy() for item in self.items if item]
@@ -173,7 +181,7 @@ class TodoList(object):
         from self.
         """
         # parse predicate if it's in string
-        if isinstance(predicate, str):
+        if isinstance(predicate, unicode) or isinstance(predicate, str):
             predicate = parse_predicate(predicate)
 
         filtered_items_with_None = [
@@ -280,6 +288,10 @@ class ItemTitle(object):
 
     def remove_indent(self):
         self.indent_level = 0
+
+    def edit(self, new_text):
+        self.text = new_text.strip()
+        self.content = remove_trailing_tags(self.text)
 
     def indent(self, level=1):
         self.indent_level += level
@@ -412,6 +424,9 @@ class Item(object):
         if self.sub_tasks:
             self.sub_tasks.set_indent_level(level + 1)
 
+    def edit(self, new_content):
+        self.title.edit(new_content)
+
     def prepend_subtasks(self, items):
         self.indent_new_subtasks(items)
         if self.sub_tasks:
@@ -468,27 +483,23 @@ class Item(object):
             colored,
             self.is_done()
         )
-        ptext = ("{indent}{ident_color}{ident}"
-                "{prefix_color}{prefix}"
-                "{text_color}{text}"
-                "{postfix_color}{postfix}"
-                "{def_color}{sub_tasks}").format(
+        ptext = (u"{indent}{ident_color}{ident}"
+                u"{prefix_color}{prefix}"
+                u"{text_color}{text}"
+                u"{postfix_color}{postfix}"
+                u"{def_color}{sub_tasks}").format(
             ident=(
-                (str(self.title._id) + ' | ') if with_ids else ''
+                (unicode(self.title._id) + ' | ') if with_ids else ''
             ),
             indent=(
                 ('\t' * self.title.indent_level) if indent else ''
             ),
-            text=enclose_tags(
-                self.title.text,
-                prefix=actual_colors['tag_color'],
-                postfix=actual_colors['text_color']
-                ),
+            text=wtf(self.title.text, actual_colors),
             prefix=self.title.prefix,
             postfix=self.title.postfix,
             sub_tasks=(
                 ('\n' + self.sub_tasks.as_plain_text(
-                            colored, with_ids, indent
+                    colored, with_ids, indent
                 )
                 )
                 if self.sub_tasks else ''
@@ -523,7 +534,8 @@ class Item(object):
 
     def as_countdown(self, colored=False):
         if not ' @due(' in self.title.text:
-            return self.sub_tasks.as_countdown(colored)
+            if self.sub_tasks:
+                return self.sub_tasks.as_countdown(colored)
 
         time_left = date_to_countdown(
             get_tag_param(self.title.line, 'due')
@@ -537,7 +549,7 @@ class Item(object):
         )
 
         if time_left:
-            text = "{time_left} {text_color}{text}{def_color}{sub_tasks}".format(
+            text = u"{time_left} {text_color}{text}{def_color}{sub_tasks}".format(
                 time_left=time_left,
                 text=enclose_tags(
                     self.title.text,
@@ -671,6 +683,29 @@ class NewLineItem(object):
     def deep_copy(self):
         return NewLineItem()
 
-
     def as_html(self):
         return "<br>"
+
+
+def wtf(t, actual_colors):
+    # try:
+        # wtf = {
+        #     u'ż': u'ż',
+        #     u'ę': u'ę',
+        #     u'ó': u'ó',
+        #     u'ą': u'ą',
+        #     u'ś': u'ś',
+        #     u'ń': u'ń',
+        #     u'ź': u'ź',
+        #     u'ć': u'ć',
+        #     u'ń': u'ń',
+        # }
+        # for k, v in wtf.items():
+        #     t = t.replace(k, v)
+        return u"{0}".format(enclose_tags(
+            t,
+            prefix=actual_colors['tag_color'],
+            postfix=actual_colors['text_color']
+        ))  #
+    # except:
+        # return 'WW'

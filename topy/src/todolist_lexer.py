@@ -44,8 +44,8 @@ class Token(object):
         # only tags are allowed after `:`
         after_colon = splitted[-1].split('@')
         only_tags_after_colon = all([
-           Token.tag_pattern_without_at.match(tag) for tag in after_colon
-            ])
+            Token.tag_pattern_without_at.match(tag) for tag in after_colon
+        ])
         return only_tags_after_colon
 
     def __init__(self, line=None, indent_level=0, line_no=0):

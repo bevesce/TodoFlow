@@ -49,9 +49,9 @@ class AlfredItemsList(object):
     def __str__(self):
         items = "".join(
             [self.pattern.format(
-                arg=arg,
-                title=escape(title),
-                subtitle=escape(subtitle),
+                arg=arg.encode('utf-8'),
+                title=escape(title.encode('utf-8')),
+                subtitle=escape(subtitle.encode('utf-8')),
                 valid=valid,
                 icon=icon,
                 uid=uid

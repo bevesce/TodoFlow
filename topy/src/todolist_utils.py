@@ -132,5 +132,5 @@ def date_to_countdown(date_iso):
         countdown = str((param_date - today).days)
         return countdown.zfill(number_of_digits)
     except Exception as e:
-        print e
+        # print e
         return '?' * number_of_digits

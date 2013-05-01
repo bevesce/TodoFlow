@@ -125,7 +125,7 @@ Displays all tasks in active lists, you can filter them by typing query.
 	- if task has tag **@search** or **@research** opens Alfred 2 with query *g {content of task}* (for googling)
 	- if task has tag **@download** or **@tvseries** opens Alfred 2 with query  *pb {content of task}*
 	- always puts content of task to clipboard
-- fn+↩ - removes task from list
+- fn+↩ - start editing selected task, Alfred will open reopen itself with *editq* keyword and content of selected item. You can then edit text to change item or remove text completely to remove item from list.
 
 ![alfred-q][]
 

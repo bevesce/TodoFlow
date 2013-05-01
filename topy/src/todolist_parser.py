@@ -28,7 +28,7 @@ class Parser(object):
     @staticmethod
     def list_from_file(filepath):
         with open(filepath, 'r') as f:
-            tlist = Parser(Lexer(f.readlines())).parse()
+            tlist = Parser(Lexer([l.decode('utf-8') for l in f.readlines()])).parse()
             tlist.source = filepath
             return tlist
 

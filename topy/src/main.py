@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """
 Main module, provides functions needes to
 create TodoList object from plain text files
@@ -17,7 +19,7 @@ from filterpredicate import TagPredicate
 
 
 def from_file(path):
-    return Parser.list_from_file(path)
+    return Parser.list_from_file(path.strip())
 
 
 def from_files(paths):
@@ -55,21 +57,28 @@ def remove(item_id):
     TodoList.remove(item_id)
 
 
+def edit(item_id, new_content):
+    TodoList.edit(item_id, new_content)
+
+
 def get_content(item_id):
     return TodoList.get_content(item_id)
 
 
 def tag_dependand_action(item_id):
     item = TodoList.get_item(item_id)
-    if item.has_tag('@web'):
-        action.open(item.get_tag_param('@web'))
-    if item.has_tag('@file'):
-        action.open(item.get_tag_param('@file'))
+
+    to_open = ('@mail', '@web', '@file')
+    for tag in to_open:
+        if item.has_tag(tag):
+            action.open(item.get_tag_param(tag))
+
+    content = item.get_content()
     if item.has_any_tags(['@download', '@tvseries']):
-        action.alfread_search('pb ' + item.get_content())
+        action.alfred_search('pb ' + content)
     if item.has_any_tags(['@search', '@research']):
-        action.alfread_search('g ' + item.get_content())
-    action.put_to_clipboard(item.get_content())
+        action.alfred_search('g ' + content)
+    action.put_to_clipboard(content)
 
 
 class action():
@@ -78,7 +87,7 @@ class action():
         subprocess.call('open "{0}"'.format(to_open), shell=True)
 
     @staticmethod
-    def alfread_search(query):
+    def alfred_search(query):
         subprocess.call(
             'osascript -e "tell application \\"Alfred 2\\" to search \\"{0}\\""'.format(query),
             shell=True
@@ -94,7 +103,7 @@ def add_new_subtask(item_id, new_item):
     new_item should be item of type Task, Project, Note or
     string, in that case it's assumed that it's task
     """
-    if isinstance(new_item, str):
+    if isinstance(new_item, unicode):
         new_item = TodoList([Task('- ' + new_item)])
     TodoList.items_by_id[item_id].append_subtasks(new_item)
 
@@ -143,6 +152,6 @@ def save(tlist):
     """
     for item in tlist.items:
         if hasattr(item, 'source'):
-            with open(item.source, 'w') as f:
+            with open(item.source.strip(), 'w') as f:
                 item.sub_tasks.indent(-1)
-                f.write(item.sub_tasks.as_plain_text())
+                f.write(item.sub_tasks.as_plain_text().encode('utf-8'))
