@@ -6,6 +6,7 @@ Topy module provides API for interacting with todo lists in plain text files wit
 
 # Changelog #
 
+- 2013-05-02 - Drafts Inbox actions added
 - 2013-05-02 - added version for Pythonista iOS app
 - 2013-05-02 - added editing from topy and Alfred workflow
 - 2013-05-02 - better encoding handling
@@ -229,6 +230,22 @@ AppleScript that's puts selected tasks in Mail.app to Inbox.todo in following fo
 
 Requires additional configuration in script itself. I know nothing about AppleScript so it may be not very pretty.
 
+### inbox with Drafts ###
+
+[Drafts](http://agiletortoise.com/drafts/) action that appends draft with timestamp to Inbox.todo file. Requires path adjustment.
+
+	drafts://x-callback-url/import_action?type=dropbox&name=Inbox&path=%2FTODO%2F&filenametype=2&filename=Inbox.todo&ext=&writetype=2&template=-%20%5B%5Bdraft%5D%5D%20%40in%28%5B%5Bdate%5D%5D%29%0A
+
+Version that also adds clipboard content:
+
+	drafts://x-callback-url/import_action?type=dropbox&name=Clipboard%20-%3E%20Inbox&path=%2FTODO%2F&filenametype=2&filename=Inbox.todo&ext=&writetype=2&template=-%20%5B%5Bclipboard%5D%5D%20%5B%5Bdraft%5D%5D%20%40in%28%5B%5Bdate%5D%5D%29%0A
+
+And bookmarklet that gets page title and url and launches this action in Drafts and returns to Safari:
+
+	javascript:if(window.getSelection()!='')%7Bvar%20selected=encodeURIComponent(window.getSelection());var%20selected='%250A%250A%253E%2520'+selected.replace(/%250A/g,'%250A%253E%2520');%7Delse%7Bvar%20selected='';%7Dlocation.href='drafts://x-callback-url/create?'+'text='+encodeURIComponent(document.title)+'%20@web('+encodeURIComponent(location.href)+')'+selected+'&action='+'Inbox'+'&x-success='+encodeURIComponent(location.href);
+
+[Draggable link](javascript:if(window.getSelection()!='')%7Bvar%20selected=encodeURIComponent(window.getSelection());var%20selected='%250A%250A%253E%2520'+selected.replace(/%250A/g,'%250A%253E%2520');%7Delse%7Bvar%20selected='';%7Dlocation.href='drafts://x-callback-url/create?'+'text='+encodeURIComponent(document.title)+'%20@web('+encodeURIComponent(location.href)+')'+selected+'&action='+'Inbox'+'&x-success='+encodeURIComponent(location.href);)
+
 ### log_to_day_one ###
 
 Creates entry in [Day One][] with tasks that were done today.
@@ -279,6 +296,8 @@ After quering script keeps running end waits for input:
 	- *@search* and *research* - search for content of item with Bang On iOS app
 	- *@web* opens browser with parameter of the tag as url
 	- *@mail* open Mail app with content of tag *@osoba* as address	
+
+![qtopy in action](http://bvsc.nazwa.pl/img/itopy.png)
 
 ## NerdTool / GeekTools ##
 
