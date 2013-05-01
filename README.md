@@ -61,7 +61,7 @@ Both task1 and task2 have index 0, subproject and task3 have index 1, task4 has 
 
 - =
 - !=
-- \< - values are compared lexicographically (it just string comparision)
+- \< - values are compared lexicographically (it just string comparison)
 - \>
 - \<=
 - \>=
@@ -72,7 +72,7 @@ Two queries joined by *and* are query, two queries joined by *or* are query, que
 
 Full grammar is in filterpredicate.py source file.
 
-# Instalation & Configuration #
+# Installation & Configuration #
 
 For now I'm not providing *setup.py*, so to use it from anywhere you need to add directory that contains topy folder to python path. Main configuration file is in *topy/config.py*, options are described there. Several utilities require additional configuration.
 
@@ -85,7 +85,7 @@ Some examples what can be done with this module and other tools for working with
 	Command line interface.
 	
 	usage: tp [-h] [-q QUERY] [-p [PATHS [PATHS ...]]] [--not-colored]
-			  [--markdown] [--with-ids] [--html] [--css CSS] [--countdow	]	
+			  [--markdown] [--with-ids] [--html] [--css CSS] [--countdown	]	
 			 [--dont-indent	
 	
 	Filter todo list.
@@ -100,7 +100,7 @@ Some examples what can be done with this module and other tools for working with
 	  --not-	colored, -nc    not colored output	
 	  --mark	down, -md       print as markdow	
 	  --with	-ids, -ids      print with items	ids	
-	  --html	                print as htm	
+	  --html	                print as html	
 	  --css CSS             css stylesheet, only valid with --html	
 	  --countdown, -cd      print as countdown
 	  --dont-indent         don't indent lines
@@ -117,13 +117,13 @@ SublimeText 2 package, read more in [its readme][SublimeReadme].
 
 ##### *q* keyword
 
-Displays all tasks in [active lists][], you can filter them by typing query.
+Displays all tasks in active lists, you can filter them by typing query.
 
 - ↩ - tags task as **@done**
-- ⌘+↩ - **new, kinda experimental feature** performs action depending on tags of task, at the moment to change behaviour you need to modify tag_dependand_action function in main.py
+- ⌘+↩ - **new, experimental feature** performs action depending on tags of task, at the moment to change behaviour you need to modify tag_dependent_action function in main.py
 	- if task has tag **@file** or **@web** tries to open parameter of that tag
-	- if taks has tag **@search** or **@research** opens Alfred2 with query *g {content of task}*
-	- if task has tag **@download** or **@tvseries** opens Alfred2 with query  *pb {content of task}*
+	- if task has tag **@search** or **@research** opens Alfred 2 with query *g {content of task}* (for googling)
+	- if task has tag **@download** or **@tvseries** opens Alfred 2 with query  *pb {content of task}*
 	- always puts content of task to clipboard
 - fn+↩ - removes task from list
 
@@ -146,7 +146,7 @@ Examples:
 ##### *a* keyword #####
 
 
-Displays list of all projects in [active lists][].
+Displays list of all projects in active lists.
 Type task and hit ↩ to append task to selected project, you can filter projects by typing query after ';'.
 
 ![alfred-a][]
