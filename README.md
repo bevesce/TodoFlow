@@ -6,6 +6,7 @@ Topy module provides API for interacting with todo lists in plain text files wit
 
 # Changelog #
 
+- 2013-05-03 - added separate coloring for @today, @next and @due tags
 - 2013-05-02 - Drafts Inbox actions added
 - 2013-05-02 - added version for Pythonista iOS app
 - 2013-05-02 - added editing from topy and Alfred workflow

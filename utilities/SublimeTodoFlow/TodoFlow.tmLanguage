@@ -29,6 +29,30 @@
 		</dict>
 		<dict>
 			<key>comment</key>
+			<string>today</string>
+			<key>match</key>
+			<string>@today</string>
+			<key>name</key>
+			<string>string</string>
+		</dict>
+		<dict>
+			<key>comment</key>
+			<string>due</string>
+			<key>match</key>
+			<string>@due(\([^)]*\)){0,1}</string>
+			<key>name</key>
+			<string>constant.numeric</string>
+		</dict>
+		<dict>
+			<key>comment</key>
+			<string>next</string>
+			<key>match</key>
+			<string>@next</string>
+			<key>name</key>
+			<string>string</string>
+		</dict>
+		<dict>
+			<key>comment</key>
 			<string>tag</string>
 			<key>match</key>
 			<string>((?&lt;=\s)|^)(@[^\(\s]*(\(([^)]*)\)|(?=(\s|$))))</string>
