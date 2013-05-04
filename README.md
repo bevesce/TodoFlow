@@ -6,6 +6,7 @@ Topy module provides API for interacting with todo lists in plain text files wit
 
 # Changelog #
 
+- 2013-05-04 - new utility - tabs_as_tasks
 - 2013-05-03 - added separate coloring for @today, @next and @due tags
 - 2013-05-02 - Drafts Inbox actions added
 - 2013-05-02 - added version for Pythonista iOS app
@@ -252,6 +253,13 @@ Creates entry in [Day One][] with tasks that were done today.
 ### tvcal ###
 
 Adds titles of tv series that will air in upcoming 24 hours to Inbox.todo, requires account at <http://www.pogdesign.co.uk/cat/> and icalendar python module.
+
+### tabs_as_task ###
+
+Gets urls and titles of oppened pages in Safari and prints them in following format:
+
+	- title1 @web(url1)
+	- title2 @web(url2)
 
 ### update_lists ###
 
