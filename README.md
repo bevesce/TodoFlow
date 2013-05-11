@@ -6,6 +6,7 @@ Topy module provides API for interacting with todo lists in plain text files wit
 
 # Changelog #
 
+- 2013-05-11 - new utility - qr_to_drafts
 - 2013-05-04 - new utility - tabs_as_tasks
 - 2013-05-03 - added separate coloring for @today, @next and @due tags
 - 2013-05-02 - Drafts Inbox actions added
@@ -245,6 +246,13 @@ Version that also adds clipboard content:
 And bookmarklet that gets page title and url and launches this action in Drafts and returns to Safari:
 
 	javascript:if(window.getSelection()!='')%7Bvar%20selected=encodeURIComponent(window.getSelection());var%20selected='%250A%250A%253E%2520'+selected.replace(/%250A/g,'%250A%253E%2520');%7Delse%7Bvar%20selected='';%7Dlocation.href='drafts://x-callback-url/create?'+'text='+encodeURIComponent(document.title)+'%20@web('+encodeURIComponent(location.href)+')'+selected+'&action='+'Inbox'+'&x-success='+encodeURIComponent(location.href);
+
+### qr_to_drafts ###
+
+Ok, now it's just crazy. Inspired by [David Sparks post](http://macsparky.com/blog/2013/5/omnifocus-task-creation-via-qr-code)
+about workflow of [Jonas Bergenudd](http://urbanism.se).
+
+Script creates QR code with given text that when scanned puts that text in Drafts and launches Inbox action. 
 
 ### log_to_day_one ###
 
