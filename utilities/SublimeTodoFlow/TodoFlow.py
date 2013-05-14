@@ -39,7 +39,7 @@ def is_project(line):
         return False
     if line[-1] == u' ':  # trailing space after `:`
         return False
-    if splitted[1].strip() != '' and splitted[1].strip()[0] != '@':
+    if splitted[-1].strip() != '' and splitted[-1].strip()[0] != '@':
         return False
     # only tags are allowed after `:`
     after_colon = splitted[-1].split(u'@')
@@ -81,6 +81,31 @@ class TaskCommand(sublime_plugin.TextCommand):
         return line
 
 
+def convert_to_project_line(line):
+    splitted = line.split(' ')
+    pre = ''
+    post = []
+    opened_parenthesis = 0
+    for i, s in enumerate(splitted[::-1]):
+        # print i, s, opened_parenthesis
+        if s[-1] == ')':
+            opened_parenthesis += 1
+        if s[0] == '@':
+            post.append(s)
+            if '(' in s:
+                opened_parenthesis -= 1
+        else:
+            if opened_parenthesis == 0:
+                if i == 0:
+                    pre = line
+                else:
+                    pre = ' '.join(splitted[0:-(i)])
+                break
+    # print post
+    return (pre + ': ' + ' '.join(post)).rstrip()
+
+
+
 class NewTaskCommand(sublime_plugin.TextCommand):
     def run(self, edit):
         work_on_file(self, edit)
@@ -103,18 +128,7 @@ class ChangeTypeCommand(sublime_plugin.TextCommand):
             line = '\t' * level + line.strip()[2:]
 
             # insert `:` before trailing tags
-            splitted = line.split(' @')
-            last_trailing_tag_idx = len(splitted) - 1
-            if last_trailing_tag_idx == 0:
-                return line + ':'
-            while tag_pattern_without_at.match(
-                splitted[last_trailing_tag_idx]
-            ) and last_trailing_tag_idx > 1:
-                last_trailing_tag_idx -= 1
-
-            line = ' @'.join(splitted[0:last_trailing_tag_idx]) + ':'
-            if len(splitted[last_trailing_tag_idx:]):
-                line += ' @' + ' @'.join(splitted[last_trailing_tag_idx:])
+            line = convert_to_project_line(line)
 
         elif is_project(line):  # change to note
             print 'project'
