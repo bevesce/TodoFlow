@@ -6,6 +6,7 @@ Topy module provides API for interacting with todo lists in plain text files wit
 
 # Changelog #
 
+- 2013-05-14 - fixed bug in sublime package (bad changing type of item when project has trailing tags)
 - 2013-05-11 - new utility - qr_to_drafts
 - 2013-05-04 - new utility - tabs_as_tasks
 - 2013-05-03 - added separate coloring for @today, @next and @due tags

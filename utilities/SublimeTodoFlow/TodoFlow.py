@@ -39,7 +39,7 @@ def is_project(line):
         return False
     if line[-1] == u' ':  # trailing space after `:`
         return False
-    if splitted[1][0] != '@':
+    if splitted[1].strip() != '' and splitted[1].strip()[0] != '@':
         return False
     # only tags are allowed after `:`
     after_colon = splitted[-1].split(u'@')
@@ -99,6 +99,7 @@ class ChangeTypeCommand(sublime_plugin.TextCommand):
     def process(self, line):
         level = indent_level(line)
         if is_task(line):  # change to project
+            print 'task'
             line = '\t' * level + line.strip()[2:]
 
             # insert `:` before trailing tags
@@ -116,9 +117,13 @@ class ChangeTypeCommand(sublime_plugin.TextCommand):
                 line += ' @' + ' @'.join(splitted[last_trailing_tag_idx:])
 
         elif is_project(line):  # change to note
-            line = re.sub(':(?=($|\s))', '', line)
+            print 'project'
+            splitted = [s for s in line.split(':') if s.strip()]
+            line = ':'.join(splitted[0:-1]) + splitted[-1]
+            print 'project new:'
 
         else:  # change to task
+            print 'note'
             return '\t' * level + '- ' + line.strip()
 
         if line[-1] == ' ':
