@@ -4,8 +4,13 @@
 
 Topy module provides API for interacting with todo lists in plain text files with [taskpaperlike][] format with powerful query syntax. It provides functions to modify lists and to convert them to markdown, html and XML used in [Alfred2][] workflow. See utilities for examples of what can be done with it.
 
+# Project Maturity #
+
+This is something that I use everyday and works as it is but I add things when I have new ideas or notice opportunity for improvenemt.
+
 # Changelog #
 
+- 2013-05-19 - minor improvement in how abbreviations in queries are expanded
 - 2013-05-14 - fixed bug in sublime package (bad changing type of item when project has trailing tags)
 - 2013-05-11 - new utility - qr_to_drafts
 - 2013-05-04 - new utility - tabs_as_tasks

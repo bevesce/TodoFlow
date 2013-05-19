@@ -58,11 +58,15 @@ def remove(item_id):
 
 
 def edit(item_id, new_content):
-    TodoList.edit(item_id, new_content)
+    TodoList.edit(item_id, new_content.decode('utf-8'))
 
 
 def get_content(item_id):
     return TodoList.get_content(item_id)
+
+
+def get_text(item_id):
+    return TodoList.get_text(item_id)
 
 
 def tag_dependand_action(item_id):
@@ -74,7 +78,7 @@ def tag_dependand_action(item_id):
             action.open(item.get_tag_param(tag))
 
     content = item.get_content()
-    if item.has_any_tags(['@download', '@tvseries']):
+    if item.has_any_tags(['@download', '@tvseries', '@comics']):
         action.alfred_search('pb ' + content)
     if item.has_any_tags(['@search', '@research']):
         action.alfred_search('g ' + content)
@@ -121,6 +125,8 @@ def expand_shortcuts(query):
             first_space_idx = len(query)
 
         for i in range(0, first_space_idx):
+            if not query[i] in abbreviations:
+                return query.strip()
             expanded_query.append(abbreviations[query[i]])
         expanded_query.append(query[first_space_idx + 1:])
         return conjuction.join(expanded_query)
