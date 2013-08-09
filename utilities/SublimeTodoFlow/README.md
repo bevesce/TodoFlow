@@ -4,7 +4,7 @@
 
 SublimeText2 package for working with todo lists in plain text files with [taskpaperlike][] [format][]. It's designed to work with every color scheme. I don't like when packages overwrite my theme.
 
-![sublime1][]![sublime2][]![sublime3][]![sublime4][]
+![sublime1](http://jerry.mydevil.net/img/sublime1.png) ![sublime2](http://jerry.mydevil.net/img/sublime2.png) ![sublime3](http://jerry.mydevil.net/img/sublime3.png) ![sublime4](http://jerry.mydevil.net/img/sublime4.png)
 
 # Key Binding & Commands #
 
@@ -13,12 +13,10 @@ SublimeText2 package for working with todo lists in plain text files with [taskp
 - ⌘+⌃+, / *ctrl+alt+,* - change type of current line (toggle between task / project / note)
 - ⌘+⌃+. / *ctrl+alt+.* - add tag from quick panel, list of tags is created from tags in current file, tags **@in**, **@due**, **@done** are not included.
 
-![sublime5][]
+![sublime5](http://jerry.mydevil.net/img/sublime5.png)
 
 - ⌘+⌃+⌥+↑ / *super+ctrl+alt+↑* - increase date (or insert today if cursor is not on date), what is increased (year, month, day) depends  on what part of date cursor is on 
 - ⌘+⌃+⌥+↓ / *super+ctrl+alt+↓* - decrease date
-
-![dategif][]
 
 # File format [format]#
 

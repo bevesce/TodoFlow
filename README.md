@@ -121,7 +121,7 @@ Some examples what can be done with this module and other tools for working with
 	  --countdown, -cd      print as countdown
 	  --dont-indent         don't indent lines
 
-![tp_screen_shot][]
+![tp_screen_shot](http://jerry.mydevil.net/img/tp.png)
 
 ## SublimeTodoFlow ##
 
@@ -143,7 +143,7 @@ Displays all tasks in active lists, you can filter them by typing query.
 	- always puts content of task to clipboard
 - fn+↩ - start editing selected task, Alfred will open reopen itself with *editq* keyword and content of selected item. You can then edit text to change item or remove text completely to remove item from list.
 
-![alfred-q][]
+![alfred-q](http://jerry.mydevil.net/img/TodoFlow2-q.png)
 
 In config.py you can set dictionary of one-letter abbreviations for queries. To use them type **q** and then previously defined  abbreviation (without space). Abbreviations can be chained with *and*.
 
@@ -165,7 +165,7 @@ Examples:
 Displays list of all projects in active lists.
 Type task and hit ↩ to append task to selected project, you can filter projects by typing query after ';'.
 
-![alfred-a][]
+![alfred-a](http://jerry.mydevil.net/img/TodoFlow2-a.png)
 
 ##### *remove list* keywords #####
 
@@ -177,10 +177,10 @@ Adds list to active lists
 
 ##### icons #####
 
-- ![task][] - task
-- ![done][] - item tagged as **@done**
-- ![project][] - project
-- ![note][] - note
+- ![task](http://jerry.mydevil.net/img/task.png) - task
+- ![done](http://jerry.mydevil.net/img/done.png) - item tagged as **@done**
+- ![project](http://jerry.mydevil.net/img/project.png) - project
+- ![note](http://jerry.mydevil.net/img/note.png) - note
 
 ## Inbox Alfred 2 Workflow ##
 
@@ -190,7 +190,7 @@ Adds list to active lists
 
 Appends typed task with date stamp to Inbox.todo. 
 
-![alfred-in][]
+![alfred-in](http://jerry.mydevil.net/img/TodoFlow2-in.png)
 
 ##### first hotkey #####
 
@@ -198,8 +198,7 @@ Appends selected text to Inbox.todo with date stamp.
 
 ##### second hotkey #####
 
-Appends selected mails in Mail.app to Inbox.todo, see [mail-to-inbox][]
-
+Appends selected mails in Mail.app to Inbox.todo, see [mail-to-inbox]()
 
 ---
 
@@ -236,7 +235,7 @@ Appends tasks to Inbox.todo with date stamp as parameter of **@in** tag.
 
 AppleScript that's puts selected tasks in Mail.app to Inbox.todo in following format:
 
-\- subject **@in(**date received**)** **@person(**sender**)** **@mail(**message://...**)**
+- subject **@in(**date received**)** **@person(**sender**)** **@mail(**message://...**)**
 
 Requires additional configuration in script itself. I know nothing about AppleScript so it may be not very pretty.
 
@@ -327,8 +326,6 @@ After querying script keeps running end waits for input:
 	- *@web* opens browser with parameter of the tag as url
 	- *@mail* open Mail app with content of tag *@osoba* as address	
 
-![qtopy in action](http://bvsc.nazwa.pl/img/itopy.png)
-
 ## NerdTool / GeekTools ##
 
 Scripts I use to put todo lists on Desktop with Nerd tools.
@@ -337,7 +334,7 @@ Scripts I use to put todo lists on Desktop with Nerd tools.
 
 It looks like this:
 
-![nerd_tools][]
+![nerd_tools](http://jerry.mydevil.net/img/nerdtool.png)
 
 ### print_next ###
 
