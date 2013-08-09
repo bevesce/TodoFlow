@@ -9,6 +9,8 @@ from datetime import date
 import re
 import console
 import webbrowser
+from notification import schedule as n
+
 # File that stores path to your todo lists
 # This location keeps up with alfred workflow
 # best practices but you can change it
@@ -55,14 +57,14 @@ mostly operations on text.
 """
 
 def set_font(color=(0.00, 0.00, 0.00), size=18, font='dejavusansmono'):
-	console.set_font(font, size)
-	console.set_color(color)
+    console.set_font(font, size)
+    console.set_color(color)
 
 def set_size(size):
-	console.set_font('dejavusansmono', size)
+    console.set_font('dejavusansmono', size)
 
 def set_color(c):
-	console.set_color(*c)
+    console.set_color(*c)
 
 ctoday = (0.00, 0.50, 0.50)
 cnext = (0.00, 0.25, 0.50)
@@ -1504,6 +1506,10 @@ class TodoList(object):
         ]
         return "\n".join(items_texts_list)
 
+    def as_notify(self):
+            for item in self.items:
+                item.as_notify()
+
     def as_countdown(self):
         today = date.today().isoformat()
         only_due = self.filter(
@@ -1544,8 +1550,8 @@ class TodoList(object):
     ) if css_style else ''
 )
     def pythonista_print(self):
-    	for item in self.items:
-    		item.pythonista_print()
+        for item in self.items:
+            item.pythonista_print()
 
 class ItemTitle(object):
     def __init__(self, line, line_no, indent_level, typ):
@@ -1611,11 +1617,11 @@ class ItemTitle(object):
         return bool(re.search(done_tag, self.line))
 
     def pythonista_print(self):
-    	indent = '\t'*self.indent_level
-    	print indent + self.text
-    	set_size(12)
-    	print indent + '/' + str(self._id)
-    	
+        indent = '\t'*self.indent_level
+        print indent + self.text
+        set_size(12)
+        print indent + '/' + str(self._id)
+
 
 class Item(object):
     """
@@ -1709,11 +1715,11 @@ class Item(object):
         self.parent_list.remove_item(self)
 
     def indent_new_subtasks(self, items):
-    	try:
-    		for item in items.items:
-    			item.set_indent_level(self.title.indent_level + 1)
-    	except:
-    		items.set_indent_level(self.title.indent_level + 1)
+        try:
+            for item in items.items:
+                item.set_indent_level(self.title.indent_level + 1)
+        except:
+            items.set_indent_level(self.title.indent_level + 1)
 
     def set_indent_level(self, level):
         self.title.indent_level = level
@@ -1732,7 +1738,7 @@ class Item(object):
         if self.sub_tasks:
             self.sub_tasks = self.sub_tasks + items
         else:
-            self.sub_tasks = items  
+            self.sub_tasks = items
 
     def flatten(self):
         self.tag_with_parents()
@@ -1769,6 +1775,11 @@ class Item(object):
                     self.sub_tasks.items.remove(item)
         if meets_prediacate or new.sub_tasks:
             return new
+
+    def as_notify(self):
+            if self.sub_tasks:
+                self.sub_tasks.as_notify()
+            n(str(self.title.text).replace('@today', '').strip())
 
     def as_plain_text(self, with_ids=False, indent=True):
         ptext = (u"{indent}{ident}"
@@ -1859,25 +1870,28 @@ class Item(object):
         return title + sub_tasks
 
     def pythonista_print(self):
-    	if self.has_tag('@done'):
-    		set_color(cdone)
-    	elif self.has_tag('@due'):
-    		set_color(cdue)
-    	elif self.has_tag('@next'):
-    		set_color(cnext)
-    	elif self.has_tag('@today'):
-    		set_color(ctoday)
-    	else:
-    		set_color(ctask)
-    	self.title.pythonista_print()
-    	
-    	if self.sub_tasks:
-    		self.sub_tasks.pythonista_print()
+        if self.has_tag('@done'):
+            set_color(cdone)
+        elif self.has_tag('@due'):
+            set_color(cdue)
+        elif self.has_tag('@next'):
+            set_color(cnext)
+        elif self.has_tag('@today'):
+            set_color(ctoday)
+        else:
+            set_color(ctask)
+        self.title.pythonista_print()
+
+        if self.sub_tasks:
+            self.sub_tasks.pythonista_print()
 
 class Project(Item):
     def __init__(self, line='', line_no=0, indent_level=0, sub_tasks=None, typ='project'):
         super(Project, self).__init__(line, line_no, indent_level, sub_tasks, typ)
         self.type = 'project'
+    def as_notify(self):
+            if self.sub_tasks:
+                self.sub_tasks.as_notify()
 
 
     def markdown_indent_level(self):
@@ -1890,8 +1904,8 @@ class Project(Item):
         return Project()
 
     def pythonista_print(self):
-    	set_size(18+20/(self.title.indent_level+1.))
-    	super(Project, self).pythonista_print()
+        set_size(18+20/(self.title.indent_level+1.))
+        super(Project, self).pythonista_print()
 
 
 class Task(Item):
@@ -1908,8 +1922,8 @@ class Task(Item):
         return Task()
 
     def pythonista_print(self):
-    	set_size(18)
-    	super(Task, self).pythonista_print()
+        set_size(18)
+        super(Task, self).pythonista_print()
 
 class Note(Item):
     def __init__(self, line='', line_no=0, indent_level=0, sub_tasks=None, typ='note'):
@@ -1923,8 +1937,8 @@ class Note(Item):
         return Note()
 
     def pythonista_print(self):
-    		set_size(15)
-    		super(Note, self).pythonista_print()
+            set_size(15)
+            super(Note, self).pythonista_print()
 
 class NewLineItem(object):
     def __init__(self):
@@ -1941,6 +1955,9 @@ class NewLineItem(object):
 
     def as_plain_text(self, *args):
         return ''
+
+    def as_notify(self):
+            pass
 
     def flatten(self, *args, **kwargs):
         return []
@@ -2160,32 +2177,32 @@ import clipboard
 def tag_dependand_action(item_id):
     item = TodoList.get_item(item_id)
     content = item.get_content()
-    
+
     if item.has_any_tags(['@search', '@research']):
         action.x_callend('bang-on://?' + urlencode({'q': content}))
     elif item.has_tag('@web'):
         action.x_callend(item.get_tag_param('@web'))
     elif item.has_tag('@mail'):
-    	clipboard.set(content)
-    	s = 'mailto:{0}'.format(item.get_tag_param('@osoba').split('<')[1][0:-1])
-    	action.x_callend(s)
+        clipboard.set(content)
+        s = 'mailto:{0}'.format(item.get_tag_param('@osoba').split('<')[1][0:-1])
+        action.x_callend(s)
 
 finished = False
 
 class action():
     @staticmethod
     def x_call(s):
-    	webbrowser.open(s)
- 
+        webbrowser.open(s)
+
     @staticmethod
     def x_callend(s):
-    	global finished
-    	action.x_call(s)
-    	finished=True 
+        global finished
+        action.x_call(s)
+        finished=True
 
     @staticmethod
     def open(s):
-    	webbrowser.open(s)
+        webbrowser.open(s)
 
 def add_new_subtask(item_id, new_item):
     """
@@ -2231,12 +2248,12 @@ def archive(tlist, archive_tlist=None):
 
 
 def move(fro, to):
-	to_item = TodoList.items_by_id[to]
-	for f in fro:
-		item = TodoList.items_by_id[f]
-		item.remove_self_from_parent()
-		to_item.append_subtasks(TodoList([item]))
-    
+    to_item = TodoList.items_by_id[to]
+    for f in fro:
+        item = TodoList.items_by_id[f]
+        item.remove_self_from_parent()
+        to_item.append_subtasks(TodoList([item]))
+
 
 def save(tlist):
     """
@@ -2259,50 +2276,56 @@ fq = ''
 import clipboard
 
 def dispatch(inp):
-	i = inp[0]
-	r = inp[1:]
-	if i == 'q':
-		t.filter(expand_shortcuts(r)).pythonista_print()
-	elif  i == 'd':
-		do(int(r))
-		save(t)
-		t.filter(fq).pythonista_print()
-	elif i == 'c':
-		clipboard.set(get_content(int(r)))
-	elif i == 'a':
-		tag_dependand_action(int(r))
-	elif i == 'm':
-		fro, to = r.split('>')
-		fro = [f.strip() for f in fro.split(' ')]
-		fro = [int(f) for f in fro if f]
-		to = int(to.strip())
-		move(fro, to)
-		save(t)
-		t.filter(fq).pythonista_print()
-	#elif i == '+':
-	#	ide, tas = r.partition(' ')[::2]
-	#	print ide, tas
-	#	ide = int(ide.strip())
-	#	add_new_subtask(ide, tas)
-	#	save(t)
-	#	t.filter(fq).pythonista_print()
-	else:
-		print inp + '?'
+    i = inp[0]
+    r = inp[1:]
+    if i == 'q':
+        t.filter(expand_shortcuts(r)).pythonista_print()
+    elif  i == 'd':
+        do(int(r))
+        save(t)
+        t.filter(fq).pythonista_print()
+    elif i == 'c':
+        clipboard.set(get_content(int(r)))
+    elif i == 'a':
+        tag_dependand_action(int(r))
+    elif i == 'm':
+        fro, to = r.split('>')
+        fro = [f.strip() for f in fro.split(' ')]
+        fro = [int(f) for f in fro if f]
+        to = int(to.strip())
+        move(fro, to)
+        save(t)
+        t.filter(fq).pythonista_print()
+    #elif i == '+':
+    #   ide, tas = r.partition(' ')[::2]
+    #   print ide, tas
+    #   ide = int(ide.strip())
+    #   add_new_subtask(ide, tas)
+    #   save(t)
+    #   t.filter(fq).pythonista_print()
+    else:
+        print inp + '?'
 
 def q(query=''):
-	global t
-	global fq
-	fq = query
-	t = from_files(to_list())
-	t.filter(query).pythonista_print()
-	inp = raw_input()
-	while inp != '':
-		dispatch(inp)
-		if not finished:
-			inp = raw_input()
-		else: 
-			break
-	set_color((0.,0.,0.))
-	console.set_font()
-	
+    global t
+    global fq
+    fq = query
+    t = from_files(to_list())
+    t.filter(query).pythonista_print()
+    inp = raw_input()
+    while inp != '':
+        dispatch(inp)
+        if not finished:
+            inp = raw_input()
+        else:
+            break
+    set_color((0.,0.,0.))
+    console.set_font()
 
+
+def qq(query):
+    global t
+    global fq
+    fq = query
+    t = from_files(to_list())
+    return t.filter(query)

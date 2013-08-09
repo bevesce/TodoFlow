@@ -9,6 +9,18 @@ projects_path = 'path/to/Projects.todo'
 onhold_path = 'path/to/Onhold.todo'
 archive_path = 'path/to/NOTES/Archive.todo'
 
+# items with given tag can be automatically redirected from inbox to proper file
+
+inbox_tag_to_path = {
+    '@music': '/Users/bvsc/Dropbox/TODO/NOTES/$music.todo',
+    '@film': '/Users/bvsc/Dropbox/TODO/NOTES/$filmy.todo',
+    '@book': '/Users/bvsc/Dropbox/TODO/NOTES/$books.todo',
+    '@app': '/Users/bvsc/Dropbox/TODO/NOTES/$apps.todo',
+    '@game': '/Users/bvsc/Dropbox/TODO/NOTES/$games.todo',
+    '@toy': '/Users/bvsc/Dropbox/TODO/NOTES/$toys&tools.todo',
+    '@tool': '/Users/bvsc/Dropbox/TODO/NOTES/$toys&tools.todo'
+}
+
 ###################################################
 
 #### print_today, print_deadlines, print_next #####

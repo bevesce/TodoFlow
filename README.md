@@ -10,6 +10,7 @@ This is something that I use everyday and works as it is but I add things when I
 
 # Changelog #
 
+- 2013-08-10 - added todify - iOS pythonista script that adds task tagged with *@today* to notification center
 - 2013-05-19 - minor improvement in how abbreviations in queries are expanded
 - 2013-05-14 - fixed bug in sublime package (bad changing type of item when project has trailing tags)
 - 2013-05-11 - new utility - qr_to_drafts
@@ -296,15 +297,23 @@ some path must be adjusted in AppleScript *reminders_to_topy.applescript*.
 
 It allows to put items into Inbox with Siri on iOS (just put reminder in *Inbox* list and import it when on Mac or set this script in launchd).
 
-### itopy, utopy, qtopy ###
+### itopy, utopy, qtopy, todify ###
 
 Version of script to use in [Pythonista](http://omz-software.com/pythonista/) iOS app. Most of the source was marged to not clutter scripts list in app.  Requires [seamless dropbox](https://github.com/bevesce/Seamless-Dropbox)
 
 **itopy** - the main code, 
 
+**todify** - script that puts task returned by query *@today and not @done* to iOSs notification center. It's looks like this:
+
+![ todify ](http://jerry.mydevil.net/img/todify.png)
+
+Best launched with url scheme:
+
+	pythonista://todify?action=run
+
 **utopy** - marged version of *update_lists*
 
-**qtopy** is for quering and interactiong with lists. This is [Drafts](http://agiletortoise.com/drafts/) action to start this script with draft as the query:
+**qtopy** is for quering and working with lists. This is [Drafts](http://agiletortoise.com/drafts/) action to start this script with draft as the query:
 
 	drafts://x-callback-url/import_action?type=URL&name=itopy&url=pythonista%3A%2F%2Fqtopy%3Faction%3Drun%26args%3D%5B%5Bdraft%5D%5D
 

@@ -51,7 +51,7 @@ def tvcal(inbox_file):
                     ' @at(' + str(dt) + ') @tvseries'
                     )
     if len(to_inbox) > 1:
-        inbox_file.write('\n' + '\n'.join(to_inbox))
+        inbox_file.write('\n' + '\n'.join(to_inbox) + '\n')
 
 if __name__ == '__main__':
     with open(inbox_path, 'a') as inbox_file:

@@ -12,7 +12,10 @@ inbox_file = open(inbox_path, 'a')
 onhold_list = topy.from_file(onhold_path)
 
 log_to_day_one(all_lists.deep_copy())
-tvcal(inbox_file)
+try:
+    tvcal(inbox_file)
+except:
+    pass
 update_weekly(onhold_list, inbox_file)
 update_waiting(onhold_list, inbox_file)
 # inbox_file.close()
