@@ -10,8 +10,8 @@ SublimeText2 package for working with todo lists in plain text files with [taskp
 
 - ⌘+⌃+↩ / *ctrl+alt+enter* - toggle between **@next** / **@today** / **@done(YYYY-MM-DD)** / … tags. ⌘+D is for selecting words, how could anyone overwrite that?
 - ⌘+↩ / *ctrl+enter* - insert new task
-- ⌘+⌃+, / *ctrl+alr+,* - change type of current line (toggle between task / project / note)
-- ⌘+⌃+. / *ctrl+alr+.* - add tag from quick panel, list of tags is created from tags in current file, tags **@in**, **@due**, **@done** are not included.
+- ⌘+⌃+, / *ctrl+alt+,* - change type of current line (toggle between task / project / note)
+- ⌘+⌃+. / *ctrl+alt+.* - add tag from quick panel, list of tags is created from tags in current file, tags **@in**, **@due**, **@done** are not included.
 
 ![sublime5][]
 

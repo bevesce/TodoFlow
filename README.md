@@ -6,7 +6,7 @@ Topy module provides API for interacting with todo lists in plain text files wit
 
 # Project Maturity #
 
-This is something that I use everyday and works as it is but I add things when I have new ideas or notice opportunity for improvenemt.
+This is something that I use everyday and works as it is but I add things when I have new ideas or notice opportunity for improvement.
 
 # Changelog #
 
@@ -20,7 +20,7 @@ This is something that I use everyday and works as it is but I add things when I
 - 2013-05-02 - added version for Pythonista iOS app
 - 2013-05-02 - added editing from topy and Alfred workflow
 - 2013-05-02 - better encoding handling
-- 2013-05-02 - start of changelog
+- 2013-05-02 - start of change log
 
 # Usage #
 
@@ -114,7 +114,7 @@ Some examples what can be done with this module and other tools for working with
 							paths to files containg todo list, defaults 	to paths	
 								stored in topy.lists (see config.py)	
 	  --not-	colored, -nc    not colored output	
-	  --mark	down, -md       print as markdow	
+	  --mark	down, -md       print as markdown	
 	  --with	-ids, -ids      print with items	ids	
 	  --html	                print as html	
 	  --css CSS             css stylesheet, only valid with --html	
@@ -271,7 +271,7 @@ Adds titles of tv series that will air in upcoming 24 hours to Inbox.todo, requi
 
 ### tabs_as_task ###
 
-Gets urls and titles of oppened pages in Safari and prints them in following format:
+Gets urls and titles of opened pages in Safari and prints them in following format:
 
 	- title1 @web(url1)
 	- title2 @web(url2)
@@ -299,7 +299,7 @@ It allows to put items into Inbox with Siri on iOS (just put reminder in *Inbox*
 
 ### itopy, utopy, qtopy, todify ###
 
-Version of script to use in [Pythonista](http://omz-software.com/pythonista/) iOS app. Most of the source was marged to not clutter scripts list in app.  Requires [seamless dropbox](https://github.com/bevesce/Seamless-Dropbox)
+Version of script to use in [Pythonista](http://omz-software.com/pythonista/) iOS app. Most of the source was merged to not clutter scripts list in app.  Requires [seamless dropbox](https://github.com/bevesce/Seamless-Dropbox)
 
 **itopy** - the main code, 
 
@@ -311,18 +311,18 @@ Best launched with url scheme:
 
 	pythonista://todify?action=run
 
-**utopy** - marged version of *update_lists*
+**utopy** - merged version of *update_lists*
 
-**qtopy** is for quering and working with lists. This is [Drafts](http://agiletortoise.com/drafts/) action to start this script with draft as the query:
+**qtopy** is for querying and working with lists. This is [Drafts](http://agiletortoise.com/drafts/) action to start this script with draft as the query:
 
 	drafts://x-callback-url/import_action?type=URL&name=itopy&url=pythonista%3A%2F%2Fqtopy%3Faction%3Drun%26args%3D%5B%5Bdraft%5D%5D
 
-After quering script keeps running end waits for input:
+After querying script keeps running end waits for input:
 
 - **d item_id** tags item as done
 - **c item_id** puts content of item to clipboard
 - **m item_1_id > item_2_id** removes item 1 from current position and appends it to subtask of item 2
-- **a item_id** tag dependant action, with x-url schemes it can be pretty powerfull
+- **a item_id** tag dependant action, with x-url schemes it can be pretty powerful
 	- *@search* and *research* - search for content of item with Bang On iOS app
 	- *@web* opens browser with parameter of the tag as url
 	- *@mail* open Mail app with content of tag *@osoba* as address	
@@ -331,7 +331,7 @@ After quering script keeps running end waits for input:
 
 ## NerdTool / GeekTools ##
 
-Scripts I use to put todo lists on Desktop with Nerdtools.
+Scripts I use to put todo lists on Desktop with Nerd tools.
 
 ### NerdTool Exported Logs ###
 
