@@ -51,6 +51,10 @@ class TodoList(object):
         return cls.items_by_id[id_no].get_content()
 
     @classmethod
+    def get_text(cls, id_no):
+        return cls.items_by_id[id_no].get_text()
+
+    @classmethod
     def remove(cls, id_no):
         cls.items_by_id[id_no].remove_self_from_parent()
 
@@ -62,6 +66,8 @@ class TodoList(object):
         self.items = items if items else []
         self.set_parent_list(self.items)
         self.source = None
+        self.tags_counters = {}
+        self._iter_items_idx = 0
 
     def __str__(self):
         return self.as_plain_text()
@@ -85,6 +91,21 @@ class TodoList(object):
         return TodoList(
             items
             )
+
+    def __iter__(self):
+        return self
+
+    def next(self):
+        if not self.items:
+            raise StopIteration
+        try:
+            return self.items[self._iter_items_idx].next()
+        except StopIteration:
+            self._iter_items_idx += 1
+            if self._iter_items_idx >= len(self.items):
+                raise StopIteration
+            else:
+                return self.items[self._iter_items_idx].next()
 
     def copy(self):
         return TodoList(self.copy_of_items())
@@ -305,6 +326,9 @@ class ItemTitle(object):
         self.line = remove_tag_from_text(self.line, tag)
         self.content = remove_tag_from_text(self.content, tag)
 
+    def get_text_without_tags(self):
+        return remove_tags(self.content)
+
     def has_tag(self, tag):
         return bool(re.search("(^| )" + tag + "($| |\()", self.text))
 
@@ -340,14 +364,33 @@ class Item(object):
         if self.sub_tasks:
             self.sub_tasks.add_parent(self)
 
+        self._iter_returned_self = False
+        self._iter_subtasks_idx = 0
+
     def __eq__(self, other):
         return self.title == other.title
 
     def __str__(self):
         return self.as_plain_text()
 
+    def __iter__(self):
+        return self
+
+    def next(self):
+        if not self._iter_returned_self:
+            self._iter_returned_self = True
+            return self
+        if self._iter_returned_self and not self.sub_tasks:
+            raise StopIteration
+        else:
+            return self.sub_tasks.next()
+
+
     def get_content(self):
         return self.title.content
+
+    def get_text(self):
+        return self.title.text
 
     def copy(self):
         new = self.empty()
@@ -397,6 +440,16 @@ class Item(object):
 
     def has_any_tags(self, tags):
         return self.title.has_any_tags(tags)
+
+    def is_nth_with_tag(self, number, tag):
+        if not self.has_tag(tag) or self.has_tag('@done'):
+            return False
+        self_number = self.parent_list.tags_counters.get(tag, 0)
+        self.parent_list.tags_counters[tag] = self_number + 1
+        if number == self_number:
+            return True
+        else:
+            return False
 
     def get_tag_param(self, tag):
         return self.title.get_tag_param(tag)
@@ -667,6 +720,9 @@ class NewLineItem(object):
         def f(*args, **kwargs):
             pass
         return f
+
+    def next(self):
+        raise StopIteration
 
     def as_plain_text(self, *args):
         return ''
