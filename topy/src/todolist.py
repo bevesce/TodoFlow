@@ -252,7 +252,7 @@ class TodoList(object):
         return "<ul>" + items_html + "</ul>"
 
     def as_full_html(self, css_style=None):
-        return """
+        return u"""
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     {1}
@@ -263,7 +263,7 @@ class TodoList(object):
 </div>
 </body>""".format(
     self.as_html(),
-    """<link href="{0}" rel="stylesheet" type="text/css" />""".format(
+    u"""<link href="{0}" rel="stylesheet" type="text/css" />""".format(
         css_style
     ) if css_style else ''
 )
@@ -626,7 +626,7 @@ class Item(object):
             self.title.indent_level
         )
 
-        return '<li><span class="{type_class}{done_class}">{text}</span>{sub_tasks}</li>'.format(
+        return u'<li><span class="{type_class}{done_class}">{text}</span>{sub_tasks}</li>'.format(
             type_class=self.type + str(css_class_level),
             done_class=(
                 ' done' if self.is_done() else ''
@@ -635,11 +635,13 @@ class Item(object):
                 ('\n' + self.sub_tasks.as_html())
                     if self.sub_tasks else ''
             ),
+            # text=unicode(self.title.text)
             text=enclose_tags(
-                escape(self.title.text),
-                prefix='<span class="tag">',
-                postfix='</span>'),
-            )
+                unicode(escape(self.title.text)),
+                prefix=u'<span class="tag">',
+                postfix=u'</span>'
+            ),
+        )
 
     def markdown_indent_level(self):
         if self.parent_item:
