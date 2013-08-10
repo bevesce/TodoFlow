@@ -2,7 +2,7 @@
 from config import projects_path, inbox_path, onhold_path  # archive_path
 import topy
 # from archive import archive
-from update_lists import update_daily, update_weekly, update_waiting
+from update_lists import update_daily, update_weekly, update_waiting, update_followups
 from tvcal import tvcal
 from log_to_day_one import log_to_day_one
 
@@ -22,6 +22,6 @@ update_waiting(onhold_list, inbox_file)
 
 update_daily(all_lists)
 # archive(all_lists, archive_list)
-
+update_followups(all_lists)
 # archive_list.to_file(archive_path)
 topy.save(all_lists)

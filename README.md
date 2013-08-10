@@ -10,6 +10,7 @@ This is something that I use everyday and works as it is but I add things when I
 
 # Changelog #
 
+- 2013-08-10 - added actions for **@followup** tag
 - 2013-08-10 - added todify - iOS pythonista script that adds task tagged with *@today* to notification center
 - 2013-05-19 - minor improvement in how abbreviations in queries are expanded
 - 2013-05-14 - fixed bug in sublime package (bad changing type of item when project has trailing tags)
@@ -282,6 +283,9 @@ Provides functions to update recurring tasks.
 * Tasks in Onhold.todo with tag **@waiting(some-date-in-ISO-8601-format)** are added to Inbox.todo at that date.
 * Tasks in Onhold.todo tagged with **@weekly(some-day-of-the-week)** are added to Inbox.todo at that day. 
 * Tag **@done** is removed from tasks in Daily project in main todo list.
+* When some task is tagged with **@done(YYYY-MM-DD)** and with **@followup(X example task text)** to Onhold.todo will be added new task with structure: 
+
+	*- example task text **@waiting(YYYY-MM-DD + X days)** **@following(text of orginal task without tags)***
 
 At the moment no tasks are removed from Onhold.todo.
 
