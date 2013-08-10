@@ -10,6 +10,7 @@ This is something that I use everyday and works as it is but I add things when I
 
 # Changelog #
 
+- 2013-08-10 - added actions for **@remind** tag
 - 2013-08-10 - added actions for **@followup** tag
 - 2013-08-10 - added todify - iOS pythonista script that adds task tagged with *@today* to notification center
 - 2013-05-19 - minor improvement in how abbreviations in queries are expanded
@@ -291,7 +292,7 @@ At the moment no tasks are removed from Onhold.todo.
 
 ### end_the_day
 
-Joins several of other scripts. Launchd runs it for me at the and of the day. 
+Joins several of other scripts. Launchd runs it for me at the and of the day.
 
 ### reminders_to_topy ###
 
@@ -299,6 +300,10 @@ Imports items from *Inbox* list in Reminders.app to Inbox file,
 some path must be adjusted in AppleScript *reminders_to_topy.applescript*.
 
 It allows to put items into Inbox with Siri on iOS (just put reminder in *Inbox* list and import it when on Mac or set this script in launchd).
+
+### remind
+
+Adds items tagged with **@remind(YYYY-MM-DD)** to Reminders.app and changes tag to **@willremind(YYYY-MM-DD)**.
 
 ### itopy, utopy, qtopy, todify ###
 

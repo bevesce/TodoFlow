@@ -29,7 +29,9 @@ done_tag = custom_tag_regexp('done')
 def add_tag_to_text(text, tag, param=None):
     if text[-1] != ' ':
         text += ' '
-    text += "@" + tag
+    if not tag.startswith('@'):
+        tag = '@' + tag
+    text += tag
     if param:
         text += '({0})'.format(param)
     return text
@@ -82,6 +84,10 @@ def remove_trailing_tags(line):
             break
     idx = max(1, idx + 1)  # don't want empty lines, also, loops goes 1 too far
     return ' @'.join(sp[0:idx])
+
+
+def remove_tags(line):
+    return tag_pattern.sub('', line)
 
 
 def extract_content(typ, line):
