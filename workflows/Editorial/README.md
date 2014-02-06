@@ -11,7 +11,7 @@ they can be set in workflow. Last position on list - *Query* is for single use q
 
 Result will be displayed as html in in-app browser. Each item on list is also a link that will open source file in Editorial when activated. In workflows/html/css are several styles that can be used (paste them in workflow).
 
-![editorial query](http://procrastinationlog.net/img/editorial.png)
+![editorial query](http://procrastinationlog.net/img/editorial2.png)
 
 ## Installation
 
