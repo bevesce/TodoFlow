@@ -7,8 +7,8 @@ Using it I made several tools:
 - CLI for searching
 - GeekTool/NerdTool extension
 - Alfred workflow
-- Editorial.app search workflows
-- Pythonista.app search
+- Editorial.app workflows
+- version Pythonista.app
 - lists updater
 - Day One logger
 - Reminders.app exporter & importer
