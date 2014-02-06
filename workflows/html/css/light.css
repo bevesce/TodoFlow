@@ -1,0 +1,95 @@
+body {
+    /*margin: 40px 60px 40px 60px;*/
+    padding: 0;
+    width: 100%;
+    color: black;
+    font-family: 'Source Sans Pro', 'DejaVuSansMono';
+    line-height: 1.6em;
+    font-size: 100%;
+    word-wrap: break-word;
+}
+
+a, a:visited{
+    color: black;
+    text-decoration: none;
+}
+
+a:hover{
+    color: #293847;
+}
+
+.project-0, .project-1, .project-2, .project-3, .project-4, .project-5{
+    font-family: Avenir;
+    font-weight: bold;
+}
+
+.project-0{
+    font-size: 1.6em;
+}
+
+.project-1{
+    font-size: 1.3em;
+}
+
+.project-2{
+    font-size: 1.1em;
+}
+
+ .project-3, .project-4, .project-5{
+    font-size: 0.9em;
+ }
+
+.note0, .note1, .note2, .note3, .note4, .note5{
+    color: gray;
+}
+
+.tag{
+    font-style: italic;
+    color: #19578A;
+}
+
+.linked-tag{
+    display: inline-block;
+    background-color: silver;
+}
+
+.done{
+    text-decoration: line-through;
+    color: gray;
+}
+
+
+.linked-tag{
+    display: inline-block;
+    background-color: black;
+}
+
+.done{
+    text-decoration: line-through;
+    color: gray;
+}
+
+
+li.newline, li.project, li.task{
+ list-style: none;
+}
+
+li.task:before { 
+    content: "- ";
+}
+
+.green{
+    color: #009D01;
+}
+
+.blue{
+    color: #0092C6;
+}
+
+.orange{
+    color: #E8A154;
+}
+
+.gray{
+    color: gray;
+}
