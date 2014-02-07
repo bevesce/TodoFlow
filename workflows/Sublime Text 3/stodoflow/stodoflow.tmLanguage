@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>fileTypes</key>
+    <array>
+        <string>todo</string>
+        <string>td</string>
+        <string>todoflow</string>
+        <string>taskpaper</string>
+    </array>
+    <key>name</key>
+    <string>todoflow</string>
+    <key>patterns</key>
+    <array>
+        <dict>
+            <key>comment</key>
+            <string>done item</string>
+            <key>match</key>
+            <string>(.* @done[\s(\[{].*|^\s*(-|\*|\d+\.) \[x].*)</string>
+            <key>name</key>
+            <string>comment</string>
+        </dict>
+        <dict>
+            <key>comment</key>
+            <string>blocked item</string>
+            <key>match</key>
+            <string>.* @blocked[\s(\[{].*</string>
+            <key>name</key>
+            <string>storage.type</string>
+        </dict>
+        <dict>
+            <key>comment</key>
+            <string>task marker</string>
+            <key>match</key>
+            <string>^\s*- </string>
+            <key>name</key>
+            <string>constant.language</string>
+        </dict>
+        <dict>
+            <key>comment</key>
+            <string>working</string>
+            <key>match</key>
+            <string> @working</string>
+            <key>name</key>
+            <string>string</string>
+        </dict>
+        <dict>
+            <key>comment</key>
+            <string>due</string>
+            <key>match</key>
+            <string> (@due(\([^)]*\))|@due(\[[^]]*\])|@due(\{[^}]*}))</string>
+            <key>name</key>
+            <string>constant.numeric</string>
+        </dict>
+        <dict>
+            <key>comment</key>
+            <string>next</string>
+            <key>match</key>
+            <string> @next</string>
+            <key>name</key>
+            <string>string</string>
+        </dict>
+        <dict>
+            <key>comment</key>
+            <string>tag()</string>
+            <key>match</key>
+            <string> @[^\(\s]*\([^\(]*\)</string>
+            <key>name</key>
+            <string>keyword</string>
+        </dict>
+        <dict>
+            <key>comment</key>
+            <string>tag[]</string>
+            <key>match</key>
+            <string> @[^\[\s]*\[[^\(]*\]</string>
+            <key>name</key>
+            <string>keyword</string>
+        </dict>
+        <dict>
+            <key>comment</key>
+            <string>tag[]</string>
+            <key>match</key>
+            <string> @[^\{\s]*\{[^\{]*\}</string>
+            <key>name</key>
+            <string>keyword</string>
+        </dict>
+        <dict>
+            <key>comment</key>
+            <string>tag</string>
+            <key>match</key>
+            <string> @\S*</string>
+            <key>name</key>
+            <string>keyword</string>
+        </dict>
+        <dict>
+            <key>comment</key>
+            <string>project</string>
+            <key>match</key>
+            <string>^.*:$</string>
+            <key>name</key>
+            <string>entity.name.function</string>
+        </dict>
+
+    </array>
+    <key>scopeName</key>
+    <string>text.todoflow</string>
+    <key>uuid</key>
+    <string>2b7f1af8-da55-4dd7-b8f4-a81ec8e86bda</string>
+</dict>
+</plist>

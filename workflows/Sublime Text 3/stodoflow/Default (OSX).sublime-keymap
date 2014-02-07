@@ -1,0 +1,27 @@
+[
+    { "keys": ["super+ctrl+enter"], "command": "tasks_toggle", "context":
+    [
+         { "key": "selector", "operator": "equal", "operand": "text.todoflow", "match_all": true }
+    ]
+    },
+    { "keys": ["super+enter"], "command": "new_task", "context":
+    [
+         { "key": "selector", "operator": "equal", "operand": "text.todoflow", "match_all": true }
+    ]
+    },
+    { "keys": ["super+ctrl+alt+up"], "command": "increase_date", "context":
+    [
+         { "key": "selector", "operator": "equal", "operand": "text.todoflow", "match_all": true }
+    ]
+    },
+    { "keys": ["super+ctrl+alt+down"], "command": "decrease_date", "context":
+    [
+         { "key": "selector", "operator": "equal", "operand": "text.todoflow", "match_all": true }
+    ]
+    },
+    { "keys": ["super+ctrl+alt+m"], "command": "move_to_project", "context":
+    [
+         { "key": "selector", "operator": "equal", "operand": "text.todoflow", "match_all": true }
+    ]
+    }
+]
