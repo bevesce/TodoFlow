@@ -1,8 +1,9 @@
 from utils import enclose_tags
 
 class PlainPrinter(object):
-    def __init__(self):
-        self.seq_counter = [(0, 0)]
+    def __init__(self, indent_char='\t'):
+        # self.seq_counter = [(0, 0)]
+        self.indent_char = indent_char
         self.prev_tag = ''
         self.post_tag = ''
 
@@ -23,10 +24,10 @@ class PlainPrinter(object):
         print self.pformat(tlist)
 
     def project(self, item):
-        return '\t' * item.indent_level + enclose_tags(item.text, self.prev_tag, self.post_tag) + ':'
+        return self.indent_char * item.indent_level + enclose_tags(item.text, self.prev_tag, self.post_tag) + ':'
 
     def task(self, item):
-        return '\t' * item.indent_level + '- ' + enclose_tags(item.text, self.prev_tag, self.post_tag)
+        return self.indent_char * item.indent_level + '- ' + enclose_tags(item.text, self.prev_tag, self.post_tag)
 
     def note(self, item):
-        return '\t' * item.indent_level + enclose_tags(item.text, self.prev_tag, self.post_tag)
+        return self.indent_char * item.indent_level + enclose_tags(item.text, self.prev_tag, self.post_tag)
