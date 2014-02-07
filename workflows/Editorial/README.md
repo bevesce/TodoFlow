@@ -7,11 +7,11 @@ When used it will display list of predefined queries in format:
 
 they can be set in workflow. Last position on list - *Query* is for single use queries (you'll be asked for input). 
 
-![editorial query](http://procrastinationlog.net/img/editorialquery.png)
+![editorial query](http://procrastinationlog.net/img/editorialquery2.png)
 
 Result will be displayed as html in in-app browser. Each item on list is also a link that will open source file in Editorial when activated. In workflows/html/css are several styles that can be used (paste them in workflow).
 
-![editorial query](http://procrastinationlog.net/img/editorial2.png)
+![editorial query](http://procrastinationlog.net/img/editoriall2.png)
 
 ## Installation
 
@@ -96,3 +96,5 @@ Requires todoflow. Gets selected text, displays list of all projects and moves s
 You can install it from [here](http://editorial-app.appspot.com/workflow/4986239597936640/r_fct1waTmY)
 
 Uses *Repeat* and *Save file contents* blocks to work around [this bug in editor.set_file_contents](http://omz-forums.appspot.com/editorial/post/5925732018552832).
+
+![editorial query](http://procrastinationlog.net/img/editorialm2.png)

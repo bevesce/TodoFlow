@@ -2,7 +2,7 @@
 
 Script that takes arguments, filters TaskPaper lists and prints them in Pythonista console.
 
-![pythonista](http://procrastinationlog.net/img/pythonista.png)
+![pythonista](http://procrastinationlog.net/img/pythonista2.png)
 
 Can be launched from Launch Center Pro with url scheme:
 
