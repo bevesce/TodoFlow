@@ -51,14 +51,16 @@ import editor
 
 path_to_folder_synced_in_editorial = '{0}'
 
-def open(path, mode='r'):
-    editorial_path = path.replace(path_to_folder_synced_in_editorial, '')
+def open(name, mode='r'):
+    editorial_path = name.replace(path_to_folder_synced_in_editorial, '')
     content = editor.get_file_contents(editorial_path, 'dropbox')
-    return FakeFile(content)
+    return FakeFile(content, editorial_path, mode)
     
 class FakeFile(object):
-    def __init__(self, content):
+    def __init__(self, content, name, mode):
         self.content = content
+        self.name = name
+        self.mode = mode
         
     def __enter__(self):
         return self
@@ -71,6 +73,12 @@ class FakeFile(object):
         
     def readlines(self):
         return self.content.split('\\n')
+
+    def write(self, content):
+        new_content = content
+        if self.mode != 'a':
+            new_content = self.content + '\\n' + new_content
+        editor.set_file_contents (self.name, new_content, 'dropbox')
 
     def close(self):
         pass

@@ -80,6 +80,12 @@ class Item(object):
             item = item.parent_item
         return ' / '.join(parents_contents[::-1])
 
+    def get_root(self):
+        item = self
+        while item.parent_item:
+            item = item.parent_item
+        return item
+
     def set_source(self, path):
         self.source = path
         self.sublist.set_source(path)

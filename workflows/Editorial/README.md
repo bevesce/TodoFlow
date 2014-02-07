@@ -1,4 +1,4 @@
-# Editorial Workflow
+# Editorial Query Workflow
 
 This is workflow that uses todoflow to filter todo lists inside Editorial.app.
 When used it will display list of predefined queries in format:
@@ -82,3 +82,17 @@ Obviously using *open* in Editorial won't work when using path from OSX, so befo
             return self.content.split('\\n')
 
 it overwrites *open* from standard library with *open* that will work in Editorial (only for reading, at least for now).
+
+# ✓ Toggle tags workflow
+
+Requires todoflow. Toggles between *@next*, *@working* and *@done* tags.
+
+You can install it from [here](http://editorial-app.appspot.com/workflow/5592946678169600/EmgYcGKvFs4)
+
+# ↱ Move to Project
+
+Requires todoflow. Gets selected text, displays list of all projects and moves selection to chosen one - prepends new tasks.
+
+You can install it from [here](http://editorial-app.appspot.com/workflow/4986239597936640/r_fct1waTmY)
+
+Uses *Repeat* and *Save file contents* blocks to work around [this bug in editor.set_file_contents](http://omz-forums.appspot.com/editorial/post/5925732018552832).

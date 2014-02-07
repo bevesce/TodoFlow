@@ -70,6 +70,10 @@ def remove(item_id):
     TodoList.remove(item_id)
 
 
+def get_item(item_id):
+    return TodoList.items_by_id[item_id]
+
+
 def edit(item_id, new_content):
     TodoList.edit(item_id, new_content.decode('utf-8'))
 
@@ -201,7 +205,34 @@ def save(tlist):
     """
     for item in tlist.items:
         if hasattr(item, 'source'):
-            with open(item.source.strip(), 'w', encoding='utf-8', errors='ignore') as f:
-                item.sublist.dedent()
-                text = PlainPrinter().pformat(item.sublist)
-                f.write(text)
+            try:
+                f = open(item.source.strip(), 'w', encoding='utf-8', errors='ignore')
+            except TypeError:
+                f = open(item.source.strip(), 'w')
+            item.sublist.dedent()
+            text = PlainPrinter().pformat(item.sublist)
+            f.write(text)
+            f.close()
+
+def editorial_save(tlist):
+    """
+    **This will fail horribly if used outside Editorial**
+    It's not really save, only preparation to it.
+    To use only in Editorial.app and it's workaround [this bug](http://omz-forums.appspot.com/editorial/post/5925732018552832)
+    that doesn't allow to use simple call to editor.set_files_contents, instead it's required to use Set File Contents block.
+
+    It's annoying.
+    """
+    import workflow
+    import pickle
+    paths = []
+    path_to_content = {}
+    for item in tlist.items:
+        if hasattr(item, 'source'):
+            item.sublist.dedent()
+            text = PlainPrinter().pformat(item.sublist)
+            path = item.source.replace(path_to_folder_synced_in_editorial, '')
+            paths.append(path)
+            path_to_content[path] = text.decode('utf-8')
+            workflow.set_variable('contents', pickle.dumps(path_to_content))
+    workflow.set_output('\n'.join(paths))

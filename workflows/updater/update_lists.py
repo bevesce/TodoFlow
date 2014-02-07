@@ -1,7 +1,7 @@
 #!/usr/bin/python
 from datetime import date, timedelta
 import re
-from todoflow import from_file, archive
+from todoflow import from_file
 from todoflow.printers import PlainPrinter
 from todoflow.config import days_of_the_week, projects_path, onhold_path, inbox_path, daily_project_title
 
