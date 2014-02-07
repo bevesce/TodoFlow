@@ -1,5 +1,5 @@
-from utils import enclose_tags
-from plainprinter import PlainPrinter
+from .utils import enclose_tags
+from .plainprinter import PlainPrinter
 
 class DayonePrinter(PlainPrinter):
     def __init__(self):
@@ -20,7 +20,7 @@ class DayonePrinter(PlainPrinter):
         return '\n'.join(result).encode('utf-8').strip() + '\n'
 
     def pprint(self, tlist):
-        print self.pformat(tlist)
+        print(self.pformat(tlist))
 
     def project(self, item):
         return '#' * (item.indent_level + 1) + ' ' + enclose_tags(item.text, self.prev_tag, self.post_tag) + ':'

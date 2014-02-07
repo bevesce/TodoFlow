@@ -1,4 +1,4 @@
-from utils import enclose_tags
+from .utils import enclose_tags
 
 class color:
     """defines colors used in output"""
@@ -45,7 +45,7 @@ class ColorPrinter(object):
         return '\n'.join(result).encode('utf-8').strip() + '\n'
 
     def pprint(self, tlist):
-        print self.pformat(tlist)
+        print(self.pformat(tlist))
 
     def project(self, item):
         return '\t' * item.indent_level + enclose_tags(item.text, self.prev_tag, self.post_tag) + ':'

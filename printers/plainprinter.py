@@ -1,4 +1,4 @@
-from utils import enclose_tags
+from .utils import enclose_tags
 
 class PlainPrinter(object):
     def __init__(self, indent_char='\t'):
@@ -18,16 +18,20 @@ class PlainPrinter(object):
                 result.append(self.note(item))
             else:
                 result.append('')
-        return '\n'.join(result).encode('utf-8').strip() + '\n'
+        try:
+            return '\n'.join(result).encode('utf-8').strip() + '\n'
+        except TypeError:
+            return '\n'.join(result).strip() + '\n'
+
 
     def pprint(self, tlist):
-        print self.pformat(tlist)
+        print(self.pformat(tlist))
 
     def project(self, item):
         return self.indent_char * item.indent_level + enclose_tags(item.text, self.prev_tag, self.post_tag) + ':'
 
     def task(self, item):
-        return self.indent_char * item.indent_level + '- ' + enclose_tags(item.text, self.prev_tag, self.post_tag)
+        return self.indent_char * item.indent_level + u'- ' + enclose_tags(item.text, self.prev_tag, self.post_tag)
 
     def note(self, item):
         return self.indent_char * item.indent_level + enclose_tags(item.text, self.prev_tag, self.post_tag)

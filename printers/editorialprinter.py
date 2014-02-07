@@ -1,4 +1,4 @@
-from htmlprinter import HTMLPrinter
+from .htmlprinter import HTMLPrinter
 
 from todoflow.config import path_to_folder_synced_in_editorial
 

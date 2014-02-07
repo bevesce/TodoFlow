@@ -1,8 +1,8 @@
 #coding: utf-8
 
-from utils import enclose_tags
 from cgi import escape
 from todoflow.config import tag_to_class
+from .utils import enclose_tags
 
 template = u"""
 <!DOCTYPE html>
@@ -31,7 +31,7 @@ class HTMLPrinter(object):
         self.included_css = included_css
 
     def pprint(self, tlist):
-        print self.pformat(tlist)
+        print(self.pformat(tlist))
 
     def pformat(self, tlist):
         result = []

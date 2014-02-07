@@ -1,4 +1,4 @@
-from htmlprinter import HTMLPrinter
+from .htmlprinter import HTMLPrinter
 
 class HTMLLinkedPrinter(HTMLPrinter):
     def postprocess_item(self, item, text):

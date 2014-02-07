@@ -17,9 +17,9 @@ Conflict is resolved by prefering production 7 over 5.
 
 """
 
-from lexer import Lexer
-from todolist import TodoList
-from item import NewLineItem, Task, Project, Note
+from .lexer import Lexer
+from .todolist import TodoList
+from .item import NewLineItem, Task, Project, Note
 
 class Parser(object):
     def __init__(self, lexer):
@@ -27,10 +27,18 @@ class Parser(object):
 
     @staticmethod
     def list_from_file(filepath):
-        with open(filepath, 'r') as f:
-            tlist = Parser(Lexer([l.decode('utf-8') for l in f.readlines()])).parse()
-            tlist.source = filepath
-            return tlist
+        try:
+            f = open(filepath, 'r', encoding='utf-8', errors='ignore')
+        except TypeError:
+            f = open(filepath, 'r')
+        lines = f.readlines()
+        f.close()
+        try:
+            tlist = Parser(Lexer([l.decode('utf-8') for l in lines])).parse()
+        except:
+            tlist = Parser(Lexer([l for l in lines])).parse()
+        tlist.source = filepath
+        return tlist
 
     @staticmethod
     def list_from_text(text):

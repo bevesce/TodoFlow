@@ -1,5 +1,5 @@
-from todolist import TodoList
-from title import ItemTitle
+from .todolist import TodoList
+from .title import ItemTitle
 
 class Item(object):
     """

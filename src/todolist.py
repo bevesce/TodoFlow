@@ -1,6 +1,6 @@
 from todoflow.printers.plainprinter import PlainPrinter
 from datetime import date
-from query import parse_predicate
+from .query import parse_predicate
 
 done_tag = 'done'
 
@@ -132,7 +132,13 @@ class TodoList(object):
         from self.
         """
         # parse predicate if it's in string
-        if isinstance(predicate, unicode) or isinstance(predicate, str):
+        is_unicode = False
+        try:
+            is_unicode = isinstance(predicate, unicode)
+        except NameError:
+            pass
+
+        if is_unicode or isinstance(predicate, str):
             predicate = parse_predicate(predicate)
 
         filtered_items_with_None = [

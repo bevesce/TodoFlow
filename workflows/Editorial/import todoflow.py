@@ -71,6 +71,9 @@ class FakeFile(object):
         
     def readlines(self):
         return self.content.split('\\n')
+
+    def close(self):
+        pass
             
 """.format(path_to_folder_synced_in_editorial)
 print(preambule)

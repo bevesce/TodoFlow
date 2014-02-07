@@ -1,6 +1,6 @@
-from utils import create_tag_pattern, remove_tags, fix_tag, remove_tag
-import utils
-from todolist import TodoList
+from .utils import create_tag_pattern, remove_tags, fix_tag, remove_tag
+from . import utils
+from .todolist import TodoList
 
 tag_prefix = '@'
 

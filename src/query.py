@@ -173,8 +173,8 @@ class Lexer(object):
         try:
             return self.tokens.pop()
         except IndexError:
-            print ' '.join([t.type for t in self.tokens])
-            print self.input_text
+            print(' '.join([t.type for t in self.tokens]))
+            print(self.input_text)
             raise ParsingError
 
     def top(self):
@@ -182,8 +182,8 @@ class Lexer(object):
         try:
             return self.tokens[-1]
         except IndexError:
-            print ' '.join([t.type for t in self.tokens])
-            print self.input_text
+            print(' '.join([t.type for t in self.tokens]))
+            print(self.input_text)
             raise ParsingError
 
 
@@ -217,7 +217,7 @@ class Parser(object):
             return goto
 
         def err():
-            print self.lexer.input_text
+            print(self.lexer.input_text)
             raise ParsingError
 
         def acc():

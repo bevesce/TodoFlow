@@ -40,5 +40,10 @@ def clear():
 
 
 def to_list():
-    with open(full_path, 'r') as f:
-        return [l for l in f.read().split('\n') if l]
+    try:
+        f = open(full_path, 'r', encoding='utf-8', errors='ignore')
+    except TypeError:
+        f = open(full_path, 'r')
+    result = [l for l in f.read().split('\n') if l]
+    f.close()
+    return result

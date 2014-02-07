@@ -11,10 +11,10 @@ import os.path
 import re
 import subprocess
 from datetime import datetime
-import fileslist as lists
-from todolist import TodoList
-from item import Task, Project, NewLineItem
-from parser import Parser
+from . import fileslist as lists
+from .todolist import TodoList
+from .item import Task, Project, NewLineItem
+from .parser import Parser
 from todoflow.config import quick_query_abbreviations as abbreviations
 from todoflow.config import quick_query_abbreviations_conjuction as conjuction
 from todoflow.config import files_list_path, should_expand_dates, should_expand_shortcuts
@@ -132,7 +132,13 @@ def prepend_subtasks(item_id, new_item):
     new_item should be item of type Task, Project, Note or
     string, in that case it's assumed that it's task
     """
-    if isinstance(new_item, unicode) or isinstance(new_item, str):
+    is_unicode = False
+    try:
+        is_unicode = isinstance(new_item, unicode)
+    except NameError:
+        pass
+
+    if is_unicode or isinstance(new_item, str):
         new_item = TodoList([Task(new_item)])
     TodoList.items_by_id[item_id].prepend_subtasks(new_item)
 
@@ -195,6 +201,7 @@ def save(tlist):
     """
     for item in tlist.items:
         if hasattr(item, 'source'):
-            with open(item.source.strip(), 'w') as f:
+            with open(item.source.strip(), 'w', encoding='utf-8', errors='ignore') as f:
                 item.sublist.dedent()
-                f.write(PlainPrinter().pformat(item.sublist))
+                text = PlainPrinter().pformat(item.sublist)
+                f.write(text)

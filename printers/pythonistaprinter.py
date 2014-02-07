@@ -1,5 +1,5 @@
 import console
-from plainprinter import PlainPrinter
+from .plainprinter import PlainPrinter
 
 indent = ' '
 
@@ -20,15 +20,15 @@ class PythonistaPrinter(PlainPrinter):
 
 	def project(self, item):
 		console.set_color(0.00, 0.00, 0.00)
-		print indent * item.indent_level + item.text + ':'
+		print(indent * item.indent_level + item.text + ':')
 		console.set_color()
 
 	def note(self, item):
-		print indent * item.indent_level + item.text
+		print(indent * item.indent_level + item.text)
 
 	def ttask(self, item):
 		self.task(item)
-		print indent * item.indent_level + '- ' + item.text
+		print(indent * item.indent_level + '- ' + item.text)
 		console.set_color()
 
 	def task(self, item):
@@ -42,5 +42,5 @@ class PythonistaPrinter(PlainPrinter):
 			console.set_color(1.00, 0.00, 0.50)
 
 	def newline(self, item):
-		print '\n'
+		print('\n')
 

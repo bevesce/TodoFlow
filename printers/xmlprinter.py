@@ -10,7 +10,7 @@ from cgi import escape
 from uuid import uuid1
 from todoflow.config import white_symbols_on_icons
 
-from plainprinter import PlainPrinter
+from .plainprinter import PlainPrinter
 
 
 class AlfredItemsList(object):
@@ -88,7 +88,7 @@ class XMLPrinter(PlainPrinter):
         return str(al)
 
     def pprint(self, tlist, *args):
-        print self.pformat(tlist, *args)
+        print(self.pformat(tlist, *args))
 
     def titlize(self, item):
         if item.type == 'note':
