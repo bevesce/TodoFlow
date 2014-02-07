@@ -54,6 +54,10 @@ def from_files(paths):
     return TodoList(items)
 
 
+def from_text(text):
+    return Parser.list_from_text(text)
+
+
 def do(item_id):
     TodoList.do(item_id)
 
@@ -67,12 +71,7 @@ def remove(item_id):
 
 
 def edit(item_id, new_content):
-    new_content = wtf(new_content)
     TodoList.edit(item_id, new_content.decode('utf-8'))
-
-
-def get_content(item_id):
-    return TodoList.get_content(item_id)
 
 
 def get_text(item_id):
@@ -116,14 +115,26 @@ class action():
         subprocess.call('echo ' + text + ' | pbcopy', shell=True)
 
 
-def add_new_subtask(item_id, new_item):
+def append_subtasks(item_id, new_item):
     """
     new_item should be item of type Task, Project, Note or
     string, in that case it's assumed that it's task
     """
-    if isinstance(new_item, unicode):
-        new_item = TodoList([Task('- ' + new_item)])
+    if isinstance(new_item, unicode) or isinstance(new_item, str):
+        new_item = TodoList([Task(new_item)])
     TodoList.items_by_id[item_id].append_subtasks(new_item)
+
+add_new_subtask = append_subtasks
+
+
+def prepend_subtasks(item_id, new_item):
+    """
+    new_item should be item of type Task, Project, Note or
+    string, in that case it's assumed that it's task
+    """
+    if isinstance(new_item, unicode) or isinstance(new_item, str):
+        new_item = TodoList([Task(new_item)])
+    TodoList.items_by_id[item_id].prepend_subtasks(new_item)
 
 
 def expand_shortcuts(query):
@@ -171,20 +182,6 @@ def expand_dates(query):
 
 def expand_query(query):
     return expand_dates(expand_shortcuts(query))
-
-def archive(tlist, archive_tlist=None):
-    """
-    moves @done items to first project of title Archive
-    assumes that it exsits
-    if `archive_tlist` is not specified puts archived items
-    to itself
-    """
-    done = tlist.filter('@done and project != Archive', remove=True)
-    done_list = done.deep_copy().flatten()
-    if not archive_tlist:
-        archive_tlist = tlist
-    arch_id = archive_tlist.find_project_id_by_title('Archive')
-    TodoList.items_by_id[arch_id].prepend_subtasks(TodoList(done_list))
 
 
 def save(tlist):
