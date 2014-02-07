@@ -1,4 +1,5 @@
-from utils import create_tag_pattern, remove_tags, fix_tag
+from utils import create_tag_pattern, remove_tags, fix_tag, remove_tag
+import utils
 from todolist import TodoList
 
 tag_prefix = '@'
@@ -51,8 +52,7 @@ class ItemTitle(object):
         return self.text
 
     def remove_tag(self, tag):
-        p, _ = create_tag_pattern(tag)
-        self.text = p.sub('', self.text)
+        return utils.remove_tag(self.text, tag)
 
     def remove_tag_with_param(self, tag, param):
         tag = fix_tag(tag)
@@ -67,8 +67,7 @@ class ItemTitle(object):
         return self.text
 
     def has_tag(self, tag):
-        p, _ = create_tag_pattern(tag)
-        return bool(p.search(self.text))
+        return utils.has_tag(self.text, tag)
 
     def has_tags(self, tags):
         return all(self.has_tag(tag) for tag in tags)
@@ -77,10 +76,7 @@ class ItemTitle(object):
         return any(self.has_tag(tag) for tag in tags)
 
     def get_tag_param(self, tag):
-        p, param_group = create_tag_pattern(tag)
-        match = p.search(self.text)
-        if match:
-            return match.group(param_group)[1:-1]
+        return utils.get_tag_param(self.text, tag)
 
     def replace_tag_param(self, tag, new_param):
         p, _ = create_tag_pattern(tag)
