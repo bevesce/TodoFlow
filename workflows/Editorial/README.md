@@ -29,7 +29,7 @@ You need to move whole files structure of todoflow to Editorial, probably there 
 
 1. Install and configure [seamless dropbox](https://github.com/bevesce/Seamless-Dropbox/blob/master/seamless_dropbox.py), you'll need app key and secret from [dropbox developer site](https://www.dropbox.com/developers/apps) (probably you should read what seamless dropbox does)
     - to do this you can download seamless dropbox from repo, configure it and put in clipboard
-    - then install it using [this workflow](http://editorial-app.appspot.com/workflow/6099190178381824/FFr4Mx7Gg0U), it asks for path (just *seamless_dropbox.py*) and creates file using content of clipboard
+    - then install it using [this workflow](http://editorial-app.appspot.com/workflow/6442061712588800/hOafIlNIhTI), it asks for path (just *seamless_dropbox.py*) and creates file using content of clipboard
 2. Put configured todoflow in your dropbox
 2. Paste content of *import todoflow.py* to Python scratchpad
 3. Set variables *path_to_folder_synced_in_editorial* and *path_to_todoflow_in_dropbox* 
