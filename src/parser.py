@@ -32,6 +32,11 @@ class Parser(object):
             tlist.source = filepath
             return tlist
 
+    @staticmethod
+    def list_from_text(text):
+        tlist = Parser(Lexer([l.decode('utf-8') for l in text.split('\n')])).parse()
+        return tlist
+
     def parse(self):
         def todolist(newlines_prefix = None):
             """parse list"""
