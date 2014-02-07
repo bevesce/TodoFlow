@@ -22,7 +22,6 @@ for dr in dirs:
 files = [
     '/__init__.py',
     '/config.py',
-    '/listfiles.py',
     '/printers/__init__.py',
     '/printers/colorprinter.py',
     '/printers/dayoneprinter.py',
