@@ -63,6 +63,10 @@ class TasksToggleCommand(MultipleLinesModifierCommand):
         return text
 
 
+def is_project(line):
+    return line.endswith(':')
+
+
 class NewTaskCommand(MultipleLinesModifierCommand):
     def modify(self, line):
         level = indent_level(line)
