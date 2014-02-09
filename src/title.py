@@ -52,7 +52,7 @@ class ItemTitle(object):
         return self.text
 
     def remove_tag(self, tag):
-        return utils.remove_tag(self.text, tag)
+        self.text = utils.remove_tag(self.text, tag)
 
     def remove_tag_with_param(self, tag, param):
         tag = fix_tag(tag)
