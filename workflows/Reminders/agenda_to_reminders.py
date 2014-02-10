@@ -17,7 +17,7 @@ def clear_lists():
 
 
 def export_deadlines(t):
-    due = t.filter('@due and not @done and not project $ onhold')
+    due = t.filter('@due and not @done and not project ? onhold')
     for item in due:
         if item.has_tag('due'):
             param = item.get_tag_param('due')
@@ -53,7 +53,7 @@ def export_generic(t, query, tag, list_name):
 
 
 def export_contexts(t):
-    items = t.filter('project $ Contexts')
+    items = t.filter('project ? Contexts')
     for item in items:
         if item.text.startswith('@ ') or item.text == '':
             continue
