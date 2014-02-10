@@ -1,4 +1,5 @@
 from .utils import enclose_tags
+from todoflow.src.utils import remove_tag
 from .plainprinter import PlainPrinter
 
 class DayonePrinter(PlainPrinter):
@@ -9,7 +10,7 @@ class DayonePrinter(PlainPrinter):
     def pformat(self, tlist):
         result = []
         for item in tlist:
-            item.text = item.remove_tag('done')
+            item.text = remove_tag(item.text, 'done')
             if item.type == 'project':
                 result.append(self.project(item))
             elif item.type == 'task':
