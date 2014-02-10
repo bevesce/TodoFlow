@@ -3,7 +3,7 @@
 import sys
 sys.path += ['/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/']
 
-from todomd.config import tvcal_url, inbox_path, tvseries_project_title
+from todoflow.config import tvcal_url, inbox_path, tvseries_project_title
 from icalendar import Calendar
 from urllib2 import urlopen
 from datetime import datetime, timedelta
