@@ -82,43 +82,6 @@ def get_text(item_id):
     return TodoList.get_text(item_id)
 
 
-def tag_dependent_action(item_id):
-    item = TodoList.get_item(item_id)
-    to_open = ('@mail', '@web', '@file')
-    for tag in to_open:
-        if item.has_tag(tag):
-            action.open(item.get_tag_param(tag))
-
-    content = item.get_content()
-    if item.has_any_tags(['@download', '@tvseries', '@comics']):
-        action.alfred_search('pb ' + content)
-    if item.has_any_tags(['@search', '@research']):
-        action.alfred_search('g ' + content)
-    action.put_to_clipboard(content)
-
-
-class action():
-    @staticmethod
-    def open(to_open):
-        try:
-            subprocess.check_output('open "{0}"'.format(to_open), shell=True)
-        except:
-            to_open = files_list_path + to_open
-            to_open = os.path.expanduser(to_open)
-            subprocess.call('open "{0}"'.format(to_open), shell=True)
-
-    @staticmethod
-    def alfred_search(query):
-        subprocess.call(
-            'osascript -e "tell application \\"Alfred 2\\" to search \\"{0}\\""'.format(query),
-            shell=True
-        )
-
-    @staticmethod
-    def put_to_clipboard(text):
-        subprocess.call('echo ' + text + ' | pbcopy', shell=True)
-
-
 def append_subtasks(item_id, new_item):
     """
     new_item should be item of type Task, Project, Note or
