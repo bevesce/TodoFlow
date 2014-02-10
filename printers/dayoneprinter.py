@@ -9,6 +9,7 @@ class DayonePrinter(PlainPrinter):
     def pformat(self, tlist):
         result = []
         for item in tlist:
+            item.text = item.remove_tag('done')
             if item.type == 'project':
                 result.append(self.project(item))
             elif item.type == 'task':
@@ -23,7 +24,12 @@ class DayonePrinter(PlainPrinter):
         print(self.pformat(tlist))
 
     def project(self, item):
-        return '#' * (item.indent_level + 1) + ' ' + enclose_tags(item.text, self.prev_tag, self.post_tag) + ':'
+        idx = 0
+        text = item.text
+        while text[idx] == '#':
+            idx += 1
+        text = text[idx:]
+        return '\n' + '#' * (item.indent_level + 1) + ' ' + enclose_tags(text, self.prev_tag, self.post_tag) + ':'
 
     def task(self, item):
         return '\t' * (item.indent_level - 2) + '- ' + enclose_tags(item.text, self.prev_tag, self.post_tag)
