@@ -11,7 +11,9 @@ def update_daily(projects):
     for item in daily:
         if item.type == 'task':
             item.remove_tag('done')
-            item.tag('working')
+            print item.text
+            if not item.has_tag('working'):
+                item.tag('working')
 
 
 def update_weekly(onhold, inbox):
