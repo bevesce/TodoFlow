@@ -150,15 +150,28 @@ I wanted to add this for some time, I tried with numbered tasks, but it was prob
         - task0 @done
         - task1
         - task2
+    This is not sequential:
+        - task0 @done
+        - task1
+        - task2
 
 Only first not @done task will be returned in search (if it meets criteria):
 
     query: task
+    ___________
     This is sequential project::
         - task1
 
+    This is not sequential:
+        - task0 @done
+        - task1
+        - task2
+
+
     query: task2
-        *empty*
+    ____________
+    This is not sequential:
+        - task2
 
 # Project overview
 
