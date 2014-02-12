@@ -9,9 +9,9 @@ files_list_name = 'lists'
 
 
 inbox_path = '/Users/bvsc/Dropbox/Notes/__todo/_inbox.txt'
-projects_path = '/Users/bvsc/Dropbox/Notes/__todo/Projects.todo'
-onhold_path = '/Users/bvsc/Dropbox/Notes/__todo/Onhold.todo'
-archive_path = '/Users/bvsc/Dropbox/Notes/__todo/NOTES/Archive.todo'
+projects_path = '/Users/bvsc/Dropbox/Notes/__todo/Projects.md'
+onhold_path = '/Users/bvsc/Dropbox/Notes/__todo/Onhold.md'
+archive_path = '/Users/bvsc/Dropbox/Notes/__todo/NOTES/Archive.md'
 
 ##################### Queries #####################
 
@@ -23,18 +23,20 @@ quick_query_abbreviations_conjuction = ' and '  # ' or '
 
 # fill with your own, this is what I use:
 quick_query_abbreviations = {
-    't': '@today',
+    't': '@working',
     'n': '@next',
     'd': 'not @done',
     'u': '@due and not (project ? Onhold)',
-    's': 'project ? Studia',
-    'i': 'index = 0',
-    'f': '(@working or @next)',
-    'q': 'not (project ? Onhold)',
+    's': '@studia+d',
+    'a': '(@working or @next)',
 }
 
 # add date value when tagging with @done
 date_after_done = True
+
+# char that is before last ':' in project title that indicates that given project is sequential
+# only first not @done task in sequential projects is returned in searches
+sequential_projects_sufix = ':'
 
 ################## HTML printer ##################
 

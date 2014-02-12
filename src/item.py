@@ -1,5 +1,8 @@
+import re
+
 from .todolist import TodoList
 from .title import ItemTitle
+from todoflow.config import sequential_projects_sufix
 
 class Item(object):
     """
@@ -124,9 +127,6 @@ class Item(object):
         if item itself or any of subtasks meets predicate.
 
         Subtasks of item are also filtered.
-
-        If `remove` is set to True removes items that meet
-        predicate from subtasks.
         """
         new = self.copy()
         new.sublist = self.sublist.filter(predicate)
@@ -136,7 +136,7 @@ class Item(object):
 
 
 class Project(Item):
-    def __init__(self, text='', indent_level = 0,sublist=None, typ='project'):
+    def __init__(self, text='', indent_level=0, sublist=None, typ='project'):
         text = text[:-1].strip()
         super(Project, self).__init__(text, indent_level, sublist, typ)
         self.type = typ
@@ -150,7 +150,43 @@ class Project(Item):
         )
 
 
-import re
+class SeqProject(Item):
+    def __init__(self, text='', indent_level=0, sublist=None, typ='seq-project'):
+        text = text[:-(1 + len(sequential_projects_sufix))].strip()
+        super(SeqProject, self).__init__(text, indent_level, sublist, typ)
+        self.type = typ
+
+    def empty(self):
+        return SeqProject()
+
+    def __str__(self):
+        return (
+            '\t' * self.indent_level + self.text + sequential_projects_sufix + ':'
+        )
+
+    def filter(self, predicate):
+        """
+        Returns new item (with the same title object)
+        if item itself or any of subtasks meets predicate.
+
+        Subtasks of item are also filtered.
+        """
+        new = self.copy()
+        subitem = None
+        for item in self.sublist:
+        	if item.has_tag('done'):
+        		continue
+        	subitem = item
+        	break
+        if subitem and predicate.test(subitem):
+        	sublist = TodoList([subitem])
+        	new.sublist = sublist
+        else:
+        	sublist = TodoList()
+        	new.sublist = sublist
+        meets_prediacate = predicate.test(self)
+        if meets_prediacate or new.sublist.items:
+            return new
 
 task_prefix = re.compile(r'^\s*- ')
 

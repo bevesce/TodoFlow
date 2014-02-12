@@ -70,12 +70,20 @@ a:hover{
 }
 
 
-li.newline, li.project, li.task{
+ul li{
  list-style: none;
 }
 
-li.task:before { 
+ol > a > li{
+    list-style: decimal;
+}
+
+ul li.task:before { 
     content: "- ";
+}
+
+ol > a > li.task:before { 
+    content: "";
 }
 
 .green{

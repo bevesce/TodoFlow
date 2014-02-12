@@ -9,7 +9,7 @@ class PythonistaPrinter(PlainPrinter):
 
 	def pprint(self, tlist):
 		for item in tlist:
-			if item.type == 'project':
+			if item.type == 'project' or item.type == 'seq-printer':
 				self.project(item)
 			elif item.type == 'note':
 				self.note(item)

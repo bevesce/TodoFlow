@@ -74,7 +74,7 @@ class XMLPrinter(PlainPrinter):
         al = AlfredItemsList()
         additional_arg = ';'.join(args)
         for item in tlist:
-            if item.type == 'project':
+            if item.type == 'project' or item.type == 'seq-project':
                 self.seq_counter = [(0, 0)]
             elif item.type in ('task', 'note'):
                 al.append(

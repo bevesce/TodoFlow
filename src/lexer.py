@@ -14,6 +14,7 @@ Token stores its type in string, posible types are:
 
 """
 import re
+from todoflow.config import sequential_projects_sufix
 
 
 class Token(object):
@@ -34,19 +35,11 @@ class Token(object):
 
     @staticmethod
     def is_project(line):
-        splitted = line.split(':')
-        if len(splitted) < 2:  # no `:` in line
-            return False
-        if line[-1] == ' ':  # trailing space after `:`
-            return False
-        if splitted[1].strip() != '' and splitted[1][0] != '@':
-            return False
-        # only tags are allowed after `:`
-        after_colon = splitted[-1].split('@')
-        only_tags_after_colon = all([
-            Token.tag_pattern_without_at.match(tag) for tag in after_colon
-        ])
-        return only_tags_after_colon
+        return line.endswith(':')
+
+    @staticmethod
+    def is_seq_project(line):
+        return line.endswith(sequential_projects_sufix + ':')
 
     def __init__(self, line=None, indent_level=0, line_no=0):
         if line:
@@ -56,6 +49,8 @@ class Token(object):
 
             if Token.is_task(line):
                 self.type = 'task'
+            elif Token.is_seq_project(line):
+                self.type = 'seq-project-title'
             elif Token.is_project(line):
                 self.type = 'project-title'
             else:

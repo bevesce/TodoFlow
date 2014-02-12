@@ -8,8 +8,8 @@ import update_lists as ul
 
 try:
     from tvcal import tvcal
-except:
-    pass
+except Exception as e:
+    print e
 from log_to_day_one import log_to_day_one
 
 all_lists = todoflow.from_files(todoflow.lists.to_list())

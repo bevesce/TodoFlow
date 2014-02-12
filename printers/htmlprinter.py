@@ -47,11 +47,16 @@ class HTMLPrinter(object):
     def pformat_item(self, item):
         title = self.titlize(item)
         sublist = [title]
+        prefix = '<ul>'
+        sufix = '</ul>'
+        if item.type == 'seq-project':
+            prefix = '<ol>'
+            sufix = '</ol>'
         if item.sublist:
-            sublist.append('<ul>')
+            sublist.append(prefix)
             for subitem in item.sublist.items:
                 sublist.append(self.pformat_item(subitem))
-            sublist.append('</ul></a>')
+            sublist.append(sufix + '</a>')
         text = '\n'.join(sublist)
         return self.postprocess_item(item, text)
 
@@ -62,6 +67,8 @@ class HTMLPrinter(object):
         text = self.preprocess_title(item)
         if item.type == 'project':
             return self.projecify(item, text)
+        if item.type == 'seq-project':
+            return self.sprojecify(item, text)
         elif item.type == 'task':
             return self.taskify(item, text)
         elif item.type == 'newline':
@@ -81,6 +88,14 @@ class HTMLPrinter(object):
         return extra_classes
 
     def projecify(self, item, text):
+        extra_classes = self.get_extra_classes(item)
+        return u'<li class="project project-{lvl} {extra_classes}">{text}</li>'.format(
+            text=text,
+            lvl=item.indent_level + 1,
+            extra_classes=' '.join(extra_classes)
+        )
+
+    def sprojecify(self, item, text):
         extra_classes = self.get_extra_classes(item)
         return u'<li class="project project-{lvl} {extra_classes}">{text}</li>'.format(
             text=text,

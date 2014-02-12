@@ -9,17 +9,18 @@ Conflict is resolved by prefering production 7 over 5.
     1. TodoList -> Item TodoList .
     2. Item     -> Task SubTasks
     3.           | Project SubTasks
-    4.           | Note SubTasks
-    5.           | indent TodoList dedent
-    6.           | NewLineItem
-    7. SubTasks -> indent TodoList dedent
-    8.           | .
+    4.           | SeqProject SubTasks
+    5.           | Note SubTasks
+    6.           | indent TodoList dedent
+    7.           | NewLineItem
+    8. SubTasks -> indent TodoList dedent
+    9.           | .
 
 """
 
 from .lexer import Lexer
 from .todolist import TodoList
-from .item import NewLineItem, Task, Project, Note
+from .item import NewLineItem, Task, Project, Note, SeqProject
 
 class Parser(object):
     def __init__(self, lexer):
@@ -55,6 +56,7 @@ class Parser(object):
 
             type_to_constructor = {
                 'task': Task,
+                'seq-project-title': SeqProject,
                 'project-title': Project,
                 'note': Note,
             }

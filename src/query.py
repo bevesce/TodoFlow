@@ -915,7 +915,7 @@ class ArgOpPredicate(object):
         elif self.left_side == 'project':
             projects_meets = []
             # if item itself is a project it must be considered
-            if item.type == 'project':
+            if item.type == 'project' or item.type == 'seq-project':
                 if op_functions[self.op](item.title.text, self.right_side):
                     projects_meets.append(True)
                 else:

@@ -13,6 +13,8 @@ class DayonePrinter(PlainPrinter):
             item.text = remove_tag(item.text, 'done')
             if item.type == 'project':
                 result.append(self.project(item))
+            if item.type == 'seq-project':
+                result.append(self.project(item))
             elif item.type == 'task':
                 result.append(self.task(item))
             elif item.type == 'note':

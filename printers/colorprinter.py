@@ -1,4 +1,5 @@
 from .utils import enclose_tags
+from todoflow.config import sequential_projects_sufix
 
 class color:
     """defines colors used in output"""
@@ -36,6 +37,8 @@ class ColorPrinter(object):
         for item in tlist:
             if item.type == 'project':
                 result.append(color.blue + self.project(item) + color.defc)
+            if item.type == 'seq-project':
+                result.append(color.magenta + self.sproject(item) + color.defc)
             elif item.type == 'task':
                 result.append(self.task(item))
             elif item.type == 'note':
@@ -49,6 +52,9 @@ class ColorPrinter(object):
 
     def project(self, item):
         return '\t' * item.indent_level + enclose_tags(item.text, self.prev_tag, self.post_tag) + ':'
+
+    def sproject(self, item):
+        return '\t' * item.indent_level + enclose_tags(item.text, self.prev_tag, self.post_tag) + sequential_projects_sufix + ':'
 
     def task(self, item):
         return '\t' * item.indent_level + color.blue + '- ' + color.defc + enclose_tags(item.text, self.prev_tag, self.post_tag)
