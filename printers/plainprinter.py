@@ -3,7 +3,6 @@ from todoflow.config import sequential_projects_sufix
 
 class PlainPrinter(object):
     def __init__(self, indent_char='\t'):
-        # self.seq_counter = [(0, 0)]
         self.indent_char = indent_char
         self.prev_tag = ''
         self.post_tag = ''
@@ -13,7 +12,7 @@ class PlainPrinter(object):
         for item in tlist:
             if item.type == 'project':
                 result.append(self.project(item))
-            if item.type == 'seq-project':
+            elif item.type == 'seq-project':
                 result.append(self.sproject(item))
             elif item.type == 'task':
                 result.append(self.task(item))

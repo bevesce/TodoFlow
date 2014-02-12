@@ -37,13 +37,13 @@ class ColorPrinter(object):
         for item in tlist:
             if item.type == 'project':
                 result.append(color.blue + self.project(item) + color.defc)
-            if item.type == 'seq-project':
+            elif item.type == 'seq-project':
                 result.append(color.magenta + self.sproject(item) + color.defc)
             elif item.type == 'task':
                 result.append(self.task(item))
             elif item.type == 'note':
                 result.append(self.note(item))
-            else:
+            elif item.type == 'newline':
                 result.append('')
         return '\n'.join(result).encode('utf-8').strip() + '\n'
 

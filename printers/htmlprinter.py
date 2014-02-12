@@ -67,7 +67,7 @@ class HTMLPrinter(object):
         text = self.preprocess_title(item)
         if item.type == 'project':
             return self.projecify(item, text)
-        if item.type == 'seq-project':
+        elif item.type == 'seq-project':
             return self.sprojecify(item, text)
         elif item.type == 'task':
             return self.taskify(item, text)
