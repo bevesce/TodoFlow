@@ -65,9 +65,9 @@ class Parser(object):
             # construct appropriate object
             newlines = []
             while type_on_top == 'newline':
-                self.lexer.pop()
+                nl_lex = self.lexer.pop()
+                newlines.append(NewLineItem(nl_lex.line_no, nl_lex.first_char_no))
                 type_on_top = self.lexer.top().type
-                newlines.append(NewLineItem())
             if type_on_top in type_to_constructor:
                 new_item = parse_item(type_to_constructor[type_on_top])
             elif type_on_top == 'indent':  # begining of sublist
@@ -85,12 +85,11 @@ class Parser(object):
             lex = self.lexer.pop()
             sublist = None
             type_on_top = self.lexer.top().type
-
             newlines = []
             while type_on_top == 'newline':
-                self.lexer.pop()
+                nl_lex = self.lexer.pop()
+                newlines.append(NewLineItem(nl_lex.line_no, nl_lex.first_char_no))
                 type_on_top = self.lexer.top().type
-                newlines.append(NewLineItem())
             sublist = TodoList(newlines)
             if type_on_top == 'indent':
                 self.lexer.pop()
@@ -99,6 +98,8 @@ class Parser(object):
                 text=lex.text,
                 indent_level=lex.indent_level,
                 sublist=sublist,
+                line_no=lex.line_no,
+                first_char_no=lex.first_char_no,
             )
 
         def parse_sublist(newlines_prefix=None):

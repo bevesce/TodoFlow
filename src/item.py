@@ -8,11 +8,13 @@ class Item(object):
     """
     Abstract item on todo list
     """
-    def __init__(self, text='', indent_level=None, sublist=None, typ='item'):
+    def __init__(self, text='', indent_level=None, sublist=None, typ='item', line_no=0, first_char_no=0):
         self.title = ItemTitle(text, indent_level, typ)
         self.parent_item = None
         self.parent_list = None
         self.type = typ
+        self.line_no = line_no
+        self.first_char_no = first_char_no
         self.sublist = sublist if sublist else TodoList()
         TodoList.items_by_id[self.title._id] = self
 
@@ -39,6 +41,8 @@ class Item(object):
         new.sublist = self.sublist.copy()
         new.type = self.type
         new.source = self.source
+        new.line_no = self.line_no
+        new.first_char_no = self.first_char_no
         return new
 
     def deep_copy(self):
@@ -49,6 +53,8 @@ class Item(object):
         new.sublist = self.sublist.deep_copy()
         new.type = self.type
         new.source = self.source
+        new.line_no = self.line_no
+        new.first_char_no = self.first_char_no
         return new
 
     def index(self):
@@ -136,9 +142,9 @@ class Item(object):
 
 
 class Project(Item):
-    def __init__(self, text='', indent_level=0, sublist=None, typ='project'):
+    def __init__(self, text='', indent_level=0, sublist=None, typ='project', line_no=0, first_char_no=0):
         text = text[:-1].strip()
-        super(Project, self).__init__(text, indent_level, sublist, typ)
+        super(Project, self).__init__(text, indent_level, sublist, typ, line_no, first_char_no)
         self.type = typ
 
     def empty(self):
@@ -151,9 +157,9 @@ class Project(Item):
 
 
 class SeqProject(Item):
-    def __init__(self, text='', indent_level=0, sublist=None, typ='seq-project'):
+    def __init__(self, text='', indent_level=0, sublist=None, typ='seq-project', line_no=0, first_char_no=0):
         text = text[:-(1 + len(sequential_projects_sufix))].strip()
-        super(SeqProject, self).__init__(text, indent_level, sublist, typ)
+        super(SeqProject, self).__init__(text, indent_level, sublist, typ, line_no, first_char_no)
         self.type = typ
 
     def empty(self):
@@ -192,9 +198,9 @@ task_prefix = re.compile(r'^\s*- ')
 
 
 class Task(Item):
-    def __init__(self, text='', indent_level=0, sublist=None, typ='task'):
+    def __init__(self, text='', indent_level=0, sublist=None, typ='task', line_no=0, first_char_no=0):
         text = task_prefix.sub('', text).strip()
-        super(Task, self).__init__(text, indent_level, sublist, typ)
+        super(Task, self).__init__(text, indent_level, sublist, typ, line_no, first_char_no)
         self.type = typ
 
     def __str__(self):
@@ -207,9 +213,9 @@ class Task(Item):
 
 
 class Note(Item):
-    def __init__(self, text='', indent_level=0, sublist=None, typ='note'):
+    def __init__(self, text='', indent_level=0, sublist=None, typ='note', line_no=0, first_char_no=0):
         text = text.strip()
-        super(Note, self).__init__(text, indent_level, sublist, typ)
+        super(Note, self).__init__(text, indent_level, sublist, typ, line_no, first_char_no)
         self.type = typ
 
     def empty(self):
@@ -217,9 +223,9 @@ class Note(Item):
 
 
 class NewLineItem(Item):
-    def __init__(self, text='', indent_level=0, sublist=None, typ='newline'):
+    def __init__(self, text='', indent_level=0, sublist=None, typ='newline', line_no=0, first_char_no=0):
         text = ''
-        super(NewLineItem, self).__init__(text, indent_level, sublist, typ)
+        super(NewLineItem, self).__init__(text, indent_level, sublist, typ, line_no, first_char_no)
 
     def copy(self):
         return NewLineItem()

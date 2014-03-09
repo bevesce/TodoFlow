@@ -72,7 +72,7 @@ class FakeFile(object):
         return self.content
         
     def readlines(self):
-        return self.content.split('\\n')
+        return [l + '\\n' for l in self.content.split('\\n')]
 
     def write(self, content):
         new_content = content

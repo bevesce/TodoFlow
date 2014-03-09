@@ -41,10 +41,11 @@ class Token(object):
     def is_seq_project(line):
         return line.endswith(sequential_projects_sufix + ':')
 
-    def __init__(self, line=None, indent_level=0, line_no=0):
+    def __init__(self, line=None, indent_level=0, line_no=0, first_char_no=0):
+        self.line_no = line_no
+        self.first_char_no = first_char_no
+        self.indent_level = indent_level
         if line:
-            self.indent_level = indent_level
-            self.line_no = line_no
             self.text = line
 
             if Token.is_task(line):
@@ -64,24 +65,33 @@ class Dedent(Token):
     def __init__(self):
         self.type = 'dedent'
         self.text = ''
+        self.line_no = -1
+        self.first_char_no = -1
 
 
 class Indent(Token):
     def __init__(self):
         self.type = 'indent'
         self.text = ''
+        self.line_no = -1
+        self.first_char_no = -1
 
 
 class NewLine(Token):
-    def __init__(self):
+    def __init__(self, line_no=0, first_char_no=0):
+        self.first_char_no = first_char_no
         self.type = 'newline'
         self.text = '\n'
+        self.line_no = line_no
+        self.indent_level = 0
 
 
 class EndToken(Token):
     def __init__(self):
         self.type = '$'
         self.text = '' 
+        self.line_no = -1
+        self.first_char_no = -1
         
 
 class Lexer(object):
@@ -106,11 +116,15 @@ class Lexer(object):
         """turns input into tokens"""
         tokens = []
         indent_levels = [0]
-        for line_no, line in enumerate(lines):
+        first_char_no = 0
+        line_no = 0
+        for line in lines:
+            line_no += 1 # count from 1, not from 0
             if line == '\n':
-                tokens.append(NewLine())
+                tokens.append(NewLine(line_no, first_char_no))
                 # empty lines are ignored in
                 # flow of indents so
+                first_char_no += 1
                 continue
 
             # generate indent and dedent tokens
@@ -123,7 +137,8 @@ class Lexer(object):
                     indent_levels.pop()
                     tokens.append(Dedent())
 
-            tokens.append(Token(line.rstrip(), current_level, line_no))
+            tokens.append(Token(line.rstrip(), current_level, line_no, first_char_no))
+            first_char_no += len(line)
         tokens.append(EndToken())
         # add $ token at the end and return
         return tokens[::-1]
