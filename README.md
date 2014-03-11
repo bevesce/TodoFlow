@@ -8,7 +8,7 @@ Using it I made several tools:
 - GeekTool/NerdTool extension
 - Alfred workflow
 - Editorial.app workflows
-- version Pythonista.app
+- version for Pythonista.app
 - lists updater
 - Day One logger
 - Sublime Text 3 package
@@ -20,39 +20,46 @@ Many workflows are probably too personal to use for anybody than me, but they ca
 
 # Changelog
 
+- 2014-03-11
+    + updates to Editorial workflows
+        * fixed problems with encoding
+        * added Agenda workflow
+        * dark and light theme for outputs
+        * now tapping item in search result will move to proper line in source file
+    + adds print_agenda for Pythonista.app
 - 2014-02-12
-    - added sequential projects
+    + added sequential projects
 - 2014-02-08
-    - added stodoflow - Sublime Text 3 package
-    - added Move to project and Tags Toggle Editorial workflows
+    + added stodoflow - Sublime Text 3 package
+    + added Move to project and Tags Toggle Editorial workflows
 - 2014-02-06
-    - **big changes** Ok, so this will be longer story. For several months I experimented with different syntax (something more like github flavored markdown, because I don't like that in TaskPaper it's not easy to distinguish done tasks without syntax highlighting), to do that I made major refactoring of the codebase. Now I decided that I want to come back to TaskPaper to be able to use other peoples tools. Instead of using old code I modified refactored one. Now code is cleaner (is it?), better organized (I think so), has some bugs fixed, but I dropped some parts that I was no longer using. I spread previously long readme through several folders, closer to code that it describe. Also I dropped attempts to change that horrible name - todoflow. Also Editorial workflow. I don't know if anybody is really using todoflow but if so beware.
+    + **big changes** Ok, so this will be longer story. For several months I experimented with different syntax (something more like github flavored markdown, because I don't like that in TaskPaper it's not easy to distinguish done tasks without syntax highlighting), to do that I made major refactoring of the codebase. Now I decided that I want to come back to TaskPaper to be able to use other peoples tools. Instead of using old code I modified refactored one. Now code is cleaner (is it?), better organized (I think so), has some bugs fixed, but I dropped some parts that I was no longer using. I spread previously long readme through several folders, closer to code that it describe. Also I dropped attempts to change that horrible name - todoflow. Also Editorial workflow. I don't know if anybody is really using todoflow but if so beware.
 - 2013-08-10 
-    - added actions for @remind tag
+    + added actions for @remind tag
 - 2013-08-10 
-    - added actions for @followup tag
+    + added actions for @followup tag
 - 2013-08-10 
-    - added todify - iOS pythonista script that adds task tagged with *@today* to notification center
+    + added todify - iOS pythonista script that adds task tagged with *@today* to notification center
 - 2013-05-19 
-    - minor improvement in how abbreviations in queries are expanded
+    + minor improvement in how abbreviations in queries are expanded
 - 2013-05-14 
-    - fixed bug in sublime package (bad changing type of item when project has trailing tags)
+    + fixed bug in sublime package (bad changing type of item when project has trailing tags)
 - 2013-05-11
-    - new utility - qr_to_drafts
+    + new utility - qr_to_drafts
 - 2013-05-04 
-    - new utility - tabs_as_tasks
+    + new utility - tabs_as_tasks
 - 2013-05-03 
-    - added separate coloring for @today, @next and @due tags
+    + added separate coloring for @today, @next and @due tags
 - 2013-05-02 
-    - Drafts Inbox actions added
+    + Drafts Inbox actions added
 - 2013-05-02 
-    - added version for Pythonista iOS app
+    + added version for Pythonista iOS app
 - 2013-05-02 
-    - added editing from topy and Alfred workflow
+    + added editing from topy and Alfred workflow
 - 2013-05-02 
-    - better encoding handling
+    + better encoding handling
 - 2013-05-02 
-    - start of change log
+    + start of change log
 
 # Installation
 

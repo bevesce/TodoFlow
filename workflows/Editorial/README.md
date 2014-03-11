@@ -1,4 +1,4 @@
-# Editorial Query Workflow
+# Search Workflow
 
 This is workflow that uses todoflow to filter todo lists inside Editorial.app.
 When used it will display list of predefined queries in format:
@@ -45,7 +45,8 @@ You need to move whole files structure of todoflow to Editorial, probably there 
 ### Installing workflow
 
 1. After installing todoflow and parsedatetime probably you'll need to restart app
-2. Install workflow from [here](http://editorial-app.appspot.com/workflow/4953842659622912/-Kq8ZdSUGng)
+2. Install workflow from [here](http://editorial-app.appspot.com/workflow/5806813232496640/fWXVsgFK8x8)
+3. And install this simple workflow from [here](http://editorial-app.appspot.com/workflow/5863197563158528/j4dZ5y1vnUk), it's used to select proper line when link in search results is activated
 
 ### Installing todoflow in some other way
 
@@ -83,17 +84,27 @@ Obviously using *open* in Editorial won't work when using path from OSX, so befo
 
 it overwrites *open* from standard library with *open* that will work in Editorial (only for reading, at least for now).
 
+# Agenda
+
+Requires todoflow. Shows Agenda view, similar to the one in CLI:
+
+- *@due* tasks sorted by due date
+- *@working* tasks
+- *@next* tasks
+
+You can install it from [here](http://editorial-app.appspot.com/workflow/5846893867302912/cI8nPxKUVr0)
+
 # ✓ Toggle tags workflow
 
 Requires todoflow. Toggles between *@next*, *@working* and *@done* tags.
 
-You can install it from [here](http://editorial-app.appspot.com/workflow/5592946678169600/EmgYcGKvFs4)
+You can install it from [here](http://editorial-app.appspot.com/workflow/5883366729580544/xx6KWCCP_Kg)
 
 # ↱ Move to Project
 
 Requires todoflow. Gets selected text, displays list of all projects and moves selection to chosen one - prepends new tasks.
 
-You can install it from [here](http://editorial-app.appspot.com/workflow/4986239597936640/r_fct1waTmY)
+You can install it from [here](http://editorial-app.appspot.com/workflow/5790251838603264/luMurs5X_zw)
 
 Uses *Repeat* and *Save file contents* blocks to work around [this bug in editor.set_file_contents](http://omz-forums.appspot.com/editorial/post/5925732018552832).
 

@@ -29,6 +29,7 @@ import todoflow
 import math
 from todoflow.printers import ColorPrinter
 from datetime import datetime, date
+from todoflow.src.utils import enclose_tags
 
 title_length = 80
 
@@ -67,7 +68,8 @@ def print_deadlines(t, tag, query, highlight_color, title_color, title):
                 color = highlight_color
             elif days <= 7:
                 color = yellow
-            dues.append((days_str + ' ' + item.text + defc, color))
+            text = enclose_tags(item.text, blue, defc)
+            dues.append((white + days_str + defc + ' ' + text + defc, color))
         else:
             # print '\t' * item.indent_level + gray + item.text + defc
             pass

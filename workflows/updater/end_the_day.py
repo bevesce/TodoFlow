@@ -10,6 +10,7 @@ try:
     from tvcal import tvcal
 except Exception as e:
     print e
+    print "couldn't import tv series"
 from log_to_day_one import log_to_day_one
 
 all_lists = todoflow.from_files(todoflow.lists.to_list())

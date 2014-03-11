@@ -1,6 +1,7 @@
 body {
     /*margin: 40px 60px 40px 60px;*/
     padding: 0;
+    margin: 0;
     width: 100%;
     color: black;
     font-family: 'Source Sans Pro', 'DejaVuSansMono';
@@ -15,7 +16,7 @@ a, a:visited{
 }
 
 a:hover{
-    color: #293847;
+    color: blue;
 }
 
 .project-0, .project-1, .project-2, .project-3, .project-4, .project-5{
@@ -70,20 +71,12 @@ a:hover{
 }
 
 
-ul li{
+li.newline, li.project, li.task{
  list-style: none;
 }
 
-ol > a > li{
-    list-style: decimal;
-}
-
-ul li.task:before { 
+li.task:before { 
     content: "- ";
-}
-
-ol > a > li.task:before { 
-    content: "";
 }
 
 .green{
@@ -95,9 +88,67 @@ ol > a > li.task:before {
 }
 
 .orange{
-    color: #E8A154;
+    color: coral;
 }
 
 .gray{
     color: gray;
+}
+
+.reload-button{
+    display: block;
+    width: 100%;
+    padding:0.5em 0;
+    font-size: 2em;
+    text-align: center;
+}
+
+.reload-button:hover{
+    background-color: steelblue;
+    color: white;
+}
+
+.soon{
+    color: firebrick;
+}
+
+.this-week{
+    color: coral;
+}
+
+.days-number{
+    font-weight: 700;
+    font-size: 1.3em;
+}
+
+.section-title{
+    font-size: 1em;
+    /*color: white;*/
+    text-align: center;
+    margin: 0;
+}
+
+.agenda-section{
+    padding: 0.5em 0 2em 0;
+    margin: 0;
+}
+
+.deadlines-section{
+    background-color: #FFF6F6;
+}
+
+.dates-section{
+    background-color: #FFFDF6;
+}
+
+.working-section{
+    background-color: #F6FFF8;
+}
+
+.next-section{
+    background-color: #F7F6FF;
+}
+
+.countdown{
+    list-style: none;
 }

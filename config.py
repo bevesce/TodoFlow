@@ -28,7 +28,7 @@ quick_query_abbreviations = {
     'd': 'not @done',
     'u': '@due and not (project ? Onhold)',
     's': '@studia+d',
-    'a': '(@working or @next)',
+    'a': '((@working or @next) and not @done)+d',
 }
 
 # add date value when tagging with @done
@@ -94,15 +94,15 @@ daily_project_title = '"Daily:"'
 ###################### Inbox ######################
 
 inbox_tag_to_path = {
-    '@music': '/Users/bvsc/Dropbox/Notes/__todo/_sublists/$music.todo',
-    '@film': '/Users/bvsc/Dropbox/Notes/__todo/_sublists/$filmy.todo',
-    '@book': '/Users/bvsc/Dropbox/Notes/__todo/_sublists/$books.todo',
-    '@app': '/Users/bvsc/Dropbox/Notes/__todo/_sublists/$apps.todo',
-    '@game': '/Users/bvsc/Dropbox/Notes/__todo/_sublists/$games.todo',
-    '@toy': '/Users/bvsc/Dropbox/Notes/__todo/_sublists/$toys&tools.todo',
-    '@tool': '/Users/bvsc/Dropbox/Notes/__todo/_sublists/$toys&tools.todo',
-    '@idea': '/Users/bvsc/Dropbox/Notes/__todo/_sublists/$ideas.todo',
-    '@waiting': '/Users/bvsc/Dropbox/Notes/__todo/Onhold.todo',
+    '@music': '/Users/bvsc/Dropbox/Notes/__todo/music.txt',
+    '@film': '/Users/bvsc/Dropbox/Notes/__todo/filmy.txt',
+    '@book': '/Users/bvsc/Dropbox/Notes/__todo/books.txt',
+    '@app': '/Users/bvsc/Dropbox/Notes/__todo/apps.txt',
+    '@game': '/Users/bvsc/Dropbox/Notes/__todo/games.txt',
+    '@toy': '/Users/bvsc/Dropbox/Notes/__todo/toys and tools.txt',
+    '@tool': '/Users/bvsc/Dropbox/Notes/__todo/toys and tools.txt',
+    '@food': '/Users/bvsc/Dropbox/Notes/__todo/food and drinks.txt',
+    '@idea': '/Users/bvsc/Dropbox/Notes/__todo/ideas.txt',
 }
 
 #################### Editorial ####################

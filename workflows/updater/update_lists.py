@@ -19,13 +19,17 @@ def update_daily(projects):
 def update_weekly(onhold, inbox):
     today = days_of_the_week[date.today().weekday()]
     waiting = onhold.filter('@weekly = ' + today + ' +d')
-    inbox.write(PlainPrinter().pformat(waiting))
+    txt = PlainPrinter().pformat(waiting)
+    inbox.write(txt)
+    print txt
 
 
 def update_waiting(onhold, inbox):
     today = date.today().isoformat()
     waiting = onhold.filter('@waiting <= ' + today + ' +d')
-    inbox.write(PlainPrinter().pformat(waiting))
+    txt = PlainPrinter().pformat(waiting)
+    inbox.write(txt)
+    print txt
 
 
 def update_followups(tasks):

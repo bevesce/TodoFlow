@@ -17,7 +17,6 @@ def log_to_day_one(tlist):
 
     filtered = tlist.filter(u'@done = ' + log_data_str)
     filtered.remove_tag('done')
-    print DayonePrinter().pformat(filtered)
     entry_text = day_one_entry_title + \
         DayonePrinter().pformat(filtered)
 
