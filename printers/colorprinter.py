@@ -1,4 +1,4 @@
-from .utils import enclose_tags
+from todoflow.src.utils import enclose_tags
 from todoflow.config import sequential_projects_sufix
 
 class color:

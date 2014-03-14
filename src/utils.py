@@ -70,8 +70,6 @@ tag_pattern_without_at = re.compile(tag_regexp_without_at + r'\Z')
 # prepend '@'
 tag_pattern = re.compile('(?<!^)(@' + tag_regexp_without_at + ')')
 
-#
-
 def enclose_tags(text, prefix, postfix):
     """
     puts `prefix` before and `postfix` after
@@ -80,3 +78,24 @@ def enclose_tags(text, prefix, postfix):
     def f(t):
         return prefix + t.group(1) + postfix
     return re.sub(tag_pattern, f, text)
+
+
+def task_cmp(tag):
+    def f(task1, task2):
+        has_tag1 = has_tag(task1, tag)
+        has_tag2 = has_tag(task2, tag)
+        if not has_tag1 and not has_tag2:
+            return 0
+        elif not has_tag1 and has_tag2:
+            return -1
+        elif has_tag1 and not has_tag2:
+            return 1
+        else:
+            p1 = get_tag_param(task1, tag)
+            p2 = get_tag_param(task2, tag)
+            return cmp(p1, p2)
+    return f
+
+
+def sort_by_tag(lines, tag):
+    return sorted(lines, cmp=task_cmp(tag))

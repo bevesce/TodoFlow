@@ -2,7 +2,7 @@
 
 from cgi import escape
 from todoflow.config import tag_to_class
-from .utils import enclose_tags
+from todoflow.src.utils import enclose_tags
 
 template = u"""
 <!DOCTYPE html>

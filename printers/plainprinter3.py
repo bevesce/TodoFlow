@@ -1,4 +1,4 @@
-from .utils import enclose_tags
+from todoflow.src.utils import enclose_tags
 
 class PlainPrinter3(object):
     def __init__(self, indent_char='\t'):
