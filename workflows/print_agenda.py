@@ -51,32 +51,28 @@ def print_dates(t):
     print_deadlines(t, 'date', '@date and not @done', magenta, high_magenta, 'DATES')
 
 def print_deadlines(t, tag, query, highlight_color, title_color, title):
-    due = t.filter(query)
+    due = t.search(query)
     dues = []
-    if due.items:
+    if due:
         print titleize(title, title_color, white)
     for item in due:
-        if item.has_tag(tag):
-            param = item.get_tag_param(tag)
-            due_date = datetime.strptime(param, '%Y-%m-%d').date()
-            days = (due_date - date.today()).days
-            days_str = str(days).zfill(2)
-            color = white
-            if item.has_tag('blocked'):
-                color = gray
-            elif days <= 2:
-                color = highlight_color
-            elif days <= 7:
-                color = yellow
-            text = enclose_tags(item.text, blue, defc)
-            dues.append((white + days_str + defc + ' ' + text + defc, color))
-        else:
-            # print '\t' * item.indent_level + gray + item.text + defc
-            pass
+        param = item.get_tag_param(tag)
+        due_date = datetime.strptime(param, '%Y-%m-%d').date()
+        days = (due_date - date.today()).days
+        days_str = str(days).zfill(2)
+        color = white
+        if item.has_tag('blocked'):
+            color = gray
+        elif days <= 2:
+            color = highlight_color
+        elif days <= 7:
+            color = yellow
+        text = enclose_tags(item.text, blue, defc)
+        dues.append((white + days_str + defc + ' ' + text + defc, color))
     for d, c in sorted(dues):
         print c + d
 
-t = todoflow.from_files(todoflow.lists.to_list())
+t = todoflow.all_lists()
 print '\n' * 50
 
 print_due(t)

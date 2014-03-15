@@ -140,6 +140,12 @@ class Item(object):
         if meets_prediacate or new.sublist.items:
             return new
 
+    def search(self, predicate):
+        result = [self] if predicate.test(self) else []
+        for item in self.sublist.items:
+            result += (item.search(predicate))
+        return result
+
 
 class Project(Item):
     def __init__(self, text='', indent_level=0, sublist=None, typ='project', line_no=0, first_char_no=0):

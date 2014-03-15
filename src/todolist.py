@@ -123,14 +123,7 @@ class TodoList(object):
         self.set_parent_list(items_list)
         self.items += items_list
 
-    def filter(self, predicate):
-        """
-        returns new list that contains only elements that
-        meet predicate.
-
-        Also if `remove` is set to True removes those elements
-        from self.
-        """
+    def fix_predicate(self, predicate):
         # parse predicate if it's in string
         is_unicode = False
         try:
@@ -140,7 +133,14 @@ class TodoList(object):
 
         if is_unicode or isinstance(predicate, str):
             predicate = parse_predicate(predicate)
+        return predicate
 
+    def filter(self, predicate):
+        """
+        returns new todolist that contains only elements that
+        meet predicate and their parents
+        """
+        predicate = self.fix_predicate(predicate)
         filtered_items_with_None = [
             item.filter(predicate) for item in self.items
         ]
@@ -149,3 +149,13 @@ class TodoList(object):
         ]
         new_list = TodoList(filtered_items)
         return new_list
+
+    def search(self, predicate):
+        """
+        returns list of items that meet search predicate
+        """
+        predicate = self.fix_predicate(predicate)
+        results = []
+        for item in self.items:
+            results += (item.search(predicate))
+        return results

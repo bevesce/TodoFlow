@@ -20,6 +20,8 @@ Many workflows are probably too personal to use for anybody than me, but they ca
 
 # Changelog
 
+- 2014-03-15
+    + adds someting that I should have done long time ago - search method that returns list of exact matched (contraty to filter which returns new Todolist object)
 - 2014-03-11
     + updates to Editorial workflows
         * fixed problems with encoding
@@ -88,6 +90,15 @@ To filter lists you can use:
 
 Filtering returns new todo list, object of the same class as original. Not only exact matches are part of this result, but whole projects structure (like in TaskPaper.app) - meaning that parents of matched item are also returned.
 
+Instead of *filter* you can use method *search*, it returns list (as in *[]*) of exact matches (instead of todo list (as in *'<todoflow.src.todolist.TodoList object at 0x107a61fd0>*)). 
+    
+    todo_list.search(some_query)
+    >>> [<todoflow.src.item.Project object at 0x107b50450>, <todoflow.src.item.Task object at 0x107b51710>, <todoflow.src.item.Task object at 0x107b517d0>]
+
+In my experience *search* is more useful when editing list.
+
+In my experinece
+
 Parsed list can be iterated over and modified, for example we can add some tags:
 
     for task in todo_list:
@@ -100,7 +111,7 @@ and than save list to source file:
 
 For more you'll need to read source code.
 
-# Searching
+# Searching & Filtering
 
 Todoflow supports most of the query syntax of TaskPaper with few additions:
 

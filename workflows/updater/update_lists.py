@@ -11,7 +11,6 @@ def update_daily(projects):
     for item in daily:
         if item.type == 'task':
             item.remove_tag('done')
-            print item.text
             if not item.has_tag('working'):
                 item.tag('working')
 
@@ -50,24 +49,22 @@ def update_followups(tasks):
 
 
 def update_blocked(tasks):
-    blockers = tasks.filter('@blocker and @done <= ' + date.today().isoformat())
+    blockers = tasks.search('@blocker and @done <= ' + date.today().isoformat())
     for blocker in blockers:
-        if blocker.has_tag('@blocker'):
-            blocker_id = blocker.get_tag_param('@blocker')
-            blockeds = tasks.filter('@blocked = ' + blocker_id)
-            for blocked in blockeds:
-                if blocked.has_tag('@blocked'):
-                    blocked.remove_tag_with_param('@blocked', blocker_id)
+        blocker_id = blocker.get_tag_param('@blocker')
+        blockeds = tasks.filter('@blocked = ' + blocker_id)
+        for blocked in blockeds:
+            if blocked.has_tag('@blocked'):
+                blocked.remove_tag_with_param('@blocked', blocker_id)
 
 
 def update_incremental(tasks):
-    incrementals = tasks.filter('@v')
+    incrementals = tasks.search('@v')
     for task in incrementals:
-        if task.has_tag('@v'):
-            value_int = int(task.get_tag_param('@v'))
-            inc = task.get_tag_param('@inc')
-            if inc:
-                inc_int = int(inc)
-                new_value = value_int + inc_int
-                task.replace_tag_param('v', str(new_value))
+        value_int = int(task.get_tag_param('@v'))
+        inc = task.get_tag_param('@inc')
+        if inc:
+            inc_int = int(inc)
+            new_value = value_int + inc_int
+            task.replace_tag_param('v', str(new_value))
 
