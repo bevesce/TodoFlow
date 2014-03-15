@@ -21,6 +21,8 @@ Many workflows are probably too personal to use for anybody than me, but they ca
 # Changelog
 
 - 2014-03-15
+    + adds propagate_done utility in workflows - just to show off apparently
+- 2014-03-15
     + adds someting that I should have done long time ago - search method that returns list of exact matched (contraty to filter which returns new Todolist object)
 - 2014-03-11
     + updates to Editorial workflows
