@@ -21,16 +21,18 @@ Many workflows are probably too personal to use for anybody than me, but they ca
 # Changelog
 
 - 2014-03-15
-    + adds propagate_done utility in workflows - just to show off apparently
-- 2014-03-15
-    + adds someting that I should have done long time ago - search method that returns list of exact matched (contraty to filter which returns new Todolist object)
+    + added propagate_done utility in workflows - just to show off apparently
+    + added someting that I should have done long time ago - search method that returns list of exact matched (contraty to filter which returns new Todolist object)
+    + added not properly tested stuff to end_the_day
+        * for every item with *@remind* tag creates coresponding task in Reminders.app
+        * for every item with *@done* or *@due* tag creates coresponding event in Calendar.app
 - 2014-03-11
     + updates to Editorial workflows
         * fixed problems with encoding
         * added Agenda workflow
         * dark and light theme for outputs
         * now tapping item in search result will move to proper line in source file
-    + adds print_agenda for Pythonista.app
+    + added print_agenda for Pythonista.app
 - 2014-02-12
     + added sequential projects
 - 2014-02-08

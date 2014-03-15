@@ -9,9 +9,9 @@ files_list_name = 'lists'
 
 
 inbox_path = '/Users/bvsc/Dropbox/Notes/__todo/_inbox.txt'
-projects_path = '/Users/bvsc/Dropbox/Notes/__todo/Projects.md'
-onhold_path = '/Users/bvsc/Dropbox/Notes/__todo/Onhold.md'
-archive_path = '/Users/bvsc/Dropbox/Notes/__todo/NOTES/Archive.md'
+projects_path = '/Users/bvsc/Dropbox/Notes/__todo/Projects.taskpaper'
+onhold_path = '/Users/bvsc/Dropbox/Notes/__todo/Onhold.taskpaper'
+archive_path = '/Users/bvsc/Dropbox/Notes/__todo/NOTES/Archive.taskpaper'
 
 ##################### Queries #####################
 
