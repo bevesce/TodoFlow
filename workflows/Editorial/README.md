@@ -1,3 +1,5 @@
+2014-05-31: I successfully installed this workflows on iPhone, css styles are a little bit off because they have to big margins for smaller screen, I'll update this sometime after exams, maybe even using `ui` instead of html.
+
 # Search Workflow
 
 This is workflow that uses todoflow to filter todo lists inside Editorial.app.
@@ -7,11 +9,8 @@ When used it will display list of predefined queries in format:
 
 they can be set in workflow. Last position on list - *Query* is for single use queries (you'll be asked for input). 
 
-![editorial query](http://procrastinationlog.net/img/editorialquery2.png)
-
 Result will be displayed as html in in-app browser. Each item on list is also a link that will open source file in Editorial when activated. In workflows/html/css are several styles that can be used (paste them in workflow).
 
-![editorial query](http://procrastinationlog.net/img/editoriall2.png)
 
 ## Installation
 
