@@ -1,7 +1,7 @@
 from __future__ import absolute_import
 import os
 from .parser import parse
-from .todos import Todos, Todonode
+from .todos import Todos
 
 
 def from_text(text):
@@ -24,7 +24,7 @@ def from_paths(paths):
     items = []
     for project_title, subtodos in zip(project_titles_collection, subtodos_collection):
         subtodos.indent()
-        node = Todonode(text=project_title, subtodos=subtodos)
+        node = TodoTreeNode(text=project_title, subtodos=subtodos)
         node.item.change_to_project()
         items.append(node)
     return Todos(items=items)

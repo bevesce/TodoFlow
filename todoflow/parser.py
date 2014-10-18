@@ -1,5 +1,6 @@
 from .lexer import Lexer
-from .todos import Todos, Todonode
+from .todos import Todos, TreeNode
+from .todoitem import Todoitem
 
 
 class Parser(object):
@@ -15,7 +16,7 @@ class Parser(object):
         self.lexer = Lexer(text)
         for token in self.lexer.tokens:
             if token.is_newline:
-                self.newlines.append(Todonode())
+                self.newlines.append(TreeNode(Todoitem()))
             elif token.is_text:
                 new_item = self._handle_text(token)
             elif token.is_indent:
@@ -26,12 +27,12 @@ class Parser(object):
                 return self._handle_end()
 
     def _handle_text(self, token):
-        new_item = Todonode(token.text)
+        new_item = TreeNode(Todoitem(token.text))
         if self.items_in_parsing:
             for nl in self.newlines:
-                self.items_in_parsing[-1].subtodos.append(nl)
+                self.items_in_parsing[-1].append_child(nl)
             self.newlines = []
-            self.items_in_parsing[-1].subtodos.append(new_item)
+            self.items_in_parsing[-1].append_child(new_item)
         else:
             self.parsed_items += self.newlines
             self.newlines = []
@@ -39,8 +40,8 @@ class Parser(object):
         return new_item
 
     def _handle_end(self):
-        todolist = Todos(items=self.parsed_items + self.newlines)
-        return todolist
+        todos = Todos(TreeNode(children=self.parsed_items + self.newlines))
+        return todos
 
 
 def parse(text):

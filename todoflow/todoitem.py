@@ -8,6 +8,8 @@ from .config import (
     spaces_equal_to_tab
 )
 
+from .printers import PlainPrinter
+
 
 class Todoitem(object):
     _uniqueid_counter = 0
@@ -21,27 +23,34 @@ class Todoitem(object):
         cls._uniqueid_counter += 1
         return unicode(cls._uniqueid_counter)
 
-    def __init__(self, text):
+    def __init__(self, text=''):
         self.uniqueid = self._gen_uniqueid()
         self.text = strip_formatting(text) if text else ''
         self.indent_level = calculate_indent_level(text) if text else 0
-        self._choose_text_formatter(text)
+        self._choose_type(text)
 
     def __unicode__(self):
-        return self._text_formatter.format(self.text, self.indent_level)
+        return PlainPrinter().handle_item(self, level=self.indent_level)
 
     def __str__(self):
         return unicode(self).encode('utf-8')
 
-    def _choose_text_formatter(self, text):
+    def _choose_type(self, text):
+        self._set_all_types_flags_to_false()
         if not text:
-            self._text_formatter = EmptyLine()
+            self.is_empty_line = True
         elif is_task(text):
-            self._text_formatter = Task()
+            self.is_task = True
         elif is_project(text):
-            self._text_formatter = Project()
+            self.is_project = True
         else:
-            self._text_formatter = Note()
+            self.is_note = True
+
+    def _set_all_types_flags_to_false(self):
+        self.is_task = False
+        self.is_project = False
+        self.is_note = False
+        self.is_empty_line = False
 
     def tag(self, tag_to_use, param=None):
         self.text = add_tag(self.text, tag_to_use, param)
@@ -67,83 +76,18 @@ class Todoitem(object):
             0
         )
 
-    def is_project(self):
-        return self._text_formatter.is_project()
-
-    def is_task(self):
-        return self._text_formatter.is_task()
-
-    def is_note(self):
-        return self._text_formatter.is_note()
-
-    def is_empty_line(self):
-        return self._text_formatter.is_empty_line()
-
     def change_to_task(self):
-        self._text_formatter = Task()
+        self._set_all_types_flags_to_false()
+        self.is_task = True
 
     def change_to_project(self):
-        self._text_formatter = Project()
+        self._set_all_types_flags_to_false()
+        self.is_project = True
 
     def change_to_note(self):
-        self._text_formatter = Note()
+        self._set_all_types_flags_to_false()
+        self.is_note = True
 
-
-class AbstractTextFormatter(object):
-    def _make_indentation(self, indent_level):
-        return ' ' * indent_level
-
-    def is_project(self):
-        return False
-
-    def is_task(self):
-        return False
-
-    def is_note(self):
-        return False
-
-    def is_empty_line(self):
-        return False
-
-
-class Task(AbstractTextFormatter):
-    def format(self, text, indent_level):
-        return ''.join([
-            self._make_indentation(indent_level),
-            task_indicator,
-            text,
-        ])
-
-    def is_task(self):
-        return True
-
-
-class Note(AbstractTextFormatter):
-    def format(self, text, indent_level):
-        return self._make_indentation(indent_level) + text
-
-    def is_note(self):
-        return True
-
-
-class Project(AbstractTextFormatter):
-    def format(self, text, indent_level):
-        return ''.join([
-            self._make_indentation(indent_level),
-            text,
-            project_indicator
-        ])
-
-    def is_project(self):
-        return True
-
-
-class EmptyLine(AbstractTextFormatter):
-    def format(self, text, indent_level):
-        return ''
-
-    def _class_repr(self, indent_level=0):
-        return ' ' * indent_level + 'e'
-
-    def is_empty_line(self):
-        return True
+    def change_to_empty_line(self):
+        self._set_all_types_flags_to_false()
+        self.is_empty_line = True

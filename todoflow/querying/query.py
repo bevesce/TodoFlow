@@ -7,11 +7,14 @@ class AbstractQuery(object):
     def matches(self, todonode):
         raise NotImplementedError
 
+    def __call__(self, todonode):
+        return self.matches(todonode)
+
 
 # Basic
 class TextQuery(AbstractQuery):
     def matches(self, todonode):
-        return self.matches_text(todonode.item.text)
+        return self.matches_text(todonode.get_value().text)
 
 
 class SubstringQuery(TextQuery):
@@ -76,34 +79,27 @@ class TagOpQuery(TextQuery):
         return self.operation(param, self.right_side)
 
 
-class UpstreamNodeQuery(AbstractQuery):
-    def matches(self, todonode):
-        node = todonode
-        while node:
-            if self.node_matches(node):
-                return True
-            node = node.get_parent_node()
-
-
-class ProjectOpQuery(UpstreamNodeQuery):
+class ProjectOpQuery(AbstractQuery):
     def __init__(self, operation=None, right_side=None):
         self.operation = operation
         self.right_side = right_side.strip() if right_side else ''
 
-    def node_matches(self, todonode):
-        return (
-            todonode.item.is_project() and
-            self.operation(todonode.item.text, self.right_side)
-        )
+    def matches(self, todonode):
+        for n in [todonode] + list(todonode.get_parents()):
+            v = n.get_value()
+            if v and v.is_project and self.operation(v.text, self.right_side):
+                return True
 
 
 # whole list
-class PlusDescendants(UpstreamNodeQuery):
+class PlusDescendants(AbstractQuery):
     def __init__(self, query):
         self.query = query
 
-    def node_matches(self, node):
-        return self.query.matches(node)
+    def matches(self, todonode):
+        for n in [todonode] + list(todonode.get_parents()):
+            if self.query(n):
+                return True
 
 
 class OnlyFirst(AbstractQuery):
@@ -111,12 +107,12 @@ class OnlyFirst(AbstractQuery):
         self.query = query
 
     def matches(self, todonode):
-        if not todonode.containing_todos:
+        if not todonode.get_parent():
             return True
-        todos = todonode.containing_todos
-        if not todos.items:
+        todos = todonode.get_parent()
+        if not todos.get_children():
             return True
-        return self._is_node_first_that_matches(todos.items, todonode)
+        return self._is_node_first_that_matches(todos.get_children(), todonode)
 
     def _is_node_first_that_matches(self, items, todonode):
         matching_items = [n for n in items if self.query.matches(n)]
@@ -130,9 +126,9 @@ class TypeOpQuery(AbstractQuery):
 
     def matches(self, todonode):
         return {
-            'task': todonode.item.is_task(),
-            'note': todonode.item.is_note(),
-            'project': todonode.item.is_project(),
+            'task': todonode.get_value().is_task,
+            'note': todonode.get_value().is_note,
+            'project': todonode.get_value().is_project,
         }.get(self.right_side, False)
 
 
@@ -142,4 +138,4 @@ class UniqueidOpQuery(AbstractQuery):
         self.right_side = right_side
 
     def matches(self, todonode):
-        return self.operation(todonode.item.uniqueid, self.right_side)
+        return self.operation(todonode.get_value().uniqueid, self.right_side)

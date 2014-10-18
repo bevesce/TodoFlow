@@ -89,43 +89,9 @@ class TestParser(SeriesTestCase):
             (
                 (1, lt.tokens1),
                 (2, lt.tokens2),
-                (2, lt.tokens3),
-                (1, lt.tokens4.strip()),
-                (2, lt.tokens4),
-                (2, lt.tokens5),
-                (3, lt.tokens8),
-                (3, lt.tokens10),
-                (4, lt.tokens11),
-                (3, lt.tokens11.strip()),
-            )
-        )
-
-    def test_first_sublist_length(self):
-        def assertSublistLength(length, text):
-            todolist = parser.parse(text)
-            self.assertEqual(length, len(todolist.items[0].subtodos))
-        self.conduct_test_series(
-            assertSublistLength,
-            (
-                (0, lt.tokens1),
-                (1, lt.tokens3),
-                (2, lt.tokens4),
-                (1, lt.tokens9),
-            )
-        )
-
-    def test_item_types(self):
-        def assertItemTypes(types, text):
-            todolist = parser.parse(text)
-            self.assertEqual(types, todolist._class_repr())
-        self.conduct_test_series(
-            assertItemTypes,
-            (
-                (lt.t1_expected, lt.t1),
-                (lt.t2_expected, lt.t2),
-                (lt.t3_expected, lt.t3),
-                (lt.t4_expected, lt.t4),
-                (lt.t5_expected, lt.t5),
+                (3, lt.tokens3),
+                (3, lt.tokens4.strip()),
+                (4, lt.tokens4),
             )
         )
 

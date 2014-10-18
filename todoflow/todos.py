@@ -2,159 +2,139 @@ from collections import deque
 
 from .todoitem import Todoitem
 from .querying.parser import parse as parse_query
+from .printers import PlainPrinter
 
 
 class Todos(object):
-    def __init__(self, items=None, source=None):
-        self.parent_node = None
-        self.source = source
-        self.set_items(items)
+    def __init__(self, todos_tree):
+        self.todos_tree = todos_tree
 
-    def __len__(self):
-        return len(self.items)
+    def __iter__(self):
+        return self.todos_tree.iter_values()
 
     def __unicode__(self):
-        return u'\n'.join([unicode(i) for i in self.items])
+        return PlainPrinter().unicode(self.todos_tree)
 
     def __str__(self):
         return unicode(self).encode('utf-8')
 
-    def __iter__(self):
-        raise NotImplemented
+    def __len__(self):
+        return len(self.todos_tree)
 
-    @property
-    def items(self):
-        return tuple(self.__items)
+    def search(self, query):
+        return self.todos_tree.search(
+            parse_query(query)
+        )
+
+    def filter(self, query):
+        filtered_tree = self.todos_tree.filter(
+            parse_query(query)
+        )
+        return Todos(filtered_tree)
+
+    def get_item(self, query):
+        for i in self.search(query):
+            return i
+
+
+class TreeNode(object):
+    def __init__(self, value=None, children=None, parent=None):
+        self._value = value
+        self._parent = parent
+        self._children = None
+        self.set_children(children)
+
+    def __len__(self):
+        return len(self.get_values())
+
+    def __iter__(self):
+        """deep first"""
+        yield self
+        for child in self._children:
+            for grandchild in child:
+                yield grandchild
+
+    def iter_values(self):
+        return (n.get_value() for n in self if n.get_value())
+
+    def set_children(self, children):
+        self._children = list(children) if children else []
+        for c in self._children:
+            c._parent = self
+
+    def get_value(self):
+        return self._value
+
+    def get_values(self):
+        return tuple(self.iter_values())
+
+    def set_value(self, value):
+        self._value = value
+
+    def append(self, value):
+        new_node = self._creat_new_node(value)
+        self.append_child(new_node)
+
+    def append_child(self, child):
+        child._parent = self
+        self._children.append(child)
+
+    def prepend(self, value):
+        new_node = self._creat_new_node(value)
+        self.prepend_child(new_node)
+
+    def prepend_child(self, child):
+        child._parent = self
+        self._children.insert(0, child)
+
+    def _creat_new_node(self, value):
+        return TreeNode(value=value, parent=self)
+
+    def get_parent(self):
+        return self._parent
+
+    def get_children(self):
+        return self._children
+
+    def iter_parents(self):
+        node = self
+        while node._parent:
+            yield node._parent
+            node = node._parent
+
+    def get_parents(self):
+        return tuple(self.iter_parents())
+
+    def get_level(self):
+        return len(self.get_parents())
+
+    def iter_parents_values(self):
+        return (p.get_value() for p in self.iter_parents() if p.get_value())
+
+    def get_parents_values(self):
+        return tuple(self.iter_parents_values())
 
     def filter(self, text_or_query):
-        text_or_query = self._convert_test_to_query(text_or_query)
         return Todos(
             items=[i for i in [i.filter(text_or_query) for i in self.items] if i]
         )
 
-    def search(self, text_or_query):
-        text_or_query = self._convert_test_to_query(text_or_query)
-        result = []
-        for item in self.__items:
-            result += item.search(text_or_query)
-        return result
+    def filter(self, query):
+        children_result = self._filter_children(query)
+        if children_result:
+            return TreeNode(value=self.get_value(), children=children_result)
+        elif query(self):
+            return TreeNode(value=self.get_value())
+        return None
 
-    def _convert_test_to_query(self, text_or_query):
-        return parse_query(text_or_query)
-
-    def get_item(self, text_or_query):
-        return self.search(text_or_query)[0]
-
-    def set_items(self, items):
-        self.__items = deque(items) if items else deque()
-        for item in self.__items:
-            self._add_parent(item)
-
-    def _add_parent(self, item):
-        item.containing_todos = self
-
-    def append(self, item):
-        self.__items.append(item)
-        self._add_parent(item)
-
-    def prepend(self, item1, *args):
-        self.__items.appendleft(item)
-        self._add_parent(item)
-
-    def remove(self, item):
-        found_node = self._find_node_with_item(item)
-        if found_node:
-            self._remove_node(found_node)
-        else:
-            self._propagate_remove_to_nodes(item)
-
-    def _find_node_with_item(self, item):
-        found_node = None
-        for node in self.items:
-            if node.item == item:
-                found_node = node
-        return found_node
-
-    def _remove_node(self, node):
-        self.__items.remove(node)
-        node.containing_todos = None
-
-    def _propagate_remove_to_nodes(self, item):
-        for node in self.items:
-            node.remove(item)
-
-    def indent(self):
-        for item in self.__items:
-            item.indent()
-
-    def dedent(self):
-        for item in self.__items:
-            item.dedent()
-
-    def _class_repr(self):
-        return '\n'.join(
-            item._class_repr() for item in self.items
-        )
-
-
-class Todonode(object):
-    def __init__(self, text=None, subtodos=None, item=None):
-        self.containing_todos = None
-        self.item = item or Todoitem.from_text(text)
-        self.subtodos = subtodos or Todos()
-
-    def __unicode__(self):
-        if self.subtodos:
-            return unicode(self.item) + u'\n' + unicode(self.subtodos)
-        else:
-            return unicode(self.item)
-
-    def __str__(self):
-        return unicode(self).encode('utf-8')
-
-    @property
-    def subtodos(self):
-        return self._subtodos
-
-    @subtodos.setter
-    def subtodos(self, value):
-        self._subtodos = value
-        value.parent_node = self
-
-    def get_parent_node(self):
-        if self.containing_todos:
-            return self.containing_todos.parent_node
-        else:
-            return None
+    def _filter_children(self, query):
+        children_result_with_nones = [c.filter(query) for c in self.get_children()]
+        return [c for c in children_result_with_nones if c]
 
     def search(self, query):
-        subtodos_result = self.subtodos.search(query)
-        if query.matches(self):
-            return [self.item] + subtodos_result
-        else:
-            return subtodos_result
+        return (n.get_value() for n in self if n.get_value() and query(n))
 
-    def filter(self, query):
-        subtodos_result = self.subtodos.filter(query)
-        if subtodos_result:
-            return Todonode(item=self.item, subtodos=subtodos_result)
-        elif query.matches(self):
-            return Todonode(item=self.item)
-        else:
-            return None
-
-    def remove(self, item):
-        self.subtodos.remove(item)
-
-    def indent(self):
-        self.item.indent()
-        self.subtodos.indent()
-
-    def dedent(self):
-        self.item.dedent()
-        self.subtodos.dedent()
-
-    def _class_repr(self, indent_level=0):
-        me = ' ' * indent_level + self.item._text_formatter.__class__.__name__[0].lower()
-        subs = [i._class_repr(indent_level=indent_level + 1) for i in self.subtodos.items]
-        return '\n'.join([me] + subs)
+    def find(self, value):
+        for node in self:
+            if node.get_value() == value:
+                return node
