@@ -17,6 +17,7 @@ so the color will be back to normal after printing text.
 # constant and functions are generated dynamically
 from __future__ import unicode_literals
 
+
 def seq(code):
     return '\033[{}m'.format(code)
 
@@ -44,16 +45,19 @@ background_codes = {
     'gray': 47,
     'crimson': 48,
     'crimson': 49,
-    'crimson': 50,   
+    'crimson': 50,
 }
 
 import sys
 
 _colors = sys.modules[__name__]
+
+
 def conditional_defc(text):
     if text.endswith(DEFC):
         return text
     return text + DEFC
+
 
 def make_coloriser(name, color_seq):
     setattr(_colors, name, lambda t: color_seq + conditional_defc(t))
@@ -70,7 +74,7 @@ make_colorisers_from_codes(background_codes, name_prefix='on_')
 for fk, fv in foreground_codes.iteritems():
     color_seq = seq(fv)
     make_colorisers_from_codes(
-        background_codes, 
-        name_prefix=fk + '_on_', 
+        background_codes,
+        name_prefix=fk + '_on_',
         seq_prefix=color_seq
     )
