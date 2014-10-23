@@ -5,161 +5,317 @@ import unittest
 import todoflow.textutils as tu
 
 
-class TestTypeCheckers(unittest.TestCase):
-    def setUp(self):
-        self.task = '- task'
-        self.indented_task = '\t\t- task'
-        self.project = '  Project:'
-        self.sequential_project = '  Project::'
-        self.note = 'note'
+class TestTypes(unittest.TestCase):
+    def text(self, text):
+        self._text = text
+        return self
 
-    def test_is_task(self):
-        self.assertTrue(tu.is_task(self.task))
-        self.assertTrue(tu.is_task(self.indented_task))
-        self.assertFalse(tu.is_task(self.project))
-        self.assertFalse(tu.is_task(self.note))
+    def is_task(self):
+        self.assertTrue(tu.is_task(self._text))
+        return self
 
-    def test_is_project(self):
-        self.assertFalse(tu.is_project(self.task))
-        self.assertFalse(tu.is_project(self.indented_task))
-        self.assertTrue(tu.is_project(self.project))
-        self.assertTrue(tu.is_project(self.sequential_project))
-        self.assertFalse(tu.is_project(self.note))
+    def isnt_task(self):
+        self.assertFalse(tu.is_task(self._text))
+        return self
 
-    def test_is_note(self):
-        self.assertFalse(tu.is_note(self.task))
-        self.assertFalse(tu.is_note(self.indented_task))
-        self.assertFalse(tu.is_note(self.project))
-        self.assertTrue(tu.is_note(self.note))
+    def is_project(self):
+        self.assertTrue(tu.is_project(self._text))
+        return self
+
+    def isnt_project(self):
+        self.assertFalse(tu.is_project(self._text))
+        return self
+
+    def is_note(self):
+        self.assertTrue(tu.is_note(self._text))
+        return self
+
+    def isnt_note(self):
+        self.assertFalse(tu.is_note(self._text))
+        return self
+
+    def test_task(self):
+        self.text('- something to do').is_task().isnt_project().isnt_note()
+
+    def test_indented_task(self):
+        self.text('\t\t- some task').is_task().isnt_project().isnt_note()
+
+    def test_task_with_color(self):
+        self.text('- some task:').is_task().isnt_project().isnt_note()
+
+    def test_project(self):
+        self.text('some project:').is_project().isnt_task().isnt_note()
+
+    def test_indented_project(self):
+        self.text('\t\t\tsome project:').is_project().isnt_task().isnt_note()
+
+    def test_note(self):
+        self.text('\t\t\tsome note').is_note().isnt_task().isnt_project()
 
 
-class TestTagsFunctions(unittest.TestCase):
-    def test_has_tag(self):
-        self.assertTrue(tu.has_tag('- to @tag', 'tag'))
-        self.assertTrue(tu.has_tag('- to @tag', '@tag'))
-        self.assertFalse(tu.has_tag('- to @tag2', '@tag'))
-        self.assertFalse(tu.has_tag('- to @tag2', 'tag'))
-        self.assertFalse(tu.has_tag('- to@tag2', 'tag2'))
-        self.assertTrue(tu.has_tag('- @tag2', 'tag2'))
-        self.assertTrue(tu.has_tag('@tag2', 'tag2'))
-        self.assertTrue(tu.has_tag('@tag(2) ds', 'tag'))
-        self.assertTrue(tu.has_tag('@tag(2)', 'tag'))
-        self.assertTrue(tu.has_tag('@ta*g2', 'ta*g2'))
+class TestTags(unittest.TestCase):
+    def text(self, text):
+        self._text = text
+        return self
 
-    def test_create_tag_pattern(self):
-        p1 = tu._create_tag_pattern('tag')
-        self.assertTrue(p1.match('@tag'))
-        self.assertTrue(p1.match('@tag(2)'))
-        self.assertTrue(p1.findall('@tag(2)'))
-        self.assertTrue(p1.findall('ewq @tag(2)'))
-        self.assertTrue(p1.findall('ewq @tag(2) fds'))
-        self.assertFalse(p1.findall('ewq@tag(2) fds'))
-        self.assertFalse(p1.findall('ewq @tag(2)fds'))
-        self.assertFalse(p1.findall('ewq @tagfds'))
-        p2 = tu._create_tag_pattern('ta+*/g')
-        self.assertTrue(p2.match('@ta+*/g'))
-        p3 = tu._create_tag_pattern('@ta+*/g')
-        self.assertTrue(p3.match('@ta+*/g'))
+    def has_tag(self, tag):
+        self.assertTrue(tu.has_tag(self._text, tag))
+        self.tag = tag
+        return self
 
-    def test_fix_tag(self):
-        self.assertEqual('@t', tu._fix_tag('t'))
-        self.assertEqual('@t', tu._fix_tag('@t'))
+    def doesnt_have_tag(self, tag):
+        self.assertFalse(tu.has_tag(self._text, tag))
+        self.tag = tag
+        return self
+
+    def with_param(self, param):
+        self.assertEqual(tu.get_tag_param(self._text, self.tag), param)
+        return self
+
+    def with_tag(self, tag):
+        self.tag = tag
+        return self
+
+    def removed(self):
+        self._text = tu.remove_tag(self._text, self.tag)
+        return self
+
+    def added(self, with_param=None):
+        self._text = tu.add_tag(self._text, self.tag, param=with_param)
+        return self
+
+    def replaced_by(self, replacement):
+        self._text = tu.replace_tag(self._text, self.tag, replacement)
+        return self
+
+    def enclosed_by(self, prefix, suffix=None):
+        self._text = tu.enclose_tag(self._text, self.tag, prefix, suffix)
+        return self
+
+    def is_equal(self, text):
+        self.assertEqual(self._text, text)
+        return self
+
+    def has_tags(self, *args):
+        text_tags = set(tu.get_all_tags(self._text))
+        self.assertEqual(text_tags, set(args))
+        return self
+
+    def param_modified_by(self, modificaiton):
+        self._text = tu.modify_tag_param(self._text, self.tag, modificaiton)
+        return self
+
+
+class TestTagsFinding(TestTags):
+    def test_tag_with_at(self):
+        self.text('- same text @done rest of text').has_tag('@done')
+
+    def test_tag_at_end(self):
+        self.text('- some text with @done').has_tag('@done')
+
+    def test_tag_without_at(self):
+        self.text('- some text @today rest').has_tag('today')
+
+    def test_tag_at_beggining(self):
+        self.text('@done rest').has_tag('@done')
+
+    def test_tag_with_param(self):
+        self.text('some text @start(2014-01-01) rest').has_tag('@start')
+
+    def test_doesnt_have(self):
+        self.text('some text @tag2 rest').doesnt_have_tag('tag')
 
     def test_get_tag_param(self):
-        self.assertEqual('2', tu.get_tag_param('@t(2)', 't'))
-        self.assertEqual('2', tu.get_tag_param('@t(2)', '@t'))
-        self.assertEqual('', tu.get_tag_param('@t()', 't'))
-        self.assertEqual(None, tu.get_tag_param('@t', 't'))
-        self.assertEqual(None, tu.get_tag_param('@k', 't'))
-        self.assertEqual(None, tu.get_tag_param('yo @t d', '@t'))
+        self.text('some txet @tag(2) rest').has_tag('@tag').with_param('2')
 
-    def test_remove_tag(self):
-        self.assertEqual('yo yo', tu.remove_tag('yo @t yo', 't'))
-        self.assertEqual('yo yo', tu.remove_tag('yo @t yo', '@t'))
-        self.assertEqual('yo yo', tu.remove_tag('yo @t(22) yo', '@t'))
-        self.assertEqual('yo yo', tu.remove_tag('yo yo @t(22)', '@t'))
-        self.assertEqual('yo yo @t2', tu.remove_tag('yo yo @t(22) @t2', '@t'))
-        self.assertEqual('yo yo @t2 ', tu.remove_tag('yo yo @t(22) @t2 ', '@t'))
+    def test_get_tag_param_at_end(self):
+        self.text('some txet @done(01-14)').has_tag('@done').with_param('01-14')
 
-    def test_prepare_param(self):
-        self.assertEqual('()', tu._prepare_param(''))
-        self.assertEqual('(d)', tu._prepare_param('d'))
-        self.assertEqual('(d )', tu._prepare_param('d '))
-        self.assertEqual('(2)', tu._prepare_param(2))
-        self.assertEqual('(0)', tu._prepare_param(0))
+    def test_empty_param(self):
+        self.text('@empty()').has_tag('empty').with_param('')
 
-    def test_prepare_text_for_tag(self):
-        self.assertEqual('t ', tu._prepare_text_for_tag('t'))
-        self.assertEqual('t ', tu._prepare_text_for_tag('t '))
+    def test_no_param(self):
+        self.text('@no_param').has_tag('@no_param').with_param(None)
 
-    def test_replace_tag(self):
-        self.assertEqual('d k fd', tu.replace_tag('d @t fd', 't', 'k'))
-        self.assertEqual('d @k fd', tu.replace_tag('d @k fd', 't', 'k'))
-        self.assertEqual('d k', tu.replace_tag('d @t', 't', 'k'))
-        self.assertEqual('d @k d', tu.replace_tag('d @t d', '@t', '@k'))
+    def test_no_tag(self):
+        self.text('text without tag').doesnt_have_tag('@test').with_param(None)
 
-    def test_add_tag(self):
-        self.assertEqual('yo @done', tu.add_tag('yo', 'done'))
-        self.assertEqual('yo @done', tu.add_tag('yo', '@done'))
-        self.assertEqual('yo @done(2)', tu.add_tag('yo', '@done', 2))
-        self.assertEqual('yo @done(2) yo', tu.add_tag('yo @done yo', '@done', 2))
-        self.assertEqual('yo @done(2) yo', tu.add_tag('yo @done(1) yo', '@done', 2))
-        self.assertEqual('yo @done(0) yo', tu.add_tag('yo @done(1) yo', '@done', 0))
-
-    def test_enclose_tag(self):
-        self.assertEqual('yo **@t**', tu.enclode_tag('yo @t', '@t', '**'))
-        self.assertEqual('yo **@t** d', tu.enclode_tag('yo @t d', '@t', '**'))
-        self.assertEqual('yo <tag>@t</tag>', tu.enclode_tag('yo @t', '@t', '<tag>', '</tag>'))
+    def test_succeeding_tag(self):
+        self.text('text @tag1(yo) @tag2(wo) rest').has_tag('@tag1').with_param('yo')
 
     def test_get_all_tags(self):
-        self.assertEqual(['t', 'k'], tu.get_all_tags('yo @t dfd @k'))
-        self.assertEqual(['t', 'k'], tu.get_all_tags('yo @t(9) dfd @k'))
-        self.assertEqual(['@t', '@k'], tu.get_all_tags('yo @t(9) dfd @k', include_indicator=True))
-        self.assertEqual(['t', 'k'], tu.get_all_tags('yo @t(9) dfd @k(fd)'))
+        self.text('text @today @working test @done').has_tags('today', 'working', 'done')
 
-    def test_increase_tag_param(self):
-        self.assertEqual('yo @t(2)', tu.modify_tag_param('yo @t(1)', 't', lambda p: int(p) + 1))
-        self.assertEqual('yo @t(1)', tu.modify_tag_param('yo @t(0)', '@t', lambda p: int(p) + 1))
-        self.assertEqual('yo @t(0)', tu.modify_tag_param('yo @t(-1)', 't', lambda p: int(p) + 1))
+    def test_get_all_tags_with_params(self):
+        self.text('text @today(!) @working test @done(2014-01-10)').has_tags('today', 'working', 'done')
+
+
+class TestTagsRemoving(TestTags):
+    def test_remove_tag(self):
+        self.text('text @done rest').with_tag('@done').removed().is_equal('text rest')
+
+    def test_remove_tag_without_at(self):
+        self.text('text @today rest').with_tag('today').removed().is_equal('text rest')
+
+    def test_remove_tag_with_param(self):
+        self.text('text @start(2014) rest').with_tag('start').removed().is_equal('text rest')
+
+    def test_remove_tag_at_end(self):
+        self.text('text @start(2014)').with_tag('start').removed().is_equal('text')
+
+
+class TestTagsReplacing(TestTags):
+    def test_replace_tag(self):
+        self.text('text @tag rest').with_tag('@tag').replaced_by('sub').is_equal('text sub rest')
+
+    def test_replace_tag_with_param(self):
+        self.text('text @tag(1) rest').with_tag('tag').replaced_by('sub').is_equal('text sub rest')
+
+
+class TestTagsAdding(TestTags):
+    def test_add_tag(self):
+        self.text('some text').with_tag('@today').added().is_equal('some text @today')
+
+    def test_add_tag_without_at(self):
+        self.text('some text').with_tag('today').added().is_equal('some text @today')
+
+    def test_add_tag_with_param(self):
+        self.text('yo').with_tag('@done').added(with_param='01-10').is_equal('yo @done(01-10)')
+
+    def test_add_tag_with_not_text_param(self):
+        self.text('meaning').with_tag('@of').added(with_param=42).is_equal('meaning @of(42)')
+
+    def test_add_tag_with_exisiting_tag(self):
+        self.text('text @t(9)').with_tag('@t').added().is_equal('text @t')
+
+
+class TestTagsEnclosing(TestTags):
+    def test_enclose_tag(self):
+        self.text('text @done rest').with_tag('@done').enclosed_by('**').is_equal('text **@done** rest')
+
+    def test_enclose_tag_with_suffix(self):
+        self.text('text @start rest').with_tag('@start').enclosed_by('<', '>').is_equal('text <@start> rest')
+
+    def test_enclose_tag_with_param(self):
+        self.text('tx @in(01-01) rt').with_tag('@in').enclosed_by('**').is_equal('tx **@in(01-01)** rt')
+
+    def test_enclode_tag_at_end(self):
+        self.text('tx @in(01-01)').with_tag('@in').enclosed_by('*').is_equal('tx *@in(01-01)*')
+
+
+class TestTagsParamsModifing(TestTags):
+    def test_modify_tag_param(self):
+        self.text('tx @t(1) rt').with_tag('t').param_modified_by(lambda p: int(p) + 1).is_equal('tx @t(2) rt')
+
+    def test_modify_tag_param_without_param(self):
+        self.text('tx @t(x) rt').with_tag('t').param_modified_by(
+            lambda p: p * 2 if p else 'y'
+        ).is_equal('tx @t(xx) rt')
+        self.text('tx @t rt').with_tag('t').param_modified_by(
+            lambda p: p * 2 if p else 'y'
+        ).is_equal('tx @t(y) rt')
+
+
+class TestSortingByTag(unittest.TestCase):
+    def shuffled_texts(self, *args):
+        from random import shuffle
+        args_list = list(args)
+        shuffle(args_list)
+        self._texts = tuple(args_list)
+        return self
+
+    def sorted_by(self, tag, reverse=False):
+        self._texts = tu.sort_by_tag_param(self._texts, tag, reverse)
+        return self
+
+    def are_equal(self, *args):
+        self.assertEqual(self._texts, tuple(args))
+        return self
 
     def test_sort_by_tag(self):
-        from random import shuffle
-        texts_collection = ['yo', 'yo @t(1)', '@t(2) @k(1000)', 'fd @t(4)']
-        shuffled_texts_collection = list(texts_collection)
-        shuffle(shuffled_texts_collection)
-        self.assertEqual(
-            texts_collection,
-            tu.sort_by_tag_param(shuffled_texts_collection, 't')
-        )
-        self.assertEqual(
-            texts_collection[::-1],
-            tu.sort_by_tag_param(shuffled_texts_collection, 't', reverse=True)
-        )
+        list1 = 'yo', 'yo @t(1)', '@t(2) @k(1000)', 'fd @t(4)'
+        self.shuffled_texts(*list1).sorted_by('t').are_equal(*list1)
+
+    def test_sort_by_tag_reversed(self):
+        list1 = 'yo', 'yo @t(1)', '@t(2) @k(1000)', 'fd @t(4)'
+        self.shuffled_texts(*list1).sorted_by('t', reverse=True).are_equal(*list1[::-1])
 
 
 class TestFormatters(unittest.TestCase):
-    def test_strip_formatting(self):
-        self.assertEqual('yo', tu.strip_formatting('\t\t- yo'))
-        self.assertEqual('yo:', tu.strip_formatting('\t\t- yo:'))
-        self.assertEqual('yo', tu.strip_formatting('\t\tyo:'))
-        self.assertEqual('yo', tu.strip_formatting('yo'))
+    def text(self, text):
+        self._text = text
+        return self
 
-    def test_strip_formatting_and_tags(self):
-        self.assertEqual('yo d', tu.strip_formatting_and_tags('\t\t- yo @to(2) d @t'))
-        self.assertEqual('yo d', tu.strip_formatting_and_tags('\t\t- yo @to(2) d @t:'))
+    def with_stripped_formatting_is(self, text):
+        self._text = tu.strip_formatting(self._text)
+        self.assertEqual(self._text, text)
+        return self
 
-    def test_calculate_indent_level(self):
-        self.assertEqual(0, tu.calculate_indent_level('t'))
-        self.assertEqual(1, tu.calculate_indent_level(' t'))
-        self.assertEqual(2, tu.calculate_indent_level('  t'))
-        self.assertEqual(4, tu.calculate_indent_level('\tt'))
-        self.assertEqual(4, tu.calculate_indent_level('    t'))
-        self.assertEqual(8, tu.calculate_indent_level('\t\tt'))
-        self.assertEqual(8, tu.calculate_indent_level('        t'))
-        self.assertEqual(8, tu.calculate_indent_level('        t    '))
-        self.assertEqual(8, tu.calculate_indent_level('    \tt    '))
-        self.assertEqual(8, tu.calculate_indent_level('\t    t    '))
-        self.assertEqual(10, tu.calculate_indent_level('\t      t    '))
+    def indention_level_is(self, level):
+        self.assertEqual(tu.calculate_indent_level(self._text), level)
+
+    def with_stripped_formatting_and_tags_is(self, text):
+        self._text = tu.strip_formatting_and_tags(self._text)
+        self.assertEqual(self._text, text)
+        return self
+
+    def test_strip_task(self):
+        self.text('\t\t- text').with_stripped_formatting_is('text')
+
+    def test_strip_ignore_spaces(self):
+        self.text('\t\t  text').with_stripped_formatting_is('  text')
+
+    def test_strip_task_with_colon(self):
+        self.text('\t\t- text:').with_stripped_formatting_is('text:')
+
+    def test_strip_project(self):
+        self.text('\ttext:').with_stripped_formatting_is('text')
+
+    def test_strip_note(self):
+        self.text('\ttext\t').with_stripped_formatting_is('text')
+
+    def test_strip_tags(self):
+        self.text('\ttext @done rest @today').with_stripped_formatting_and_tags_is('text rest')
+
+    def test_calculate_indent_level_0(self):
+        self.text('text').indention_level_is(0)
+
+    def test_calculate_indent_level_1(self):
+        self.text('\ttext').indention_level_is(1)
+
+    def test_calculate_indent_level_5(self):
+        self.text('\t\t\t\t\ttext').indention_level_is(5)
+
+    def test_calculate_indent_ignore_spaces(self):
+        self.text('  text').indention_level_is(0)
+
+    def test_calculate_indent_ignore_tab_after_spaces(self):
+        self.text('  \ttext').indention_level_is(0)
+
+    def test_calculate_indent_ignore_spaces_after_tab(self):
+        self.text('\t  text').indention_level_is(1)
+
+
+class TestParseDate(unittest.TestCase):
+    def parsing(self, text):
+        self.date = tu.parse_datetime(text)
+        return self
+
+    def gives(self, year, month, day, hour, minute):
+        self.assertEqual(self.date.year, year)
+        self.assertEqual(self.date.month, month)
+        self.assertEqual(self.date.day, day)
+        self.assertEqual(self.date.hour, hour)
+        self.assertEqual(self.date.minute, minute)
+
+    def test_parse_datetime_hour_with_leading_zero(self):
+        self.parsing('2014-11-01 08:45').gives(2014, 11, 1, 8, 45)
+
+    def test_parse_datetime_hour_without_leading_zero(self):
+        self.parsing('2014-11-01 8:45').gives(2014, 11, 1, 8, 45)
+
+    def test_parse_without_time(self):
+        self.parsing('2014-11-01').gives(2014, 11, 1, 0, 0)
 
 
 if __name__ == '__main__':

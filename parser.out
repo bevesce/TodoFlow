@@ -90,120 +90,49 @@ state 0
     (15) argument -> . TYPE
     (16) argument -> . UNIQUEID
 
-    NOT             shift and go to state 9
-    LPAREN          shift and go to state 7
-    TAG             shift and go to state 6
-    TEXT            shift and go to state 3
+    NOT             shift and go to state 13
+    LPAREN          shift and go to state 4
+    TAG             shift and go to state 2
+    TEXT            shift and go to state 10
     PLUS_DESCENDANTS reduce using rule 27 (words -> .)
     ONLY_FIRST      reduce using rule 27 (words -> .)
     OR              reduce using rule 27 (words -> .)
     AND             reduce using rule 27 (words -> .)
     $end            reduce using rule 27 (words -> .)
-    PROJECT         shift and go to state 5
-    TYPE            shift and go to state 2
-    UNIQUEID        shift and go to state 8
+    PROJECT         shift and go to state 9
+    TYPE            shift and go to state 12
+    UNIQUEID        shift and go to state 6
 
-    argument                       shift and go to state 4
-    words                          shift and go to state 1
-    E4                             shift and go to state 10
-    E1                             shift and go to state 11
-    E3                             shift and go to state 12
-    E2                             shift and go to state 13
+    E1                             shift and go to state 8
+    words                          shift and go to state 3
+    E4                             shift and go to state 11
+    E3                             shift and go to state 1
+    argument                       shift and go to state 5
+    E2                             shift and go to state 7
 
 state 1
 
-    (11) E4 -> words .
+    (6) E2 -> E3 .
 
-    OR              reduce using rule 11 (E4 -> words .)
-    AND             reduce using rule 11 (E4 -> words .)
-    $end            reduce using rule 11 (E4 -> words .)
-    RPAREN          reduce using rule 11 (E4 -> words .)
-    PLUS_DESCENDANTS reduce using rule 11 (E4 -> words .)
-    ONLY_FIRST      reduce using rule 11 (E4 -> words .)
+    PLUS_DESCENDANTS reduce using rule 6 (E2 -> E3 .)
+    ONLY_FIRST      reduce using rule 6 (E2 -> E3 .)
+    OR              reduce using rule 6 (E2 -> E3 .)
+    AND             reduce using rule 6 (E2 -> E3 .)
+    $end            reduce using rule 6 (E2 -> E3 .)
+    RPAREN          reduce using rule 6 (E2 -> E3 .)
 
 
 state 2
 
-    (15) argument -> TYPE .
-
-    EQ              reduce using rule 15 (argument -> TYPE .)
-    NEQ             reduce using rule 15 (argument -> TYPE .)
-    GEQ             reduce using rule 15 (argument -> TYPE .)
-    LEQ             reduce using rule 15 (argument -> TYPE .)
-    LE              reduce using rule 15 (argument -> TYPE .)
-    GE              reduce using rule 15 (argument -> TYPE .)
-    IN              reduce using rule 15 (argument -> TYPE .)
-    CONTAINS        reduce using rule 15 (argument -> TYPE .)
-    MATCHES         reduce using rule 15 (argument -> TYPE .)
-
-
-state 3
-
-    (26) words -> TEXT . words
-    (26) words -> . TEXT words
-    (27) words -> .
-
-    TEXT            shift and go to state 3
-    PLUS_DESCENDANTS reduce using rule 27 (words -> .)
-    ONLY_FIRST      reduce using rule 27 (words -> .)
-    OR              reduce using rule 27 (words -> .)
-    AND             reduce using rule 27 (words -> .)
-    $end            reduce using rule 27 (words -> .)
-    RPAREN          reduce using rule 27 (words -> .)
-
-    words                          shift and go to state 14
-
-state 4
-
-    (12) E4 -> argument . operator words
-    (17) operator -> . EQ
-    (18) operator -> . NEQ
-    (19) operator -> . GEQ
-    (20) operator -> . LEQ
-    (21) operator -> . LE
-    (22) operator -> . GE
-    (23) operator -> . IN
-    (24) operator -> . CONTAINS
-    (25) operator -> . MATCHES
-
-    EQ              shift and go to state 23
-    NEQ             shift and go to state 24
-    GEQ             shift and go to state 15
-    LEQ             shift and go to state 19
-    LE              shift and go to state 16
-    GE              shift and go to state 20
-    IN              shift and go to state 21
-    CONTAINS        shift and go to state 18
-    MATCHES         shift and go to state 17
-
-    operator                       shift and go to state 22
-
-state 5
-
-    (14) argument -> PROJECT .
-
-    EQ              reduce using rule 14 (argument -> PROJECT .)
-    NEQ             reduce using rule 14 (argument -> PROJECT .)
-    GEQ             reduce using rule 14 (argument -> PROJECT .)
-    LEQ             reduce using rule 14 (argument -> PROJECT .)
-    LE              reduce using rule 14 (argument -> PROJECT .)
-    GE              reduce using rule 14 (argument -> PROJECT .)
-    IN              reduce using rule 14 (argument -> PROJECT .)
-    CONTAINS        reduce using rule 14 (argument -> PROJECT .)
-    MATCHES         reduce using rule 14 (argument -> PROJECT .)
-
-
-state 6
-
     (10) E4 -> TAG .
     (13) argument -> TAG .
 
+    PLUS_DESCENDANTS reduce using rule 10 (E4 -> TAG .)
+    ONLY_FIRST      reduce using rule 10 (E4 -> TAG .)
     OR              reduce using rule 10 (E4 -> TAG .)
     AND             reduce using rule 10 (E4 -> TAG .)
     $end            reduce using rule 10 (E4 -> TAG .)
     RPAREN          reduce using rule 10 (E4 -> TAG .)
-    PLUS_DESCENDANTS reduce using rule 10 (E4 -> TAG .)
-    ONLY_FIRST      reduce using rule 10 (E4 -> TAG .)
     EQ              reduce using rule 13 (argument -> TAG .)
     NEQ             reduce using rule 13 (argument -> TAG .)
     GEQ             reduce using rule 13 (argument -> TAG .)
@@ -215,7 +144,19 @@ state 6
     MATCHES         reduce using rule 13 (argument -> TAG .)
 
 
-state 7
+state 3
+
+    (11) E4 -> words .
+
+    PLUS_DESCENDANTS reduce using rule 11 (E4 -> words .)
+    ONLY_FIRST      reduce using rule 11 (E4 -> words .)
+    OR              reduce using rule 11 (E4 -> words .)
+    AND             reduce using rule 11 (E4 -> words .)
+    $end            reduce using rule 11 (E4 -> words .)
+    RPAREN          reduce using rule 11 (E4 -> words .)
+
+
+state 4
 
     (9) E3 -> LPAREN . E1 RPAREN
     (1) E1 -> . E1 AND E2
@@ -237,27 +178,52 @@ state 7
     (15) argument -> . TYPE
     (16) argument -> . UNIQUEID
 
-    NOT             shift and go to state 9
-    LPAREN          shift and go to state 7
-    TAG             shift and go to state 6
-    TEXT            shift and go to state 3
+    NOT             shift and go to state 13
+    LPAREN          shift and go to state 4
+    TAG             shift and go to state 2
+    TEXT            shift and go to state 10
     PLUS_DESCENDANTS reduce using rule 27 (words -> .)
     ONLY_FIRST      reduce using rule 27 (words -> .)
     OR              reduce using rule 27 (words -> .)
     RPAREN          reduce using rule 27 (words -> .)
     AND             reduce using rule 27 (words -> .)
-    PROJECT         shift and go to state 5
-    TYPE            shift and go to state 2
-    UNIQUEID        shift and go to state 8
+    PROJECT         shift and go to state 9
+    TYPE            shift and go to state 12
+    UNIQUEID        shift and go to state 6
 
-    argument                       shift and go to state 4
-    words                          shift and go to state 1
-    E4                             shift and go to state 10
-    E1                             shift and go to state 25
-    E3                             shift and go to state 12
-    E2                             shift and go to state 13
+    E1                             shift and go to state 14
+    words                          shift and go to state 3
+    E4                             shift and go to state 11
+    E3                             shift and go to state 1
+    argument                       shift and go to state 5
+    E2                             shift and go to state 7
 
-state 8
+state 5
+
+    (12) E4 -> argument . operator words
+    (17) operator -> . EQ
+    (18) operator -> . NEQ
+    (19) operator -> . GEQ
+    (20) operator -> . LEQ
+    (21) operator -> . LE
+    (22) operator -> . GE
+    (23) operator -> . IN
+    (24) operator -> . CONTAINS
+    (25) operator -> . MATCHES
+
+    EQ              shift and go to state 16
+    NEQ             shift and go to state 17
+    GEQ             shift and go to state 23
+    LEQ             shift and go to state 19
+    LE              shift and go to state 22
+    GE              shift and go to state 21
+    IN              shift and go to state 18
+    CONTAINS        shift and go to state 20
+    MATCHES         shift and go to state 24
+
+    operator                       shift and go to state 15
+
+state 6
 
     (16) argument -> UNIQUEID .
 
@@ -272,7 +238,88 @@ state 8
     MATCHES         reduce using rule 16 (argument -> UNIQUEID .)
 
 
+state 7
+
+    (2) E1 -> E2 . PLUS_DESCENDANTS
+    (3) E1 -> E2 . ONLY_FIRST
+    (4) E1 -> E2 .
+    (5) E2 -> E2 . OR E3
+
+    PLUS_DESCENDANTS shift and go to state 27
+    ONLY_FIRST      shift and go to state 26
+    RPAREN          reduce using rule 4 (E1 -> E2 .)
+    AND             reduce using rule 4 (E1 -> E2 .)
+    $end            reduce using rule 4 (E1 -> E2 .)
+    OR              shift and go to state 25
+
+
+state 8
+
+    (0) S' -> E1 .
+    (1) E1 -> E1 . AND E2
+
+    AND             shift and go to state 28
+
+
 state 9
+
+    (14) argument -> PROJECT .
+
+    EQ              reduce using rule 14 (argument -> PROJECT .)
+    NEQ             reduce using rule 14 (argument -> PROJECT .)
+    GEQ             reduce using rule 14 (argument -> PROJECT .)
+    LEQ             reduce using rule 14 (argument -> PROJECT .)
+    LE              reduce using rule 14 (argument -> PROJECT .)
+    GE              reduce using rule 14 (argument -> PROJECT .)
+    IN              reduce using rule 14 (argument -> PROJECT .)
+    CONTAINS        reduce using rule 14 (argument -> PROJECT .)
+    MATCHES         reduce using rule 14 (argument -> PROJECT .)
+
+
+state 10
+
+    (26) words -> TEXT . words
+    (26) words -> . TEXT words
+    (27) words -> .
+
+    TEXT            shift and go to state 10
+    PLUS_DESCENDANTS reduce using rule 27 (words -> .)
+    ONLY_FIRST      reduce using rule 27 (words -> .)
+    OR              reduce using rule 27 (words -> .)
+    AND             reduce using rule 27 (words -> .)
+    $end            reduce using rule 27 (words -> .)
+    RPAREN          reduce using rule 27 (words -> .)
+
+    words                          shift and go to state 29
+
+state 11
+
+    (8) E3 -> E4 .
+
+    OR              reduce using rule 8 (E3 -> E4 .)
+    AND             reduce using rule 8 (E3 -> E4 .)
+    $end            reduce using rule 8 (E3 -> E4 .)
+    RPAREN          reduce using rule 8 (E3 -> E4 .)
+    PLUS_DESCENDANTS reduce using rule 8 (E3 -> E4 .)
+    ONLY_FIRST      reduce using rule 8 (E3 -> E4 .)
+
+
+state 12
+
+    (15) argument -> TYPE .
+
+    EQ              reduce using rule 15 (argument -> TYPE .)
+    NEQ             reduce using rule 15 (argument -> TYPE .)
+    GEQ             reduce using rule 15 (argument -> TYPE .)
+    LEQ             reduce using rule 15 (argument -> TYPE .)
+    LE              reduce using rule 15 (argument -> TYPE .)
+    GE              reduce using rule 15 (argument -> TYPE .)
+    IN              reduce using rule 15 (argument -> TYPE .)
+    CONTAINS        reduce using rule 15 (argument -> TYPE .)
+    MATCHES         reduce using rule 15 (argument -> TYPE .)
+
+
+state 13
 
     (7) E3 -> NOT . E3
     (7) E3 -> . NOT E3
@@ -288,134 +335,87 @@ state 9
     (15) argument -> . TYPE
     (16) argument -> . UNIQUEID
 
-    NOT             shift and go to state 9
-    LPAREN          shift and go to state 7
-    TAG             shift and go to state 6
-    TEXT            shift and go to state 3
+    NOT             shift and go to state 13
+    LPAREN          shift and go to state 4
+    TAG             shift and go to state 2
+    TEXT            shift and go to state 10
     PLUS_DESCENDANTS reduce using rule 27 (words -> .)
     ONLY_FIRST      reduce using rule 27 (words -> .)
     OR              reduce using rule 27 (words -> .)
     AND             reduce using rule 27 (words -> .)
     $end            reduce using rule 27 (words -> .)
     RPAREN          reduce using rule 27 (words -> .)
-    PROJECT         shift and go to state 5
-    TYPE            shift and go to state 2
-    UNIQUEID        shift and go to state 8
+    PROJECT         shift and go to state 9
+    TYPE            shift and go to state 12
+    UNIQUEID        shift and go to state 6
 
-    argument                       shift and go to state 4
-    words                          shift and go to state 1
-    E4                             shift and go to state 10
-    E3                             shift and go to state 26
-
-state 10
-
-    (8) E3 -> E4 .
-
-    PLUS_DESCENDANTS reduce using rule 8 (E3 -> E4 .)
-    ONLY_FIRST      reduce using rule 8 (E3 -> E4 .)
-    OR              reduce using rule 8 (E3 -> E4 .)
-    AND             reduce using rule 8 (E3 -> E4 .)
-    $end            reduce using rule 8 (E3 -> E4 .)
-    RPAREN          reduce using rule 8 (E3 -> E4 .)
-
-
-state 11
-
-    (0) S' -> E1 .
-    (1) E1 -> E1 . AND E2
-
-    AND             shift and go to state 27
-
-
-state 12
-
-    (6) E2 -> E3 .
-
-    PLUS_DESCENDANTS reduce using rule 6 (E2 -> E3 .)
-    ONLY_FIRST      reduce using rule 6 (E2 -> E3 .)
-    OR              reduce using rule 6 (E2 -> E3 .)
-    AND             reduce using rule 6 (E2 -> E3 .)
-    $end            reduce using rule 6 (E2 -> E3 .)
-    RPAREN          reduce using rule 6 (E2 -> E3 .)
-
-
-state 13
-
-    (2) E1 -> E2 . PLUS_DESCENDANTS
-    (3) E1 -> E2 . ONLY_FIRST
-    (4) E1 -> E2 .
-    (5) E2 -> E2 . OR E3
-
-    PLUS_DESCENDANTS shift and go to state 30
-    ONLY_FIRST      shift and go to state 29
-    RPAREN          reduce using rule 4 (E1 -> E2 .)
-    AND             reduce using rule 4 (E1 -> E2 .)
-    $end            reduce using rule 4 (E1 -> E2 .)
-    OR              shift and go to state 28
-
+    E3                             shift and go to state 30
+    words                          shift and go to state 3
+    E4                             shift and go to state 11
+    argument                       shift and go to state 5
 
 state 14
 
-    (26) words -> TEXT words .
+    (9) E3 -> LPAREN E1 . RPAREN
+    (1) E1 -> E1 . AND E2
 
-    PLUS_DESCENDANTS reduce using rule 26 (words -> TEXT words .)
-    ONLY_FIRST      reduce using rule 26 (words -> TEXT words .)
-    OR              reduce using rule 26 (words -> TEXT words .)
-    AND             reduce using rule 26 (words -> TEXT words .)
-    $end            reduce using rule 26 (words -> TEXT words .)
-    RPAREN          reduce using rule 26 (words -> TEXT words .)
+    RPAREN          shift and go to state 31
+    AND             shift and go to state 28
 
 
 state 15
 
-    (19) operator -> GEQ .
+    (12) E4 -> argument operator . words
+    (26) words -> . TEXT words
+    (27) words -> .
 
-    TEXT            reduce using rule 19 (operator -> GEQ .)
-    PLUS_DESCENDANTS reduce using rule 19 (operator -> GEQ .)
-    ONLY_FIRST      reduce using rule 19 (operator -> GEQ .)
-    OR              reduce using rule 19 (operator -> GEQ .)
-    AND             reduce using rule 19 (operator -> GEQ .)
-    $end            reduce using rule 19 (operator -> GEQ .)
-    RPAREN          reduce using rule 19 (operator -> GEQ .)
+    TEXT            shift and go to state 10
+    PLUS_DESCENDANTS reduce using rule 27 (words -> .)
+    ONLY_FIRST      reduce using rule 27 (words -> .)
+    OR              reduce using rule 27 (words -> .)
+    AND             reduce using rule 27 (words -> .)
+    $end            reduce using rule 27 (words -> .)
+    RPAREN          reduce using rule 27 (words -> .)
 
+    words                          shift and go to state 32
 
 state 16
 
-    (21) operator -> LE .
+    (17) operator -> EQ .
 
-    TEXT            reduce using rule 21 (operator -> LE .)
-    PLUS_DESCENDANTS reduce using rule 21 (operator -> LE .)
-    ONLY_FIRST      reduce using rule 21 (operator -> LE .)
-    OR              reduce using rule 21 (operator -> LE .)
-    AND             reduce using rule 21 (operator -> LE .)
-    $end            reduce using rule 21 (operator -> LE .)
-    RPAREN          reduce using rule 21 (operator -> LE .)
+    TEXT            reduce using rule 17 (operator -> EQ .)
+    PLUS_DESCENDANTS reduce using rule 17 (operator -> EQ .)
+    ONLY_FIRST      reduce using rule 17 (operator -> EQ .)
+    OR              reduce using rule 17 (operator -> EQ .)
+    AND             reduce using rule 17 (operator -> EQ .)
+    $end            reduce using rule 17 (operator -> EQ .)
+    RPAREN          reduce using rule 17 (operator -> EQ .)
 
 
 state 17
 
-    (25) operator -> MATCHES .
+    (18) operator -> NEQ .
 
-    TEXT            reduce using rule 25 (operator -> MATCHES .)
-    PLUS_DESCENDANTS reduce using rule 25 (operator -> MATCHES .)
-    ONLY_FIRST      reduce using rule 25 (operator -> MATCHES .)
-    OR              reduce using rule 25 (operator -> MATCHES .)
-    AND             reduce using rule 25 (operator -> MATCHES .)
-    $end            reduce using rule 25 (operator -> MATCHES .)
-    RPAREN          reduce using rule 25 (operator -> MATCHES .)
+    TEXT            reduce using rule 18 (operator -> NEQ .)
+    PLUS_DESCENDANTS reduce using rule 18 (operator -> NEQ .)
+    ONLY_FIRST      reduce using rule 18 (operator -> NEQ .)
+    OR              reduce using rule 18 (operator -> NEQ .)
+    AND             reduce using rule 18 (operator -> NEQ .)
+    $end            reduce using rule 18 (operator -> NEQ .)
+    RPAREN          reduce using rule 18 (operator -> NEQ .)
 
 
 state 18
 
-    (24) operator -> CONTAINS .
+    (23) operator -> IN .
 
-    TEXT            reduce using rule 24 (operator -> CONTAINS .)
-    PLUS_DESCENDANTS reduce using rule 24 (operator -> CONTAINS .)
-    ONLY_FIRST      reduce using rule 24 (operator -> CONTAINS .)
-    OR              reduce using rule 24 (operator -> CONTAINS .)
-    AND             reduce using rule 24 (operator -> CONTAINS .)
-    $end            reduce using rule 24 (operator -> CONTAINS .)
-    RPAREN          reduce using rule 24 (operator -> CONTAINS .)
+    TEXT            reduce using rule 23 (operator -> IN .)
+    PLUS_DESCENDANTS reduce using rule 23 (operator -> IN .)
+    ONLY_FIRST      reduce using rule 23 (operator -> IN .)
+    OR              reduce using rule 23 (operator -> IN .)
+    AND             reduce using rule 23 (operator -> IN .)
+    $end            reduce using rule 23 (operator -> IN .)
+    RPAREN          reduce using rule 23 (operator -> IN .)
 
 
 state 19
@@ -433,6 +433,19 @@ state 19
 
 state 20
 
+    (24) operator -> CONTAINS .
+
+    TEXT            reduce using rule 24 (operator -> CONTAINS .)
+    PLUS_DESCENDANTS reduce using rule 24 (operator -> CONTAINS .)
+    ONLY_FIRST      reduce using rule 24 (operator -> CONTAINS .)
+    OR              reduce using rule 24 (operator -> CONTAINS .)
+    AND             reduce using rule 24 (operator -> CONTAINS .)
+    $end            reduce using rule 24 (operator -> CONTAINS .)
+    RPAREN          reduce using rule 24 (operator -> CONTAINS .)
+
+
+state 21
+
     (22) operator -> GE .
 
     TEXT            reduce using rule 22 (operator -> GE .)
@@ -444,83 +457,99 @@ state 20
     RPAREN          reduce using rule 22 (operator -> GE .)
 
 
-state 21
-
-    (23) operator -> IN .
-
-    TEXT            reduce using rule 23 (operator -> IN .)
-    PLUS_DESCENDANTS reduce using rule 23 (operator -> IN .)
-    ONLY_FIRST      reduce using rule 23 (operator -> IN .)
-    OR              reduce using rule 23 (operator -> IN .)
-    AND             reduce using rule 23 (operator -> IN .)
-    $end            reduce using rule 23 (operator -> IN .)
-    RPAREN          reduce using rule 23 (operator -> IN .)
-
-
 state 22
 
-    (12) E4 -> argument operator . words
+    (21) operator -> LE .
+
+    TEXT            reduce using rule 21 (operator -> LE .)
+    PLUS_DESCENDANTS reduce using rule 21 (operator -> LE .)
+    ONLY_FIRST      reduce using rule 21 (operator -> LE .)
+    OR              reduce using rule 21 (operator -> LE .)
+    AND             reduce using rule 21 (operator -> LE .)
+    $end            reduce using rule 21 (operator -> LE .)
+    RPAREN          reduce using rule 21 (operator -> LE .)
+
+
+state 23
+
+    (19) operator -> GEQ .
+
+    TEXT            reduce using rule 19 (operator -> GEQ .)
+    PLUS_DESCENDANTS reduce using rule 19 (operator -> GEQ .)
+    ONLY_FIRST      reduce using rule 19 (operator -> GEQ .)
+    OR              reduce using rule 19 (operator -> GEQ .)
+    AND             reduce using rule 19 (operator -> GEQ .)
+    $end            reduce using rule 19 (operator -> GEQ .)
+    RPAREN          reduce using rule 19 (operator -> GEQ .)
+
+
+state 24
+
+    (25) operator -> MATCHES .
+
+    TEXT            reduce using rule 25 (operator -> MATCHES .)
+    PLUS_DESCENDANTS reduce using rule 25 (operator -> MATCHES .)
+    ONLY_FIRST      reduce using rule 25 (operator -> MATCHES .)
+    OR              reduce using rule 25 (operator -> MATCHES .)
+    AND             reduce using rule 25 (operator -> MATCHES .)
+    $end            reduce using rule 25 (operator -> MATCHES .)
+    RPAREN          reduce using rule 25 (operator -> MATCHES .)
+
+
+state 25
+
+    (5) E2 -> E2 OR . E3
+    (7) E3 -> . NOT E3
+    (8) E3 -> . E4
+    (9) E3 -> . LPAREN E1 RPAREN
+    (10) E4 -> . TAG
+    (11) E4 -> . words
+    (12) E4 -> . argument operator words
     (26) words -> . TEXT words
     (27) words -> .
+    (13) argument -> . TAG
+    (14) argument -> . PROJECT
+    (15) argument -> . TYPE
+    (16) argument -> . UNIQUEID
 
-    TEXT            shift and go to state 3
+    NOT             shift and go to state 13
+    LPAREN          shift and go to state 4
+    TAG             shift and go to state 2
+    TEXT            shift and go to state 10
     PLUS_DESCENDANTS reduce using rule 27 (words -> .)
     ONLY_FIRST      reduce using rule 27 (words -> .)
     OR              reduce using rule 27 (words -> .)
     AND             reduce using rule 27 (words -> .)
     $end            reduce using rule 27 (words -> .)
     RPAREN          reduce using rule 27 (words -> .)
+    PROJECT         shift and go to state 9
+    TYPE            shift and go to state 12
+    UNIQUEID        shift and go to state 6
 
-    words                          shift and go to state 31
-
-state 23
-
-    (17) operator -> EQ .
-
-    TEXT            reduce using rule 17 (operator -> EQ .)
-    PLUS_DESCENDANTS reduce using rule 17 (operator -> EQ .)
-    ONLY_FIRST      reduce using rule 17 (operator -> EQ .)
-    OR              reduce using rule 17 (operator -> EQ .)
-    AND             reduce using rule 17 (operator -> EQ .)
-    $end            reduce using rule 17 (operator -> EQ .)
-    RPAREN          reduce using rule 17 (operator -> EQ .)
-
-
-state 24
-
-    (18) operator -> NEQ .
-
-    TEXT            reduce using rule 18 (operator -> NEQ .)
-    PLUS_DESCENDANTS reduce using rule 18 (operator -> NEQ .)
-    ONLY_FIRST      reduce using rule 18 (operator -> NEQ .)
-    OR              reduce using rule 18 (operator -> NEQ .)
-    AND             reduce using rule 18 (operator -> NEQ .)
-    $end            reduce using rule 18 (operator -> NEQ .)
-    RPAREN          reduce using rule 18 (operator -> NEQ .)
-
-
-state 25
-
-    (9) E3 -> LPAREN E1 . RPAREN
-    (1) E1 -> E1 . AND E2
-
-    RPAREN          shift and go to state 32
-    AND             shift and go to state 27
-
+    E3                             shift and go to state 33
+    words                          shift and go to state 3
+    E4                             shift and go to state 11
+    argument                       shift and go to state 5
 
 state 26
 
-    (7) E3 -> NOT E3 .
+    (3) E1 -> E2 ONLY_FIRST .
 
-    PLUS_DESCENDANTS reduce using rule 7 (E3 -> NOT E3 .)
-    ONLY_FIRST      reduce using rule 7 (E3 -> NOT E3 .)
-    OR              reduce using rule 7 (E3 -> NOT E3 .)
-    AND             reduce using rule 7 (E3 -> NOT E3 .)
-    $end            reduce using rule 7 (E3 -> NOT E3 .)
-    RPAREN          reduce using rule 7 (E3 -> NOT E3 .)
+    RPAREN          reduce using rule 3 (E1 -> E2 ONLY_FIRST .)
+    AND             reduce using rule 3 (E1 -> E2 ONLY_FIRST .)
+    $end            reduce using rule 3 (E1 -> E2 ONLY_FIRST .)
 
 
 state 27
+
+    (2) E1 -> E2 PLUS_DESCENDANTS .
+
+    RPAREN          reduce using rule 2 (E1 -> E2 PLUS_DESCENDANTS .)
+    AND             reduce using rule 2 (E1 -> E2 PLUS_DESCENDANTS .)
+    $end            reduce using rule 2 (E1 -> E2 PLUS_DESCENDANTS .)
+
+
+state 28
 
     (1) E1 -> E1 AND . E2
     (5) E2 -> . E2 OR E3
@@ -538,113 +567,73 @@ state 27
     (15) argument -> . TYPE
     (16) argument -> . UNIQUEID
 
-    NOT             shift and go to state 9
-    LPAREN          shift and go to state 7
-    TAG             shift and go to state 6
-    TEXT            shift and go to state 3
+    NOT             shift and go to state 13
+    LPAREN          shift and go to state 4
+    TAG             shift and go to state 2
+    TEXT            shift and go to state 10
     OR              reduce using rule 27 (words -> .)
     AND             reduce using rule 27 (words -> .)
     $end            reduce using rule 27 (words -> .)
     RPAREN          reduce using rule 27 (words -> .)
-    PROJECT         shift and go to state 5
-    TYPE            shift and go to state 2
-    UNIQUEID        shift and go to state 8
+    PROJECT         shift and go to state 9
+    TYPE            shift and go to state 12
+    UNIQUEID        shift and go to state 6
 
-    argument                       shift and go to state 4
-    words                          shift and go to state 1
-    E4                             shift and go to state 10
-    E3                             shift and go to state 12
-    E2                             shift and go to state 33
-
-state 28
-
-    (5) E2 -> E2 OR . E3
-    (7) E3 -> . NOT E3
-    (8) E3 -> . E4
-    (9) E3 -> . LPAREN E1 RPAREN
-    (10) E4 -> . TAG
-    (11) E4 -> . words
-    (12) E4 -> . argument operator words
-    (26) words -> . TEXT words
-    (27) words -> .
-    (13) argument -> . TAG
-    (14) argument -> . PROJECT
-    (15) argument -> . TYPE
-    (16) argument -> . UNIQUEID
-
-    NOT             shift and go to state 9
-    LPAREN          shift and go to state 7
-    TAG             shift and go to state 6
-    TEXT            shift and go to state 3
-    PLUS_DESCENDANTS reduce using rule 27 (words -> .)
-    ONLY_FIRST      reduce using rule 27 (words -> .)
-    OR              reduce using rule 27 (words -> .)
-    AND             reduce using rule 27 (words -> .)
-    $end            reduce using rule 27 (words -> .)
-    RPAREN          reduce using rule 27 (words -> .)
-    PROJECT         shift and go to state 5
-    TYPE            shift and go to state 2
-    UNIQUEID        shift and go to state 8
-
-    argument                       shift and go to state 4
-    words                          shift and go to state 1
-    E4                             shift and go to state 10
-    E3                             shift and go to state 34
+    words                          shift and go to state 3
+    E4                             shift and go to state 11
+    E3                             shift and go to state 1
+    argument                       shift and go to state 5
+    E2                             shift and go to state 34
 
 state 29
 
-    (3) E1 -> E2 ONLY_FIRST .
+    (26) words -> TEXT words .
 
-    RPAREN          reduce using rule 3 (E1 -> E2 ONLY_FIRST .)
-    AND             reduce using rule 3 (E1 -> E2 ONLY_FIRST .)
-    $end            reduce using rule 3 (E1 -> E2 ONLY_FIRST .)
+    PLUS_DESCENDANTS reduce using rule 26 (words -> TEXT words .)
+    ONLY_FIRST      reduce using rule 26 (words -> TEXT words .)
+    OR              reduce using rule 26 (words -> TEXT words .)
+    RPAREN          reduce using rule 26 (words -> TEXT words .)
+    AND             reduce using rule 26 (words -> TEXT words .)
+    $end            reduce using rule 26 (words -> TEXT words .)
 
 
 state 30
 
-    (2) E1 -> E2 PLUS_DESCENDANTS .
+    (7) E3 -> NOT E3 .
 
-    RPAREN          reduce using rule 2 (E1 -> E2 PLUS_DESCENDANTS .)
-    AND             reduce using rule 2 (E1 -> E2 PLUS_DESCENDANTS .)
-    $end            reduce using rule 2 (E1 -> E2 PLUS_DESCENDANTS .)
+    OR              reduce using rule 7 (E3 -> NOT E3 .)
+    AND             reduce using rule 7 (E3 -> NOT E3 .)
+    $end            reduce using rule 7 (E3 -> NOT E3 .)
+    RPAREN          reduce using rule 7 (E3 -> NOT E3 .)
+    PLUS_DESCENDANTS reduce using rule 7 (E3 -> NOT E3 .)
+    ONLY_FIRST      reduce using rule 7 (E3 -> NOT E3 .)
 
 
 state 31
 
-    (12) E4 -> argument operator words .
-
-    OR              reduce using rule 12 (E4 -> argument operator words .)
-    AND             reduce using rule 12 (E4 -> argument operator words .)
-    $end            reduce using rule 12 (E4 -> argument operator words .)
-    RPAREN          reduce using rule 12 (E4 -> argument operator words .)
-    PLUS_DESCENDANTS reduce using rule 12 (E4 -> argument operator words .)
-    ONLY_FIRST      reduce using rule 12 (E4 -> argument operator words .)
-
-
-state 32
-
     (9) E3 -> LPAREN E1 RPAREN .
 
-    PLUS_DESCENDANTS reduce using rule 9 (E3 -> LPAREN E1 RPAREN .)
-    ONLY_FIRST      reduce using rule 9 (E3 -> LPAREN E1 RPAREN .)
     OR              reduce using rule 9 (E3 -> LPAREN E1 RPAREN .)
     AND             reduce using rule 9 (E3 -> LPAREN E1 RPAREN .)
     $end            reduce using rule 9 (E3 -> LPAREN E1 RPAREN .)
     RPAREN          reduce using rule 9 (E3 -> LPAREN E1 RPAREN .)
+    PLUS_DESCENDANTS reduce using rule 9 (E3 -> LPAREN E1 RPAREN .)
+    ONLY_FIRST      reduce using rule 9 (E3 -> LPAREN E1 RPAREN .)
+
+
+state 32
+
+    (12) E4 -> argument operator words .
+
+    PLUS_DESCENDANTS reduce using rule 12 (E4 -> argument operator words .)
+    ONLY_FIRST      reduce using rule 12 (E4 -> argument operator words .)
+    OR              reduce using rule 12 (E4 -> argument operator words .)
+    AND             reduce using rule 12 (E4 -> argument operator words .)
+    $end            reduce using rule 12 (E4 -> argument operator words .)
+    RPAREN          reduce using rule 12 (E4 -> argument operator words .)
 
 
 state 33
-
-    (1) E1 -> E1 AND E2 .
-    (5) E2 -> E2 . OR E3
-
-    RPAREN          reduce using rule 1 (E1 -> E1 AND E2 .)
-    AND             reduce using rule 1 (E1 -> E1 AND E2 .)
-    $end            reduce using rule 1 (E1 -> E1 AND E2 .)
-    OR              shift and go to state 28
-
-
-state 34
 
     (5) E2 -> E2 OR E3 .
 
@@ -654,4 +643,15 @@ state 34
     AND             reduce using rule 5 (E2 -> E2 OR E3 .)
     $end            reduce using rule 5 (E2 -> E2 OR E3 .)
     RPAREN          reduce using rule 5 (E2 -> E2 OR E3 .)
+
+
+state 34
+
+    (1) E1 -> E1 AND E2 .
+    (5) E2 -> E2 . OR E3
+
+    RPAREN          reduce using rule 1 (E1 -> E1 AND E2 .)
+    AND             reduce using rule 1 (E1 -> E1 AND E2 .)
+    $end            reduce using rule 1 (E1 -> E1 AND E2 .)
+    OR              shift and go to state 25
 

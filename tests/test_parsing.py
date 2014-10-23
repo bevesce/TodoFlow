@@ -1,131 +1,249 @@
 from __future__ import unicode_literals
+# Ugly indentation of """ """ strings that is breaking pep8
+# is this way because this
+# is imo more readable than alternatives in this particular case
 
 import unittest
 
-from unittest_extensions import SeriesTestCase
-
 import todoflow.lexer as lexer
 import todoflow.parser as parser
-import resources.lists_to_test as lt
 import todoflow.config
+from todoflow.compatibility import *
 
 
-class TestLexer(SeriesTestCase):
-    def test_lexer_initiation(self):
-        lex = lexer.Lexer('test\nto')
-        self.assertTrue(lex)
-        self.assertEqual(2, len(lex.lines))
+class TestLexer(unittest.TestCase):
+    def tokens_from(self, text):
+        self.tokens = lexer.Lexer(text).tokens
+        return self
 
-    def test_lexer_indentation_handling(self):
-        def assertTokensLen(length, text):
-            self.assertEqual(length, len(lexer.Lexer(text).tokens))
-        self.conduct_test_series(
-            assertTokensLen,
-            (
-                (1 + 0, lt.tokens0),
-                (1 + 1, lt.tokens1),
-                (1 + 2, lt.tokens2),
-                (1 + 3 + 1, lt.tokens3),
-                (1 + 4 + 1, lt.tokens4),
-                (1 + 5 + 1, lt.tokens5),
-                (1 + 6 + 1, lt.tokens6),
-                (1 + 7 + 1, lt.tokens7),
-                (1 + 8 + 1, lt.tokens8),
-                (1 + 9, lt.tokens9.strip()),
-                (1 + 9 + 1, lt.tokens9),
-            )
+    def are(self, expected_tokens_repr):
+        tokens_repr = ''.join([t.tok() for t in self.tokens])
+        self.assertEqual(tokens_repr, expected_tokens_repr)
+        return self
+
+    def test_tokens(self):
+        self.tokens_from(
+"""1
+2
+3"""
+        ).are('***$')
+
+    def test_tokens_width_indent(self):
+        self.tokens_from(
+"""1
+\t2
+3"""
+        ).are('*>*<*$')
+
+    def test_tokens_with_continuos_indent(self):
+        self.tokens_from(
+"""1
+\t2
+\t3
+\t4"""
+        ).are('*>***$')
+
+    def test_tokens_with_varying_indent(self):
+        self.tokens_from(
+"""1
+\t2
+\t\t3
+\t4"""
+        ).are('*>*>*<*$')
+
+    def test_tokens_with_empty_line(self):
+        self.tokens_from(
+"""1
+
+2"""
+        ).are('*n*$')
+
+    def test_tokens_with_empty_line_at_end(self):
+        self.tokens_from(
+"""1
+2
+"""
+        ).are('**n$')
+
+
+class TestParser(unittest.TestCase):
+    def todos_from(self, text):
+        self.todos = parser.parse(text)
+        self.nodes = list(self.todos.todos_tree)
+        return self
+
+    def main_node(self):
+        return self.node(0)
+
+    def first_node(self):
+        return self.node(1)
+
+    def second_node(self):
+        return self.node(2)
+
+    def third_node(self):
+        return self.node(3)
+
+    def node(self, index):
+        self._node = self.nodes[index]
+        return self
+
+    def is_task(self):
+        self.assertTrue(self._node.get_value().is_task)
+        return self
+
+    def is_project(self):
+        self.assertTrue(self._node.get_value().is_project)
+        return self
+
+    def is_note(self):
+        self.assertTrue(self._node.get_value().is_note)
+        return self
+
+    def has_subtasks(self, howmany):
+        self.assertEqual(len(self._node.get_children()), howmany)
+        return self
+
+    def doesnt_have_item(self):
+        self.assertEqual(self._node.get_value(), None)
+        return self
+
+    def test_single_task(self):
+        self.todos_from(
+"""- task"""
+        ).first_node().is_task().has_subtasks(0)
+
+    def test_single_project(self):
+        self.todos_from(
+"""project:"""
+        ).first_node().is_project().has_subtasks(0)
+
+    def test_single_note(self):
+        self.todos_from(
+"""note"""
+        ).first_node().is_note().has_subtasks(0)
+
+    def test_simple_subtasks(self):
+        self.todos_from(
+"""project:
+\t- task1
+\t- task2"""
+        )
+        self.main_node().doesnt_have_item()
+        self.first_node().has_subtasks(2).second_node().has_subtasks(0)
+
+    def test_tasks_at_0_level(self):
+        self.todos_from(
+"""- task 1
+- task 2
+- task 3"""
+        ).main_node().doesnt_have_item().has_subtasks(3)
+
+    def test_tasks_at_0_level_with_empty_lines(self):
+        self.todos_from(
+"""- task 1
+- task 2
+
+- task 3
+"""
+        ).main_node().doesnt_have_item().has_subtasks(5)
+
+    def test_deep_indent(self):
+        self.todos_from(
+"""project:
+\t- task 1
+\t\t- subtask 1
+\t\t\t- subsubtask 1
+\t\t\t- subsubtask 2
+\t\t- subtask 2
+\t- task 2
+
+"""
+        )
+        self.main_node().doesnt_have_item().has_subtasks(3)
+        self.first_node().is_project().has_subtasks(2)
+        self.second_node().is_task().has_subtasks(2)
+        self.third_node().is_task().has_subtasks(2)
+
+    def test_deep_indent_with_empty_line_in_the_middle(self):
+        self.todos_from(
+"""project:
+\t- task 1
+\t\t- subtask 1
+\t\t\t- subsubtask 1
+
+\t\t\t- subsubtask 2
+\t\t- subtask 2
+\t- task 2
+
+"""
+        )
+        self.main_node().doesnt_have_item().has_subtasks(3)
+        self.first_node().is_project().has_subtasks(2)
+        self.second_node().is_task().has_subtasks(2)
+        self.third_node().is_task().has_subtasks(3)
+
+
+class TestPlainPrinting(unittest.TestCase):
+    def text_after_parsing_is_the_same(self, text):
+        todos = parser.parse(text)
+        self.assertEqual(unicode(todos), text)
+
+    def test_task(self):
+        self.text_after_parsing_is_the_same(
+"""- task"""
         )
 
-    def test_lexer(self):
-        def assertTokensEqual(expected, text):
-            tokens_repesentation = ''.join([t.tok() for t in lexer.Lexer(text).tokens])
-            self.assertEqual(expected, tokens_repesentation)
-        self.conduct_test_series(
-            assertTokensEqual,
-            (
-                ('*$', lt.tokens1),
-                ('**$', lt.tokens2),
-                ('*>*n$', lt.tokens3),
-                ('*>**n$', lt.tokens4),
-                ('*>*>*n$', lt.tokens5),
-                ('*>*>**n$', lt.tokens6),
-                ('*>*>*>*n$', lt.tokens7),
-                ('*>*>*<<*n$', lt.tokens8),
-                ('*>*n>*<<*n$', lt.tokens9),
-                ('*>*nn>*<<*n$', lt.tokens10),
-                ('*>*nn>*<<*$', lt.tokens10.strip()),
-                ('*>*nn>*n<<*n$', lt.tokens11),
-                ('*>*nn>*n<<*$', lt.tokens11.strip()),
-            )
+    def test_project(self):
+        self.text_after_parsing_is_the_same(
+"""project:"""
         )
 
-    def test_token_types(self):
-        text = lexer.TextToken('')
-        self.assertTrue(text.is_text)
-        self.assertFalse(text.is_newline)
-        newline = lexer.NewlineToken()
-        self.assertTrue(newline.is_newline)
-        self.assertFalse(newline.is_text)
-        indent = lexer.IndentToken()
-        self.assertTrue(indent.is_indent)
-        dedent = lexer.DedentToken()
-        self.assertTrue(dedent.is_dedent)
-        end = lexer.EndToken()
-        self.assertTrue(end.is_end)
-        self.assertFalse(end.is_text)
-
-
-class TestParser(SeriesTestCase):
-    def test_parser_init(self):
-        parsers_instance = parser.Parser()
-        parsers_instance.parse('')
-
-    def test_main_list_length(self):
-        def assertItemsLength(length, text):
-            todolist = parser.parse(text)
-            self.assertEqual(length, len(todolist))
-        self.conduct_test_series(
-            assertItemsLength,
-            (
-                (1, lt.tokens1),
-                (2, lt.tokens2),
-                (3, lt.tokens3),
-                (3, lt.tokens4.strip()),
-                (4, lt.tokens4),
-            )
+    def test_project_with_subtask(self):
+        self.text_after_parsing_is_the_same(
+"""project:
+\t- task 1
+\t- task 2"""
         )
 
-    def test_parse_to_string(self):
-        def assertParseToStringEquals(text):
-            self.assertEqual(text, str(parser.parse(text)))
-        self.conduct_test_series(
-            assertParseToStringEquals,
-            (
-                ('note', ),
-                ('- task', ),
-                ('porject:', ),
-                ('- task:', ),
-                ('- task:\n', ),
-                (lt.t1, ),
-                (lt.t1_1, ),
-                (lt.t2, ),
-                (lt.t3, ),
-                (lt.t4, ),
-                (lt.t5, ),
-                (lt.tokens1, ),
-                (lt.tokens2, ),
-                (lt.tokens3, ),
-                (lt.tokens4, ),
-                (lt.tokens5, ),
-                (lt.tokens6, ),
-                (lt.tokens7, ),
-                (lt.tokens8, ),
-                (lt.tokens9, ),
-                (lt.tokens10, ),
-                (lt.tokens11, ),
-            )
+    def test_deep_indent(self):
+        self.text_after_parsing_is_the_same(
+"""project:
+\t- task 1
+\t\t- task 2
+\t\t\t- task 3"""
         )
 
+    def test_empty_line(self):
+        self.text_after_parsing_is_the_same(
+"""- task 1
+
+\t- task2
+"""
+        )
+
+    def test_empty_line_at_end(self):
+        self.text_after_parsing_is_the_same(
+"""- task 1
+\t- task2
+"""
+        )
+
+    def test_empty_line_at_beginning(self):
+        self.text_after_parsing_is_the_same(
+"""
+- task 1
+\t- task2"""
+        )
+
+    def test_multiple_empty_lines_at_end(self):
+        self.text_after_parsing_is_the_same(
+"""- task 1
+\t- task2
+
+
+"""
+        )
 
 if __name__ == '__main__':
     unittest.main()

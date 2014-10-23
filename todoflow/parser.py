@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 from .lexer import Lexer
 from .todos import Todos, TreeNode
 from .todoitem import Todoitem
@@ -10,7 +11,7 @@ class Parser(object):
         self.items_in_parsing = []
 
     def parse(self, text):
-        # requirsive implementation in my opinion was more elegent
+        # reqursive implementation imo was more elegent
         # but for long lists it reached stack limit
         # in Ediotorial/Pythonista app on iOS
         self.lexer = Lexer(text)

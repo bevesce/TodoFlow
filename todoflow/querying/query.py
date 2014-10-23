@@ -14,7 +14,9 @@ class AbstractQuery(object):
 # Basic
 class TextQuery(AbstractQuery):
     def matches(self, todonode):
-        return self.matches_text(todonode.get_value().text)
+        item = todonode.get_value()
+        if item:
+            return self.matches_text(item.text)
 
 
 class SubstringQuery(TextQuery):

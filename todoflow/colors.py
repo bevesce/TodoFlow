@@ -25,27 +25,24 @@ defc_code = default_code = 0
 DEFAULT = DEFC = seq(defc_code)
 
 foreground_codes = {
+    'gray': 30,
     'red': 31,
     'green': 32,
-    'gray': 30,
-    'blue': 34,
     'yellow': 33,
+    'blue': 34,
     'magenta': 35,
     'cyan': 36,
     'white': 37,
-    'crimson': 38,
 }
 background_codes = {
+    'gray': 40,
     'red': 41,
     'green': 42,
-    'brown': 43,
+    'yellow': 43,
     'blue': 44,
     'magenta': 45,
     'cyan': 46,
-    'gray': 47,
-    'crimson': 48,
-    'crimson': 49,
-    'crimson': 50,
+    'white': 47,
 }
 
 import sys
@@ -65,13 +62,13 @@ def make_coloriser(name, color_seq):
 
 
 def make_colorisers_from_codes(codes, name_prefix='', seq_prefix=''):
-    for k, v in codes.iteritems():
+    for k, v in codes.items():
         color_seq = seq_prefix + seq(v)
         make_coloriser(name_prefix + k, color_seq)
 
 make_colorisers_from_codes(foreground_codes)
 make_colorisers_from_codes(background_codes, name_prefix='on_')
-for fk, fv in foreground_codes.iteritems():
+for fk, fv in foreground_codes.items():
     color_seq = seq(fv)
     make_colorisers_from_codes(
         background_codes,
