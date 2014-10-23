@@ -5,6 +5,8 @@ import os
 from cgi import escape
 from uuid import uuid1
 
+sys.path += ['/Users/bvsc/Dropbox/Projects/TodoFlowGH']
+
 import todoflow as tf
 import config
 import utils
@@ -19,6 +21,9 @@ _template = """
 
 
 class AlfredPrinter(tf.printers.AbstractPrinter):
+    def __init__(self, query):
+        self.query = tf.querying.parser.parse(query)
+
     def unicode(self, todos_tree):
         todos_tree = self._eject_tree(todos_tree)
         return '<items>' + ''.join(self.convert_to_list(todos_tree)) + '</items>'
@@ -33,6 +38,8 @@ class AlfredPrinter(tf.printers.AbstractPrinter):
         return self.format_item(item, node, 'note')
 
     def format_item(self, item, node, type_name):
+        if not self.query.matches(node):
+            return None
         return _template.format(
             arg=item.uniqueid,
             uid=str(uuid1()),
@@ -57,4 +64,4 @@ if __name__ == '__main__':
     todos = tf.from_dir(config.tasks_dir_path)
     if query:
         todos /= query
-    AlfredPrinter().pprint(todos)
+    AlfredPrinter(query).pprint(todos)

@@ -3,7 +3,6 @@ from collections import deque
 from .todoitem import Todoitem
 from .querying.parser import parse as parse_query
 from .printers import PlainPrinter
-from .files import write
 from .compatibility import _str_
 
 
