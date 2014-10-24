@@ -69,7 +69,7 @@ class TestLexer(unittest.TestCase):
 class TestParser(unittest.TestCase):
     def todos_from(self, text):
         self.todos = parser.parse(text)
-        self.nodes = list(self.todos.todos_tree)
+        self.nodes = list(self.todos._todos_tree)
         return self
 
     def main_node(self):
