@@ -7,6 +7,26 @@ import todoflow
 from todoflow.compatibility import read, unicode, write
 
 
+class TestTodoitem(unittest.TestCase):
+    def test_task(self):
+        task = todoflow.todoitem.Todoitem('- task')
+        self.assertTrue(task.is_task)
+        self.assertEqual('task', task.text)
+        self.assertEqual('- task', unicode(task))
+
+    def test_project(self):
+        task = todoflow.todoitem.Todoitem('project:')
+        self.assertTrue(task.is_project)
+        self.assertEqual('project', task.text)
+        self.assertEqual('project:', unicode(task))
+
+    def test_note(self):
+        task = todoflow.todoitem.Todoitem('note')
+        self.assertTrue(task.is_note)
+        self.assertEqual('note', task.text)
+        self.assertEqual('note', unicode(task))
+
+
 class TestSingleTodosFile(unittest.TestCase):
     def todos_from(self, path):
         self.source = path
