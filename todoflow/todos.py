@@ -92,8 +92,18 @@ class Todos(object):
         for i in self.search(query):
             return i
 
-    def set_master_item(self, text):
-        self._todos_tree.set_value(Todoitem(text))
+    def as_subtodos_of(self, text):
+        if self._todos_tree.get_value():
+            children = [self._todos_tree]
+        else:
+            children = self._todos_tree.get_children()
+        return Todos(
+            Node(
+                value=Todoitem(text),
+                children=children
+            ),
+            source=self._source
+        )
 
     def iter_sourced(self):
         """

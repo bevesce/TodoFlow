@@ -138,7 +138,7 @@ class TestTodosArthmetics(unittest.TestCase):
         )
 
     def test_head_to_headless(self):
-        self.t1.set_master_item('project 1:')
+        self.t1 = self.t1.as_subtodos_of('project 1:')
         self.assertEqual(
             unicode(self.t1 + self.t2),
 """project 1:
@@ -147,7 +147,7 @@ class TestTodosArthmetics(unittest.TestCase):
         )
 
     def test_headless_to_head(self):
-        self.t1.set_master_item('project 1:')
+        self.t1 = self.t1.as_subtodos_of('project 1:')
         self.assertEqual(
             unicode(self.t2 + self.t1),
 """- task 2
@@ -156,8 +156,8 @@ project 1:
         )
 
     def test_head_to_head(self):
-        self.t1.set_master_item('project 1:')
-        self.t2.set_master_item('project 2:')
+        self.t1 = self.t1.as_subtodos_of('project 1:')
+        self.t2 = self.t2.as_subtodos_of('project 2:')
         self.assertEqual(
             unicode(self.t1 + self.t2),
 """project 1:

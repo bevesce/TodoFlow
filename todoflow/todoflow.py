@@ -30,7 +30,7 @@ def from_paths(paths):
     for path in paths:
         subtodos = from_path(path)
         project_title = _get_project_title(path)
-        subtodos.set_master_item(project_title)
+        subtodos = subtodos.as_subtodos_of(project_title)
         todos += subtodos
     return todos
 
