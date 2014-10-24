@@ -40,6 +40,11 @@ class Todoitem(object):
     def __str__(self):
         return _str_(self)
 
+    def __repr__(self):
+        return '<Todoitem: {} | "{}" | {}>'.format(
+            self.uniqueid, self.text, self.get_type_name()
+        )
+
     def _choose_type(self, text):
         self._set_all_types_flags_to_false()
         if not text:
@@ -56,6 +61,13 @@ class Todoitem(object):
         self.is_project = False
         self.is_note = False
         self.is_empty_line = False
+
+    def get_type_name(self):
+        types = ('project', 'note', 'task', 'empty_line')
+        for type_name in types:
+            if getattr(self, 'is_' + type_name):
+                return type_name
+        return 'no_type?'
 
     def tag(self, tag_to_use, param=None):
         self.text = tu.add_tag(self.text, tag_to_use, param)
