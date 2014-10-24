@@ -1,3 +1,5 @@
+"""Printers that can be used to output `Todos` in several formats."""
+
 from __future__ import unicode_literals
 import datetime as dt
 import bisect
@@ -8,6 +10,25 @@ from . import config
 
 
 class AbstractPrinter(object):
+    """Implements basic structure of Printer,
+    so other printers that inherit from it can only implement:
+
+    - `format_task_text`
+    - `format_project_text`
+    - `format_note_text`
+    - `format_empty_line_text`
+
+    or
+
+    - `convert_task`
+    - `convert_project`
+    - `convert_note`
+    - `convert_empty_line`
+
+    `format_..._text` methods receive only text of item
+    `convert_...` methods receive item and optionally node that contains it
+
+    """
     indention = config.indention
 
     def __call__(self, todos_tree):
@@ -25,7 +46,7 @@ class AbstractPrinter(object):
 
     def _eject_tree(self, todos_tree):
         try:
-            return todos_tree.todos_tree
+            return todos_tree._todos_tree
         except AttributeError:
             return todos_tree
 
@@ -52,21 +73,22 @@ class AbstractPrinter(object):
         if converted is not None:
             return self.make_indent(item, node) + converted
 
-    def convert_task(self, item, node):
+    def convert_task(self, item, node=None):
         return self.format_task_text(item.text)
 
-    def convert_project(self, item, node):
+    def convert_project(self, item, node=None):
         return self.format_project_text(item.text)
 
-    def convert_note(self, item, node):
+    def convert_note(self, item, node=None):
         return self.format_note_text(item.text)
 
     def make_indent(self, item, node):
         if item.is_empty_line:
             return ''
-        return self.indention * len(node.get_parents_values())
+        indent_level = (len(node.get_parents_values())) if node else 0
+        return self.indention * indent_level
 
-    def convert_empty_line(self, item, node):
+    def convert_empty_line(self, item, node=None):
         return self.format_empty_line_text(item.text)
 
     def format_task_text(self, text):
@@ -83,6 +105,7 @@ class AbstractPrinter(object):
 
 
 class PlainPrinter(AbstractPrinter):
+    """Basic printer that converts todos to plain text in .taskpaper format."""
     def format_task_text(self, text):
         return '- ' + text
 
@@ -97,6 +120,10 @@ class PlainPrinter(AbstractPrinter):
 
 
 class ColorPrinter(PlainPrinter):
+    """Printer that converts todos to colorful text in .taskpaper format.
+
+    Colors with ANSI escape codes.
+    """
     special_tags_colors = (
         ('due', colors.ON_RED),
         ('next', colors.ON_BLUE),
@@ -121,6 +148,28 @@ class ColorPrinter(PlainPrinter):
         project_color=None,
         indention=None,
     ):
+        """
+        Args:
+            special_tags_colors (iterable of (tag, color_code)):
+                highlight special tags by assigning them unique color
+                (default: specified in class)
+
+            whole_line_tags_colors (iterable of (tag, color_code)):
+                highlight whole lines that are tagged with some tag
+                (default: specified in class)
+
+            tag_color (color_code):
+                highlight rest of the tags with this color
+                (default: specified in class)
+
+            project_color (color_code):
+                highlight project with this color
+                (default: specified in class)
+
+            indent (text):
+                indent lines using this text, default - '\\t' can be too wide
+                in some terminal settings
+        """
         self.special_tags_colors = special_tags_colors or self.special_tags_colors
         self.whole_line_tags_colors = whole_line_tags_colors or self.whole_line_tags_colors
         self.tag_color = tag_color or self.tag_color
@@ -164,6 +213,11 @@ class ColorPrinter(PlainPrinter):
 
 
 class CountdownPrinter(AbstractPrinter):
+    """Converts todos to colorful text representation in form:
+
+    <time_left> item title @<countdown_tag>(<when_is_due>) [items of whisc this item is subitem]
+
+    """
     countdown_tag_color = colors.MAGENTA
     time_left_ranges = (
         dt.timedelta(days=1),
@@ -179,9 +233,31 @@ class CountdownPrinter(AbstractPrinter):
         colors.green,
     )
 
-    def __init__(self, countdown_tag, countdown_tag_color=None):
+    def __init__(
+        self, countdown_tag, countdown_tag_color=None,
+        time_left_ranges=None, time_left_colors=None,
+    ):
+        """
+        Args:
+            countdown_tag (text): Only items with this tag will be displayed.
+                Must have parameter with date in form 'YYYY-MM-DD HH:MM' or 'YYYY-MM-DD'.
+
+            countdown_tag_color (color_code):
+                Color to highlight `countdown_tag`.
+
+            time_left_ranges (list of timedelta):
+                Time left have color assigned based on range in which it is contained.
+
+            time_left_colors (list of color function):
+                Color to highlight time left in corresponding range. Must have lenght greated
+                than `time_left_ranges`.
+
+
+        """
         self.countdown_tag = countdown_tag
         self.countdown_tag_color = countdown_tag_color or self.countdown_tag_color
+        self.time_left_ranges = time_left_ranges or self.time_left_ranges
+        self.time_left_colors = time_left_colors or self.time_left_colors
         self.now = dt.datetime.now()
 
     def unicode(self, todos_tree):

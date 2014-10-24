@@ -1,3 +1,8 @@
+"""
+Set of tools to transform and interpret text in .taskpaper format.
+
+It's used internally in todoflow but can by also useful outside of it.
+"""
 from __future__ import absolute_import
 
 import re
@@ -131,6 +136,8 @@ def sort_by_tag_param(texts_collection, tag, reverse=False):
     ))
 
 
+# Formatting
+
 def strip_formatting(text):
     text = text.strip('\t')
     if is_task(text):
@@ -158,6 +165,8 @@ def calculate_indent_level(text):
     indentation = text[:indentation_length]
     return len(indentation)
 
+
+# Dates
 
 def parse_datetime(text):
     try:

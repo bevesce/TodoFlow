@@ -2,7 +2,7 @@
 Module contains:
 
 1. Constants like RED, BLUE, ON_RED, RED_ON_BLUE, GREEN_ON_BLUE
-that are ascii codes in text that can be used to make terminal output
+that are ANSI codes in text that can be used to make terminal output
 colorful.
 
 >>> print colors.RED + 'this will be red'

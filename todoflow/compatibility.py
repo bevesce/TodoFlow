@@ -1,3 +1,7 @@
+"""Compatiblity layer between python 2 and python 3 for some basic stuff
+
+In future will also provide compatiblity for Editorial.app/Pythonista.app for iOS.
+"""
 from codecs import open
 
 try:

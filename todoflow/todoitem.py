@@ -2,10 +2,18 @@ from __future__ import absolute_import
 
 from . import textutils as tu
 from .printers import PlainPrinter
-from .compatibility import unicode
+from .compatibility import unicode, _str_
 
 
 class Todoitem(object):
+    """Representation of single todo item.
+
+    It can be task, project or note.
+
+    Note:
+        `Todoitem` knows nothing about it's place in whole todos.
+        (For example it doesn't know which other item contains it)
+    """
     _uniqueid_counter = 0
 
     @classmethod
@@ -18,16 +26,19 @@ class Todoitem(object):
         return unicode(cls._uniqueid_counter)
 
     def __init__(self, text=''):
+        """Creates `Todoitem` from text."""
+        # internally text of todoitem is stored in stripped form
+        # without '\t' indent,  task indicator - '- ',
+        # and project indicator ':'
         self.uniqueid = self._gen_uniqueid()
         self.text = tu.strip_formatting(text) if text else ''
-        self.indent_level = tu.calculate_indent_level(text) if text else 0
         self._choose_type(text)
 
     def __unicode__(self):
         return PlainPrinter().convert_item(self)
 
     def __str__(self):
-        return unicode(self).encode('utf-8')
+        return _str_(self)
 
     def _choose_type(self, text):
         self._set_all_types_flags_to_false()
