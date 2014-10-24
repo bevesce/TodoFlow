@@ -5,8 +5,6 @@ import os
 from cgi import escape
 from uuid import uuid1
 
-sys.path += ['/Users/bvsc/Dropbox/Projects/TodoFlowGH']
-
 import todoflow as tf
 import config
 import utils
@@ -59,9 +57,14 @@ class AlfredPrinter(tf.printers.AbstractPrinter):
     def convert_empty_line(self, item, node):
         return None
 
-if __name__ == '__main__':
+
+def do():
     query = ' '.join(sys.argv[1:])
     todos = tf.from_dir(config.tasks_dir_path)
     if query:
         todos /= query
     AlfredPrinter(query).pprint(todos)
+
+
+if __name__ == '__main__':
+    do()
