@@ -44,7 +44,7 @@ class AlfredPrinter(tf.printers.AbstractPrinter):
             valid='yes',
             title=escape(item.text),
             subtitle=escape(' / '.join([t.text for t in node.get_parents_values()])),
-            icon=self.get_icon_path('done' if item.has_tag('done') else type_name)
+            icon=self.get_icon_path(('done_' + type_name) if item.has_tag('done') else type_name)
         )
 
     def get_icon_path(self, type_name):
