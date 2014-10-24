@@ -4,7 +4,6 @@ Set of tools to transform and interpret text in .taskpaper format.
 It's used internally in todoflow but can by also useful outside of it.
 """
 from __future__ import absolute_import
-
 import re
 import datetime as dt
 

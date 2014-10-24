@@ -1,5 +1,6 @@
 from __future__ import absolute_import
 import os
+
 from .parser import parse
 from .todos import Todos
 from .compatibility import read, write, unicode
