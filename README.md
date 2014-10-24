@@ -1,6 +1,6 @@
 # Todoflow 4.0
 
-![](workflows/img/task_icon.png)
+![](workflows/img/icon.png)
 
 Todoflow is Python module that provides functions to parse, filter, search, modify and save todo lists stored in plain text files with TaskPaper syntax.
 
@@ -13,6 +13,7 @@ Todoflow is Python module that provides functions to parse, filter, search, modi
     - workflows start from zero
     - new icons
     - setup.py
+    - python3 compatiblity
 
 ## Installation
 
@@ -29,27 +30,55 @@ Load and parse todos using one of this functions:
 - `todos = todoflow.from_paths(paths)` - todos from several files are joined into one
 - `todos = todoflow.from_dir(path, extension='.taskpaper')` - every todo file in given direcotry is joined into one todos
 
+```
+    todos = todoflow.from_text("""
+    project 1:
+        - task 1
+        - task 2 @today
+    """)
+```
+
 ### Saving todos
 
 - `todoflow.to_path(todos, path)` - save todos to file
 - `todoflow.to_sources(todos)` - when todos are loaded from file (using `from_path`, `from_paths` or `from_dir`) they store path to source file so they can be saved to it later
 
-### Todos
+#### Todos
 
-- `todos.filter`
-- `todos.search`
+Todos - collection of todo items.
+Todos are immutable.
+
+- `todos.filter(query)` - returns new Todos, with only those that match query or their parents, analogous to searching in Taskpaper.app
+- `todos.search(query)` - returns iterator of Todoitems that match query (and only them).
+
+```
+    print(todos.filter('not @today'))
+
+    >>> project 1:
+    >>>     - task 1
+
+    print(tuple(todos.search('task')))
+
+    >>> (<Todoitem: 2 | "task 1" | task>, <Todoitem: 3 | "task 2 @done" | task>)
+```
 
 #### Queries
 
-- text
-- @tag
-- @tag *op arg*
-- project, type, uniqueid *op arg*
-- +d, +f
-- =, <=, <, >, >=, !=, ->, <-
-- and, or, not
+Subset with few additions of query syntax of Taskpaper.app is supported:
+
+- searching by text
+- searching by @tag
+- searching by tag parameter: @tag *op* text
+- searching by project: project *op* text
+- searching by type: `type = task`, `type = note`, `type = "project"`
+- including subitems: `+d`
+- narrowing to only first items that match query: `+f`
+- *op*s: `=`, `<=`, `<`, `>`, `>=`, `!=`, `->` (in), `<-` (contains)
+- logical operators: `and`, `or`, `not`
 
 ### Todo item
+
+Todo items are mutable, their changes are visible in all todos that contain them.
 
 - `tag(tag_to_use, param=None)`
 - `remove_tag(tag_to_remove)`
@@ -60,6 +89,17 @@ Load and parse todos using one of this functions:
 - `change_to_project()`
 - `change_to_note()`
 - `change_to_empty_line()`
+
+```
+    for item in todos.search('@today'):
+        item.tag('@done', '2014-10-24')
+        item.remove_tag('@today')
+    print(todos)
+
+    >>> project 1:
+    >>>    - task 1
+    >>>    - task 2 @done(2014-10-24)
+```
 
 ## textutils
 
