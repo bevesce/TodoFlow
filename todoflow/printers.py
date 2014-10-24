@@ -49,7 +49,7 @@ class AbstractPrinter(object):
             converted = self.convert_empty_line(item, node)
         else:
             return None
-        if converted:
+        if converted is not None:
             return self.make_indent(item, node) + converted
 
     def convert_task(self, item, node):
