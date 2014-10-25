@@ -56,21 +56,21 @@ def conditional_defc(text):
     return text + DEFC
 
 
-def make_coloriser(name, color_seq):
+def make_color(name, color_seq):
     setattr(_colors, name, lambda t: color_seq + conditional_defc(t))
     setattr(_colors, name.upper(), color_seq)
 
 
-def make_colorisers_from_codes(codes, name_prefix='', seq_prefix=''):
+def make_colors_from_codes(codes, name_prefix='', seq_prefix=''):
     for k, v in codes.items():
         color_seq = seq_prefix + seq(v)
-        make_coloriser(name_prefix + k, color_seq)
+        make_color(name_prefix + k, color_seq)
 
-make_colorisers_from_codes(foreground_codes)
-make_colorisers_from_codes(background_codes, name_prefix='on_')
+make_colors_from_codes(foreground_codes)
+make_colors_from_codes(background_codes, name_prefix='on_')
 for fk, fv in foreground_codes.items():
     color_seq = seq(fv)
-    make_colorisers_from_codes(
+    make_colors_from_codes(
         background_codes,
         name_prefix=fk + '_on_',
         seq_prefix=color_seq
