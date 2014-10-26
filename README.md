@@ -7,6 +7,7 @@ Todoflow is Python module that provides functions to parse, filter, search, modi
 ## Changelog
 
 - 2014-10-24 - Release of version 4
+    - **this version removes some features and introduces breaking changes** 
     - new code base
     - queries are now parsed with [ply](https://github.com/dabeaz/ply)
     - for now removes support for [Editorial.app](http://omz-software.com/editorial/)
