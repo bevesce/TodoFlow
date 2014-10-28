@@ -5,7 +5,7 @@ from distutils.core import setup
 
 setup(
     name='Todoflow',
-    version='4.0',
+    version='4.0.1',
     description='Todoflow - taskpaper in python',
     author='Piotr Wilczyński',
     author_email='wilczynski.pi@gmail.com',
@@ -14,5 +14,4 @@ setup(
     install_requires=[
         "ply",
     ],
-    data_files=[('', ['todoflow/querying/parsetab.pickle'])]
 )

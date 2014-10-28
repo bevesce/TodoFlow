@@ -217,14 +217,12 @@ def p_error(p):
 
 
 def _get_pickle_path():
-    return os.path.join(
-        os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))),
-        'parsetab.pickle'
-        )
+    return os.path.expanduser('~/.todoflow_parsetab.pickle')
 
 lex.lex()
 _parser = yacc.yacc(
-    picklefile=_get_pickle_path()
+    picklefile=_get_pickle_path(),
+    debug=0, write_tables=0,
 )
 
 
