@@ -10,15 +10,11 @@ from . import query
 from ..config import tag_indicator
 
 tokens = (
-    'AND', 'OR', 'NOT',
-    'PLUS_DESCENDANTS', 'ONLY_FIRST',
-    'TEXT',
     'LPAREN', 'RPAREN',
-    # 'QUOTE',
-    'TAG',
-    'EQ', 'LEQ', 'GEQ', 'NEQ', 'GE', 'LE',
-    'IN', 'CONTAINS', 'MATCHES',
-    'PROJECT', 'TYPE', 'UNIQUEID',
+    'AND', 'OR', 'NOT',
+    'EQ', 'LEQ', 'GEQ', 'NEQ', 'GE', 'LE', 'IN', 'CONTAINS', 'MATCHES',
+    'PLUS_DESCENDANTS', 'ONLY_FIRST',
+    'TEXT', 'TAG', 'PROJECT', 'TYPE', 'UNIQUEID',
 )
 
 # t_TAG_INDICATOR = r'@'
@@ -30,13 +26,13 @@ r_PROJECT = ':|project'
 t_ignore = ' \t\n\r'
 r_ignore = r'(?<!\\)"'
 t_EQ = r'='
-t_LEQ = r'<=|≤'
+t_LEQ = r'<='
 t_LE = r'<'
 t_GE = r'>'
-t_GEQ = r'>=|≥'
-r_NEQ = r'!=|≠'
-r_IN = r'->|∈'
-r_CONTAINS = r'<-|∋'
+t_GEQ = r'>='
+r_NEQ = r'!='
+r_IN = r'->'
+r_CONTAINS = r'<-'
 r_MATCHES = r'~'
 r_PLUS_DESCENDANTS = r'\+d'
 r_ONLY_FIRST = r'\+f'
@@ -48,24 +44,19 @@ def t_error(token):
     print("Illegal character '%s'" % token.value[0])
     token.lexer.skip(1)
 
-# TODO: inne rodzaje argumentow niz TAG i cudzyslowy
+# TODO: there are some symbols that
 reserved = {
     'not': 'NOT',
     'and': 'AND',
     'or': 'OR',
     '=': 'EQ',
     '<=': 'LEQ',
-    '≤': 'LEQ',
     '<': 'LE',
     '>': 'GE',
     '>=': 'GEQ',
-    '≥': 'GEQ',
     '!=': 'NEQ',
-    '≠': 'NEQ',
     '->': 'IN',
     '<-': 'CONTAINS',
-    '∋': 'CONTAINS',
-    '∈': 'IN',
     '+d': 'PLUS_DESCENDANTS',
     '+f': 'ONLY_FIRST',
     ':': 'PROJECT',
