@@ -1,0 +1,9 @@
+{
+        "completions":
+        [
+                { "trigger": "@working", "contents": "@working" },
+                { "trigger": "@next", "contents": "@next" },
+                { "trigger": "@due", "contents": "@due($0)" },
+                { "trigger": "@done", "contents": "@done($0)" }
+        ]
+}

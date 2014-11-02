@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 
-import todoflow.textutils as tu
+from .. import textutils as tu
 
 
 class AbstractQuery(object):

@@ -1,0 +1,12 @@
+[
+    {"keys": ["super+ctrl+enter"], "command": "toggle_tags", "context":
+    	[{"key": "selector", "operator": "equal", "operand": "text.taskpaper", "match_all": true },]
+    },
+    {"keys": ["super+ctrl+alt+up"], "command": "increase_date", "context":
+    	[{"key": "selector", "operator": "equal", "operand": "text.taskpaper", "match_all": true },]
+    },
+    {"keys": ["super+ctrl+alt+down"], "command": "decrease_date", "context":
+    	[{"key": "selector", "operator": "equal", "operand": "text.taskpaper", "match_all": true },]
+    },
+    {"keys": ["super+ctrl+alt+m"], "command": "move_to_project"}
+]

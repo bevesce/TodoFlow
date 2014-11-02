@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>fileTypes</key>
+	<array>
+		<string>todo</string>
+		<string>taskpaper</string>
+		<string>tasks</string>
+		<string>todolist.txt</string>
+	</array>
+	<key>keyEquivalent</key>
+	<string>^~T</string>
+	<key>name</key>
+	<string>Todoflow</string>
+	<key>patterns</key>
+	<array>
+		<!-- whole line tags -->
+		<dict>
+			<key>match</key>
+			<string>^.*@done($|\s|\().*</string>
+			<key>name</key>
+			<string>comment.linetag.done</string>
+		</dict>
+		<!-- projects -->
+		<dict>
+			<key>match</key>
+			<string>^\t\t\t[^-].*:$</string>
+			<key>name</key>
+			<string>entity.name.section.project.level3</string>
+		</dict>
+		<dict>
+			<key>match</key>
+			<string>^\t\t[^-].*:$</string>
+			<key>name</key>
+			<string>entity.name.section.project.level2</string>
+		</dict>
+		<dict>
+			<key>match</key>
+			<string>^\t[^-].*:$</string>
+			<key>name</key>
+			<string>entity.name.section.project.level1</string>
+		</dict>
+		<dict>
+			<key>match</key>
+			<string>^[^-].*:\n</string>
+			<key>name</key>
+			<string>entity.name.section.project.level0</string>
+		</dict>
+		<!-- tags -->
+		<dict>
+			<key>match</key>
+			<string>(\s|^)@working(\s|$|\([^)]*\))</string>
+			<key>name</key>
+			<string>variable.name.tag.working</string>
+		</dict>
+		<dict>
+			<key>match</key>
+			<string>(\s|^)@next(\s|$|\([^)]*\))</string>
+			<key>name</key>
+			<string>variable.name.tag.next</string>
+		</dict>
+		<dict>
+			<key>match</key>
+			<string>(\s|^)@due(\s|$|\([^)]*\))</string>
+			<key>name</key>
+			<string>variable.name.tag.due</string>
+		</dict>
+		<dict>
+			<key>match</key>
+			<string>(\s|^)@date(\s|$|\([^)]*\))</string>
+			<key>name</key>
+			<string>variable.name.tag.date</string>
+		</dict>
+		<!-- general tag -->
+		<dict>
+			<key>match</key>
+			<string>(\s|^)@[^\s(]*(\s|$|\([^)]*\))</string>
+			<key>name</key>
+			<string>constant.tag</string>
+		</dict>
+	</array>
+
+	<key>scopeName</key>
+	<string>text.taskpaper.todoflow</string>
+	<key>uuid</key>
+	<string>da0b55a6-6154-11e4-a7fe-60fb42f38c28</string>
+</dict>
+</plist>
