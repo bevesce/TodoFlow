@@ -81,16 +81,34 @@ class TagOpQuery(TextQuery):
         return self.operation(param, self.right_side)
 
 
-class ProjectOpQuery(AbstractQuery):
+class PredefinedLeftOpQuery(AbstractQuery):
     def __init__(self, operation=None, right_side=None):
         self.operation = operation
         self.right_side = right_side.strip() if right_side else ''
 
+
+class ProjectOpQuery(PredefinedLeftOpQuery):
     def matches(self, todonode):
         for n in [todonode] + list(todonode.get_parents()):
             v = n.get_value()
             if v and v.is_project and self.operation(v.text, self.right_side):
                 return True
+
+
+class LinenumOpQuery(PredefinedLeftOpQuery):
+    def matches(self, todonode):
+        v = todonode.get_value()
+        if not v:
+            return False
+        return self.operation(str(v.linenum), self.right_side)
+
+
+class SourceOpQuery(PredefinedLeftOpQuery):
+    def matches(self, todonode):
+        for n in [todonode] + list(todonode.get_parents()):
+            if self.operation(n.source, self.right_side):
+                return True
+        return False
 
 
 # whole list

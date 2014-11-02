@@ -154,6 +154,10 @@ class TestParsedTodos(unittest.TestCase):
         self._todos = parse_todos(text)
         return self
 
+    def with_source_mocked_to(self, path):
+        self._todos.set_source(path)
+        return self
+
 
 class TestFiltering(TestParsedTodos):
     def filtered_by(self, query):
@@ -246,6 +250,51 @@ B:
 \t- 3
 \t- 5
 \t\t- 5b"""
+        )
+
+    def test_linenum_start(self):
+        self.todos(
+"""- 0
+- 1
+- 2
+"""
+        ).filtered_by('linenum = 0').are(
+"""- 0
+"""
+        )
+
+    def test_linenum_middle(self):
+        self.todos(
+"""- 0
+- 1
+2:
+\t- 3
+4
+"""
+        ).filtered_by('linenum = 3').are(
+"""2:
+\t- 3"""
+        )
+
+    def test_source_when_none(self):
+        self.todos(
+"""- 0
+- 1"""
+        ).filtered_by('source = Task.taskpaper').are(
+""""""
+        )
+
+    def test_source(self):
+        self.todos(
+"""p:
+\t- 1
+\t\t- 2
+- 3"""
+        ).with_source_mocked_to('Task.taskpaper').filtered_by('source = Task.taskpaper').are(
+"""p:
+\t- 1
+\t\t- 2
+- 3"""
         )
 
 

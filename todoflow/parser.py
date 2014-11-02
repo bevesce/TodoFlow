@@ -29,7 +29,7 @@ class Parser(object):
                 return self._handle_end()
 
     def _handle_text(self, token):
-        new_item = Node(Todoitem(token.text))
+        new_item = Node(Todoitem.from_token(token))
         if self.items_in_parsing:
             for nl in self.newlines:
                 self.items_in_parsing[-1].append_child(nl)

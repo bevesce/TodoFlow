@@ -21,6 +21,12 @@ class Todoitem(object):
         return Todoitem(text)
 
     @classmethod
+    def from_token(cls, token):
+        item = Todoitem(token.text)
+        item.linenum = token.linenum
+        return item
+
+    @classmethod
     def _gen_uniqueid(cls):
         cls._uniqueid_counter += 1
         return unicode(cls._uniqueid_counter)
@@ -33,6 +39,7 @@ class Todoitem(object):
         self.uniqueid = self._gen_uniqueid()
         self.text = tu.strip_formatting(text) if text else ''
         self._choose_type(text)
+        self.linenum = 0
 
     def __unicode__(self):
         return PlainPrinter().convert_item(self)

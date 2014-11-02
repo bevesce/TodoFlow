@@ -12,6 +12,9 @@ class Token(object):
         'end': '$',
     }
 
+    def __init__(self, linenum):
+        self.linenum = linenum
+
     def __getattr__(self, attr_name):
         try:
             return self.token_ids[attr_name.split('_')[-1]] == self.tok()
@@ -35,7 +38,8 @@ class DedentToken(Token):
 
 
 class TextToken(Token):
-    def __init__(self, text):
+    def __init__(self, text, linenum):
+        super(TextToken, self).__init__(linenum)
         self.text = text
 
     def tok(self):
@@ -58,21 +62,21 @@ class Lexer(object):
     def _tokenize(self):
         self.tokens = []
         self.indent_levels = [0]
-        for line_num, line in enumerate(self.lines):
+        for linenum, line in enumerate(self.lines):
             if line:
-                self._handle_indentation(line)
-                self.tokens.append(TextToken(line))
+                self._handle_indentation(line, linenum)
+                self.tokens.append(TextToken(line, linenum))
             else:
-                self.tokens.append(NewlineToken())
-        self.tokens.append(EndToken())
+                self.tokens.append(NewlineToken(linenum))
+        self.tokens.append(EndToken(linenum + 1))
 
-    def _handle_indentation(self, line):
+    def _handle_indentation(self, line, linenum):
         indent_levels = self.indent_levels
         current_level = calculate_indent_level(line)
         if current_level > indent_levels[-1]:
             indent_levels.append(current_level)
-            self.tokens.append(IndentToken())
+            self.tokens.append(IndentToken(linenum))
         elif current_level < indent_levels[-1]:
             while current_level < indent_levels[-1]:
                 indent_levels.pop()
-                self.tokens.append(DedentToken())
+                self.tokens.append(DedentToken(linenum))

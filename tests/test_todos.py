@@ -84,6 +84,19 @@ class TestMultilpeTodosFiles(unittest.TestCase):
 \t- task 2"""
         )
 
+    def test_source_filtering(self):
+        t = tf.from_dir('tests/resources/multiples')
+        self.assertEqual(
+            unicode(t.filter('source = tests/resources/multiples/1.taskpaper')),
+"""1:
+\t- task 1"""
+        )
+        self.assertEqual(
+            unicode(t.filter('source = tests/resources/multiples/2.taskpaper')),
+"""2:
+\t- task 2"""
+        )
+
 
 class TestSources(unittest.TestCase):
     filenames = ('0.taskpaper', '1.taskpaper', '2.taskpaper')

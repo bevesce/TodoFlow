@@ -14,7 +14,7 @@ tokens = (
     'AND', 'OR', 'NOT',
     'EQ', 'LEQ', 'GEQ', 'NEQ', 'GE', 'LE', 'IN', 'CONTAINS', 'MATCHES',
     'PLUS_DESCENDANTS', 'ONLY_FIRST',
-    'TEXT', 'TAG', 'PROJECT', 'TYPE', 'UNIQUEID',
+    'TEXT', 'TAG', 'PROJECT', 'TYPE', 'UNIQUEID', 'LINENUM', 'SOURCE'
 )
 
 # t_TAG_INDICATOR = r'@'
@@ -38,13 +38,15 @@ r_PLUS_DESCENDANTS = r'\+d'
 r_ONLY_FIRST = r'\+f'
 r_TYPE = r'type'
 t_UNIQUEID = 'uniqueid'
+t_LINENUM = 'linenum'
+t_SOURCE = 'source'
 
 
 def t_error(token):
     print("Illegal character '%s'" % token.value[0])
     token.lexer.skip(1)
 
-# TODO: there are some symbols that
+
 reserved = {
     'not': 'NOT',
     'and': 'AND',
@@ -63,6 +65,8 @@ reserved = {
     'project': 'PROJECT',
     'type': 'TYPE',
     'uniqueid': 'UNIQUEID',
+    'linenum': 'LINENUM',
+    'source': 'SOURCE',
 }
 
 
@@ -153,6 +157,16 @@ def p_argument_type(p):
 def p_argument_uniqueid(p):
     'argument : UNIQUEID'
     p[0] = query.UniqueidOpQuery()
+
+
+def p_argument_linenum(p):
+    'argument : LINENUM'
+    p[0] = query.LinenumOpQuery()
+
+
+def p_argument_source(p):
+    'argument : SOURCE'
+    p[0] = query.SourceOpQuery()
 
 
 def p_operator_eq(p):
