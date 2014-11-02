@@ -39,7 +39,7 @@ class Todoitem(object):
         self.uniqueid = self._gen_uniqueid()
         self.text = tu.strip_formatting(text) if text else ''
         self._choose_type(text)
-        self.linenum = 0
+        self.linenum = None
 
     def __unicode__(self):
         return PlainPrinter().convert_item(self)

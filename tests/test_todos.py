@@ -179,5 +179,71 @@ project 2:
 \t- task 2"""
         )
 
+
+class TestTodosModification(unittest.TestCase):
+    def todos(self, text):
+        self._todos = tf.from_text(text)
+        return self
+
+    def with_text(self, text):
+        self._text = text
+        return self
+
+    def appended_to_result_of_get(self, query):
+        item = self._todos.get_item(query)
+        self._todos = self._todos.by_appending(self._text, to_item=item)
+        return self
+
+    def prepend_to_result_of_get(self, query):
+        item = self._todos.get_item(query)
+        self._todos = self._todos.by_prepending(self._text, to_item=item)
+        return self
+
+    def are(self, text):
+        self.assertEqual(unicode(self._todos), text)
+        return self
+
+    def test_append(self):
+        self.todos(
+"""- 0
+p1:
+\t- 1
+- 2"""
+        ).with_text('- 1.1').appended_to_result_of_get('p1').are(
+"""- 0
+p1:
+\t- 1
+\t- 1.1
+- 2"""
+        ).with_text('- 2.1').appended_to_result_of_get('2').are(
+"""- 0
+p1:
+\t- 1
+\t- 1.1
+- 2
+\t- 2.1"""
+        )
+
+    def test_prepend(self):
+        self.todos(
+"""- 0
+p1:
+\t- 1
+- 2"""
+        ).with_text('- 1.1').prepend_to_result_of_get('p1').are(
+"""- 0
+p1:
+\t- 1.1
+\t- 1
+- 2"""
+        ).with_text('- 2.1').prepend_to_result_of_get('2').are(
+"""- 0
+p1:
+\t- 1.1
+\t- 1
+- 2
+\t- 2.1"""
+        )
+
 if __name__ == '__main__':
     unittest.main()

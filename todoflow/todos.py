@@ -105,6 +105,20 @@ class Todos(object):
             source=self._source
         )
 
+    def by_appending(self, text, to_item):
+        item = Todoitem(text)
+        return Todos(
+            self._todos_tree.append_child_to_node_with_value(item, value=to_item),
+            source=self.get_source()
+        )
+
+    def by_prepending(self, text, to_item):
+        item = Todoitem(text)
+        return Todos(
+            self._todos_tree.prepend_child_to_node_with_value(item, value=to_item),
+            source=self.get_source()
+        )
+
     def iter_sourced(self):
         """
         Yield new Todos that contain only items that were read from some file
@@ -129,7 +143,7 @@ class Node(object):
     Attributes:
         _value (object): item stored in node
         _parent (Node, optional): None when this is the root `Node`
-        _children (ordered collection of `Todoitem`): subtrees
+        _children (ordered collection of `Node`): subtrees
         source (text, optional): path to file from which this todos were read
 
     Note:
@@ -289,3 +303,27 @@ class Node(object):
         for node in self:
             if node.get_value() == value:
                 return node
+
+    def append_child_to_node_with_value(self, new_value, value):
+        """Returns new Node"""
+        def append(node, new_value):
+            return list(node.get_children()) + [Node(value=new_value)]
+        return self.change_children_of_node_with_value(new_value, value, append)
+
+    def prepend_child_to_node_with_value(self, new_value, value):
+        """Returns new Node"""
+        def append(node, new_value):
+            return [Node(value=new_value)] + list(node.get_children())
+        return self.change_children_of_node_with_value(new_value, value, append)
+
+    def change_children_of_node_with_value(self, new_value, value, change):
+        """Returns new Node"""
+        v = self.get_value()
+        if v == value:
+            return Node(value=v, children=change(self, new_value), source=self.source)
+        else:
+            return Node(
+                value=v,
+                children=[c.change_children_of_node_with_value(new_value, value, change) for c in self.get_children()],
+                source=self.source
+            )
