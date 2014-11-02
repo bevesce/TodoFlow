@@ -259,8 +259,7 @@ B:
 - 2
 """
         ).filtered_by('linenum = 0').are(
-"""- 0
-"""
+"""- 0"""
         )
 
     def test_linenum_middle(self):
