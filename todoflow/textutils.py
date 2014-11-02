@@ -135,6 +135,29 @@ def sort_by_tag_param(texts_collection, tag, reverse=False):
     ))
 
 
+def toggle_tags(text, tags_with_params):
+    """Args:
+        tags_with_params (list of pairs): tag and it's param,
+            param can be falsy or be strftime template
+            in the last case datetime.now() is used to fill it
+    """
+    has_those_tags = [has_tag(text, tag) for tag, param in tags_with_params]
+    if not any(has_those_tags):
+        text = add_tag(text, *_toggle_tag_prep(tags_with_params[0]))
+    elif has_those_tags[-1]:
+        text = remove_tag(text, tags_with_params[-1][0])
+    for i, (tag, has_this_tag) in enumerate(zip(tags_with_params[:-1], has_those_tags)):
+        if has_this_tag:
+            text = remove_tag(text, tag[0])
+            text = add_tag(text, *_toggle_tag_prep(tags_with_params[i + 1]))
+    return text
+
+
+def _toggle_tag_prep(tag_param):
+    tag, param = tag_param
+    return tag, dt.datetime.now().strftime(param) if param else None
+
+
 # Formatting
 
 def strip_formatting(text):

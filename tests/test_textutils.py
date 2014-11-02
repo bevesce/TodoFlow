@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 import unittest
+import datetime as dt
 
 import todoflow.textutils as tu
 
@@ -105,6 +106,10 @@ class TestTags(unittest.TestCase):
         self._text = tu.modify_tag_param(self._text, self.tag, modificaiton)
         return self
 
+    def toggled(self, tags):
+        self._text = tu.toggle_tags(self._text, tags)
+        return self
+
 
 class TestTagsFinding(TestTags):
     def test_tag_with_at(self):
@@ -148,6 +153,14 @@ class TestTagsFinding(TestTags):
 
     def test_get_all_tags_with_params(self):
         self.text('text @today(!) @working test @done(2014-01-10)').has_tags('today', 'working', 'done')
+
+    def test_toggle_tags(self):
+        now = dt.datetime.now()
+        tags = [('next', None), ('working', None), ('done', '%Y-%m-%d')]
+        self.text('text').toggled(tags).is_equal('text @next')
+        self.toggled(tags).is_equal('text @working')
+        self.toggled(tags).is_equal(now.strftime('text @done(%Y-%m-%d)'))
+        self.toggled(tags).is_equal('text')
 
 
 class TestTagsRemoving(TestTags):
