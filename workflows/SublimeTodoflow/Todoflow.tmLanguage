@@ -50,32 +50,32 @@
 		<!-- tags -->
 		<dict>
 			<key>match</key>
-			<string>(\s|^)@working(\s|$|\([^)]*\))</string>
+			<string>(\s|^)@working((?=\s)|$|\([^)]*\))</string>
 			<key>name</key>
 			<string>variable.name.tag.working</string>
 		</dict>
 		<dict>
 			<key>match</key>
-			<string>(\s|^)@next(\s|$|\([^)]*\))</string>
+			<string>(\s|^)@next((?=\s)|$|\([^)]*\))</string>
 			<key>name</key>
 			<string>variable.name.tag.next</string>
 		</dict>
 		<dict>
 			<key>match</key>
-			<string>(\s|^)@due(\s|$|\([^)]*\))</string>
+			<string>(\s|^)@due((?=\s)|$|\([^)]*\))</string>
 			<key>name</key>
 			<string>variable.name.tag.due</string>
 		</dict>
 		<dict>
 			<key>match</key>
-			<string>(\s|^)@date(\s|$|\([^)]*\))</string>
+			<string>(\s|^)@date((?=\s)|$|\([^)]*\))</string>
 			<key>name</key>
 			<string>variable.name.tag.date</string>
 		</dict>
 		<!-- general tag -->
 		<dict>
 			<key>match</key>
-			<string>(\s|^)@[^\s(]*(\s|$|\([^)]*\))</string>
+			<string>(((\s)|^)@[^\s(]*((?=\s)|$|\([^)]*\)))</string>
 			<key>name</key>
 			<string>constant.tag</string>
 		</dict>
