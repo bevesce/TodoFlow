@@ -2,10 +2,11 @@
 
 ![](workflows/img/icon.png)
 
-Todoflow is Python module that provides functions to parse, filter, search, modify and save todo lists stored in plain text files with TaskPaper syntax.
+TodoFlow is Python module that provides functions to parse, filter, search, modify and save todo lists stored in plain text files with TaskPaper syntax.
 
 ## Changelog
 
+- 2015-04-24 - Removal of workflows
 - 2014-10-24 - Release of version 4
     - **this version removes some features and introduces breaking changes** 
     - new code base
