@@ -1,4 +1,4 @@
-# Todoflow 4.0
+# TodoFlow 4.0
 
 ![](workflows/img/icon.png)
 

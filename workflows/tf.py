@@ -2,12 +2,12 @@
 Search tasks.
 
 Usage:
-    agenda.py [-n=<named_query>] [(-a|-o)] [<query>]
+    tf.py [-n=<named_query>] [(-a|-o)] [<query>]
 
 Options:
     -n=<named_query>] --named_query=<named_query>]   Name of query stored in config.
     -o --or                                          Join named query and query with OR.
-    -a --and                                          Join named query and query with AND [it is default].
+    -a --and                                         Join named query and query with AND [it is default].
 
 """
 

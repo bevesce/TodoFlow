@@ -62,6 +62,7 @@ class Lexer(object):
     def _tokenize(self):
         self.tokens = []
         self.indent_levels = [0]
+        linenum = 0
         for linenum, line in enumerate(self.lines):
             if line:
                 self._handle_indentation(line, linenum)
