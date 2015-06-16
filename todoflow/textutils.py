@@ -7,17 +7,20 @@ from __future__ import absolute_import
 import re
 import datetime as dt
 
-from . import config
 
+task_indicator = '- '
+project_indicator = ':'
+tag_indicator = '@'
 
 # Types
 
+
 def is_task(text):
-    return text.lstrip().startswith(config.task_indicator)
+    return text.lstrip().startswith(task_indicator)
 
 
 def is_project(text):
-    return not is_task(text) and text.endswith(config.project_indicator)
+    return not is_task(text) and text.endswith(project_indicator)
 
 
 def is_note(text):
@@ -27,8 +30,8 @@ def is_note(text):
 # Tags
 
 def _fix_tag(tag):
-    if not tag.startswith(config.tag_indicator):
-        tag = config.tag_indicator + tag
+    if not tag.startswith(tag_indicator):
+        tag = tag_indicator + tag
     return tag
 
 
@@ -107,14 +110,14 @@ def enclose_tag(text, tag, prefix, suffix=None):
     return replace_tag(text, tag, replacement)
 
 
-tag_pattern = config.tag_indicator + r'([^\s(]*)'
+tag_pattern = tag_indicator + r'([^\s(]*)'
 
 
 def get_all_tags(text, include_indicator=False):
     pattern = re.compile(tag_pattern)
     tags = pattern.findall(text)
     if include_indicator:
-        return [config.tag_indicator + t for t in tags]
+        return [tag_indicator + t for t in tags]
     return tags
 
 
@@ -163,18 +166,18 @@ def _toggle_tag_prep(tag_param):
 def strip_formatting(text):
     text = text.strip('\t')
     if is_task(text):
-        return text[len(config.task_indicator):]
+        return text[len(task_indicator):]
     elif is_project(text):
-        return text[:-(len(config.project_indicator))]
+        return text[:-(len(project_indicator))]
     return text
 
 
 def strip_formatting_and_tags(text):
     text = text.strip()
     if is_project(text):
-        text = text[:-len(config.project_indicator)]
+        text = text[:-len(project_indicator)]
     if is_task(text):
-        text = text[len(config.task_indicator):]
+        text = text[len(task_indicator):]
     for tag in get_all_tags(text):
         text = remove_tag(text, tag)
     return text.strip()
