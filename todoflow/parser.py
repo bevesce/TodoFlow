@@ -12,13 +12,10 @@ class Parser(object):
         self.items_in_parsing = []
 
     def parse(self, text):
-        # reqursive implementation imo was more elegent
-        # but for long lists it reached stack limit
-        # in Ediotorial/Pythonista app on iOS
         self.lexer = Lexer(text)
         for token in self.lexer.tokens:
             if token.is_newline:
-                self.newlines.append(Node(Todoitem()))
+                self.newlines.append(Node(Todoitem.from_token(token)))
             elif token.is_text:
                 new_item = self._handle_text(token)
             elif token.is_indent:

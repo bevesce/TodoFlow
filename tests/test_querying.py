@@ -6,7 +6,7 @@ from __future__ import unicode_literals
 
 import unittest
 
-from todoflow.querying.parser import parse as parse_query
+from todoflow.querying_parser import parse as parse_query
 from todoflow.parser import parse as parse_todos
 from todoflow.compatibility import unicode
 

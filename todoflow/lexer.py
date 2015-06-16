@@ -26,6 +26,11 @@ class NewlineToken(Token):
     def tok(self):
         return self.token_ids['newline']
 
+    def __init__(self, linenum, start):
+        super(NewlineToken, self).__init__(linenum)
+        self.start = start
+        self.end = start
+
 
 class IndentToken(Token):
     def tok(self):
@@ -38,9 +43,11 @@ class DedentToken(Token):
 
 
 class TextToken(Token):
-    def __init__(self, text, linenum):
+    def __init__(self, text, linenum, start):
         super(TextToken, self).__init__(linenum)
         self.text = text
+        self.start = start
+        self.end = start + len(text)
 
     def tok(self):
         return self.token_ids['text']
@@ -63,12 +70,14 @@ class Lexer(object):
         self.tokens = []
         self.indent_levels = [0]
         linenum = 0
+        char_index = 0
         for linenum, line in enumerate(self.lines):
             if line:
                 self._handle_indentation(line, linenum)
-                self.tokens.append(TextToken(line, linenum))
+                self.tokens.append(TextToken(line, linenum, char_index))
             else:
-                self.tokens.append(NewlineToken(linenum))
+                self.tokens.append(NewlineToken(linenum, char_index))
+            char_index += len(line) + 1
         self.tokens.append(EndToken(linenum + 1))
 
     def _handle_indentation(self, line, linenum):

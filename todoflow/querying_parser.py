@@ -7,7 +7,7 @@ import ply.lex as lex
 import ply.yacc as yacc
 
 from . import query
-from ..config import tag_indicator
+from .config import tag_indicator
 
 tokens = (
     'LPAREN', 'RPAREN',

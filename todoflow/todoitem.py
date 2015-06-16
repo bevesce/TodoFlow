@@ -24,6 +24,8 @@ class Todoitem(object):
     def from_token(cls, token):
         item = Todoitem(token.text)
         item.linenum = token.linenum
+        item.start = token.start
+        item.end = token.end
         return item
 
     @classmethod
