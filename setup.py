@@ -10,7 +10,7 @@ setup(
     author='Piotr Wilczyński',
     author_email='wilczynski.pi@gmail.com',
     url='git+https://github.com/bevesce/TodoFlow',
-    packages=['todoflow', 'todoflow'],
+    packages=['todoflow'],
     install_requires=[
         "ply",
     ],
