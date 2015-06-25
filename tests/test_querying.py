@@ -26,6 +26,8 @@ class TestQueriesBasedOnText(TestQuering):
         self.assertFalse(self._query.matches_text(text))
         return self
 
+
+class TestTextAndTag(TestQueriesBasedOnText):
     def test_text(self):
         self.query(
             'some text'
@@ -147,6 +149,43 @@ class TestLogicalOperators(TestQueriesBasedOnText):
         self.query(
             '(A or B) and C'
         ).matches('AC').matches('BC').doesnt_match('AB')
+
+
+class TestParenthesis(TestQueriesBasedOnText):
+    def test_parsing_tag(self):
+        self.assertTrue(parse_query('@start'))
+
+    def test_parsing_tag_or(self):
+        self.assertTrue(parse_query('@start <= 2015-06-25 or not @start'))
+
+    def test_parsing_text_in_paren(self):
+        self.assertTrue(parse_query('(a)'))
+
+    def test_parsing_text_or_in_paren(self):
+        self.assertTrue(parse_query('(a or b)'))
+
+    def test_parsing_text_or_in_paren_or(self):
+        self.assertTrue(parse_query('(a or b) or c'))
+
+    def test_parsing_text_or_in_paren_or_tag(self):
+        self.assertTrue(parse_query('(a or b) or @c'))
+
+    def test_parsing_tag_in_paren(self):
+        self.assertTrue(parse_query('(@a)'))
+
+    def test_parsing_tag_or_in_paren(self):
+        self.assertTrue(parse_query('(@a or b)'))
+
+    def test_parsing_tag_or_tag_in_paren(self):
+        self.assertTrue(parse_query('(@a or @b)'))
+
+    def test_parsing_tag_or_tag(self):
+        self.assertTrue(parse_query('@a or @b'))
+
+    def test_hide_not_started_query(self):
+        self.query(
+            '((@start <= 2015-06-25 or not @start) and not @done)'
+        ).matches('A')
 
 
 class TestParsedTodos(unittest.TestCase):

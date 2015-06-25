@@ -77,6 +77,7 @@ Subset with few additions of query syntax of Taskpaper.app is supported:
 - narrowing to only first items that match query: `+f`
 - *op*s: `=`, `<=`, `<`, `>`, `>=`, `!=`, `->` (in), `<-` (contains)
 - logical operators: `and`, `or`, `not`
+- parentheses: `(`, `)`...
 
 ### Todo item
 

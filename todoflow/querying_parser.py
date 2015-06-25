@@ -21,7 +21,7 @@ tokens = (
 t_LPAREN = r'\('
 t_RPAREN = r'\)'
 # t_QUOTE = r'"'
-t_TAG = tag_indicator + r'\S*'
+t_TAG = tag_indicator + r'[^\s)]*'
 r_PROJECT = ':|project'
 t_ignore = ' \t\n\r'
 r_ignore = r'(?<!\\)"'
@@ -117,14 +117,14 @@ def p_E3_E4(p):
     p[0] = p[1]
 
 
-def p_E3_paren(p):
-    'E3 : LPAREN E1 RPAREN'
-    p[0] = p[2]
-
-
 def p_E4_tag(p):
     'E4 : TAG'
     p[0] = query.TagQuery(p[1])
+
+
+def p_E4_paren(p):
+    'E4 : LPAREN E1 RPAREN'
+    p[0] = p[2]
 
 
 def p_E4_words(p):
@@ -226,8 +226,9 @@ def p_words_epsilon(p):
 
 
 def p_error(p):
-    print("Syntax error in input!")
+    print("Syntax error in input!!!")
     print(p)
+    print('_')
 
 
 def _get_pickle_path():
@@ -250,6 +251,7 @@ class Parser(object):
 
 def parse(text_or_query):
     try:
-        return _parser.parse(text_or_query)
+        query = _parser.parse(text_or_query)
+        return query
     except TypeError:
         return text_or_query
