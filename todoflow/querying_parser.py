@@ -77,19 +77,24 @@ def t_TEXT(t):
     return t
 
 
-def p_E1_and(p):
-    'E1 : E1 AND E2'
-    p[0] = query.AndQuery(p[1], p[3])
-
-
-def p_E1_plus_d(p):
-    'E1 : E2 PLUS_DESCENDANTS'
+def p_E0_plus_d(p):
+    'E0 : E1 PLUS_DESCENDANTS'
     p[0] = query.PlusDescendants(p[1])
 
 
-def p_E1_only_f(p):
-    'E1 : E2 ONLY_FIRST'
+def p_E0_only_f(p):
+    'E0 : E1 ONLY_FIRST'
     p[0] = query.OnlyFirst(p[1])
+
+
+def p_E0_E1(p):
+    'E0 : E1'
+    p[0] = p[1]
+
+
+def p_E1_and(p):
+    'E1 : E1 AND E2'
+    p[0] = query.AndQuery(p[1], p[3])
 
 
 def p_E1_E2(p):
@@ -225,10 +230,12 @@ def p_words_epsilon(p):
     p[0] = ''
 
 
+class QueryParserError(Exception):
+    pass
+
+
 def p_error(p):
-    print("Syntax error in input!!!")
-    print(p)
-    print('_')
+    raise QueryParserError("Syntax error in input! {!s}".format(p))
 
 
 def _get_pickle_path():

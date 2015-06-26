@@ -145,10 +145,13 @@ class TypeOpQuery(AbstractQuery):
         self.right_side = right_side
 
     def matches(self, todonode):
+        value = todonode.get_value()
+        if not value:
+            return False
         return {
-            'task': todonode.get_value().is_task,
-            'note': todonode.get_value().is_note,
-            'project': todonode.get_value().is_project,
+            'task': value.is_task,
+            'note': value.is_note,
+            'project': value.is_project,
         }.get(self.right_side, False)
 
 

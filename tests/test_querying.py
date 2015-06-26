@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 
 import unittest
 
+import todoflow
 from todoflow.querying_parser import parse as parse_query
 from todoflow.parser import parse as parse_todos
 from todoflow.compatibility import unicode
@@ -188,6 +189,15 @@ class TestParenthesis(TestQueriesBasedOnText):
         ).matches('A')
 
 
+class TestPlusD(TestQueriesBasedOnText):
+    def test_plus_d(self):
+        self.assertTrue(parse_query('a +d'))
+
+    def test_parens_plus_d(self):
+        self.assertTrue(parse_query('a or b +d'))
+        self.assertTrue(parse_query('a and b +d'))
+
+
 class TestParsedTodos(unittest.TestCase):
     def todos(self, text):
         self._todos = parse_todos(text)
@@ -321,6 +331,15 @@ B:
         ).filtered_by('source = Task.taskpaper').are(
 """"""
         )
+
+    def test_plus_d_and_type(self):
+        self.todos(
+"""Project:
+\t- Task 1
+""").filtered_by('not @done and type = task +d').are(
+"""Project:
+\t- Task 1"""
+)
 
     def test_source(self):
         self.todos(

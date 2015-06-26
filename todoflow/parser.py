@@ -5,6 +5,10 @@ from .todos import Todos, Node
 from .todoitem import Todoitem
 
 
+class TodolistParserError(Exception):
+    pass
+
+
 class Parser(object):
     def __init__(self):
         self.newlines = []
@@ -13,6 +17,7 @@ class Parser(object):
 
     def parse(self, text):
         self.lexer = Lexer(text)
+        new_item = None
         for token in self.lexer.tokens:
             if token.is_newline:
                 self.newlines.append(Node(Todoitem.from_token(token)))
@@ -31,7 +36,10 @@ class Parser(object):
             for nl in self.newlines:
                 self.items_in_parsing[-1].append_child(nl)
             self.newlines = []
-            self.items_in_parsing[-1].append_child(new_item)
+            try:
+                self.items_in_parsing[-1].append_child(new_item)
+            except AttributeError:
+                raise TodolistParserError('Error in parsing: {}'.format(self.items_in_parsing))
         else:
             self.parsed_items += self.newlines
             self.newlines = []
