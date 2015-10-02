@@ -6,7 +6,9 @@ TodoFlow is Python module that provides functions to parse, filter, search, modi
 
 ## Changelog
 
-- 2015-10-02 - 4.0.2 - Removal of ply pickle file so Todoflow can work with ply 3.6 with no errors
+- 2015-10-02 - 4.0.2 
+    - Removal of ply pickle file so TodoFlow can work with ply 3.6 with no errors
+    - Release on PyPI
 - 2015-04-24 - Removal of workflows
 - 2014-10-24 - Release of version 4
     - **this version removes some features and introduces breaking changes** 
@@ -20,7 +22,7 @@ TodoFlow is Python module that provides functions to parse, filter, search, modi
 
 ## Installation
 
-    pip install git+https://github.com/bevesce/TodoFlow.git
+    pip install TodoFlow
 
 ## Overview
 
