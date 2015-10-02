@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import os
-import inspect
 
 import ply.lex as lex
 import ply.yacc as yacc
@@ -238,13 +237,9 @@ def p_error(p):
     raise QueryParserError("Syntax error in input! {!s}".format(p))
 
 
-def _get_pickle_path():
-    return os.path.expanduser('~/.todoflow_parsetab.pickle')
-
 lex.lex()
 _parser = yacc.yacc(
-    picklefile=_get_pickle_path(),
-    debug=0, write_tables=0,
+    debug=False, write_tables=False,
 )
 
 
