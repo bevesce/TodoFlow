@@ -80,6 +80,8 @@ class Todoitem(object):
 
     def tag(self, tag_to_use, param=None):
         self.text = tu.add_tag(self.text, tag_to_use, param)
+        if self.is_project:
+            self.text += " "
 
     def remove_tag(self, tag_to_remove):
         self.text = tu.remove_tag(self.text, tag_to_remove)
