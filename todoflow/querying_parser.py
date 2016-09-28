@@ -1,11 +1,25 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import os
+import inspect
 
-import ply.lex as lex
-import ply.yacc as yacc
+from ..ply import lex
+from ..ply import yacc
 
-from . import query
+from .query import AndQuery
+from .query import LinenumOpQuery
+from .query import NotQuery
+from .query import OnlyFirst
+from .query import OrQuery
+from .query import PlusDescendants
+from .query import ProjectOpQuery
+from .query import SourceOpQuery
+from .query import SubstringQuery
+from .query import TagOpQuery
+from .query import TagQuery
+from .query import TypeOpQuery
+from .query import UniqueidOpQuery
+
 from .config import tag_indicator
 
 tokens = (
@@ -76,24 +90,19 @@ def t_TEXT(t):
     return t
 
 
-def p_E0_plus_d(p):
-    'E0 : E1 PLUS_DESCENDANTS'
-    p[0] = query.PlusDescendants(p[1])
-
-
-def p_E0_only_f(p):
-    'E0 : E1 ONLY_FIRST'
-    p[0] = query.OnlyFirst(p[1])
-
-
-def p_E0_E1(p):
-    'E0 : E1'
-    p[0] = p[1]
-
-
 def p_E1_and(p):
     'E1 : E1 AND E2'
-    p[0] = query.AndQuery(p[1], p[3])
+    p[0] = AndQuery(p[1], p[3])
+
+
+def p_E1_plus_d(p):
+    'E1 : E2 PLUS_DESCENDANTS'
+    p[0] = PlusDescendants(p[1])
+
+
+def p_E1_only_f(p):
+    'E1 : E2 ONLY_FIRST'
+    p[0] = OnlyFirst(p[1])
 
 
 def p_E1_E2(p):
@@ -103,7 +112,7 @@ def p_E1_E2(p):
 
 def p_E2_or(p):
     'E2 : E2 OR E3'
-    p[0] = query.OrQuery(p[1], p[3])
+    p[0] = OrQuery(p[1], p[3])
 
 
 def p_E2_E3(p):
@@ -113,7 +122,7 @@ def p_E2_E3(p):
 
 def p_E3_not(p):
     'E3 : NOT E3'
-    p[0] = query.NotQuery(p[2])
+    p[0] = NotQuery(p[2])
 
 
 def p_E3_E4(p):
@@ -123,7 +132,7 @@ def p_E3_E4(p):
 
 def p_E4_tag(p):
     'E4 : TAG'
-    p[0] = query.TagQuery(p[1])
+    p[0] = TagQuery(p[1])
 
 
 def p_E4_paren(p):
@@ -133,7 +142,7 @@ def p_E4_paren(p):
 
 def p_E4_words(p):
     'E4 : words'
-    p[0] = query.SubstringQuery(p[1].strip())
+    p[0] = SubstringQuery(p[1].strip())
 
 
 def p_E4_argument_operator_words(p):
@@ -145,32 +154,32 @@ def p_E4_argument_operator_words(p):
 
 def p_argument_tag(p):
     'argument : TAG'
-    p[0] = query.TagOpQuery(p[1])
+    p[0] = TagOpQuery(p[1])
 
 
 def p_argument_project(p):
     'argument : PROJECT'
-    p[0] = query.ProjectOpQuery()
+    p[0] = ProjectOpQuery()
 
 
 def p_argument_type(p):
     'argument : TYPE'
-    p[0] = query.TypeOpQuery()
+    p[0] = TypeOpQuery()
 
 
 def p_argument_uniqueid(p):
     'argument : UNIQUEID'
-    p[0] = query.UniqueidOpQuery()
+    p[0] = UniqueidOpQuery()
 
 
 def p_argument_linenum(p):
     'argument : LINENUM'
-    p[0] = query.LinenumOpQuery()
+    p[0] = LinenumOpQuery()
 
 
 def p_argument_source(p):
     'argument : SOURCE'
-    p[0] = query.SourceOpQuery()
+    p[0] = SourceOpQuery()
 
 
 def p_operator_eq(p):
@@ -229,17 +238,18 @@ def p_words_epsilon(p):
     p[0] = ''
 
 
-class QueryParserError(Exception):
-    pass
-
-
 def p_error(p):
-    raise QueryParserError("Syntax error in input! {!s}".format(p))
+    print("Syntax error in input!!!")
+    print(p)
+    print('_')
 
+
+def _get_pickle_path():
+    return os.path.expanduser('~/.todoflow_parsetab.pickle')
 
 lex.lex()
 _parser = yacc.yacc(
-    debug=False, write_tables=False,
+    debug=0, write_tables=0
 )
 
 
