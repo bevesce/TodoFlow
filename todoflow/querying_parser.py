@@ -3,8 +3,8 @@ from __future__ import unicode_literals
 import os
 import inspect
 
-from ..ply import lex
-from ..ply import yacc
+from ply import lex
+from ply import yacc
 
 from .query import AndQuery
 from .query import LinenumOpQuery

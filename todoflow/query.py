@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 
-from . import textutils as tu
+from .textutils import get_tag_param
+from .textutils import has_tag
 
 
 class AbstractQuery(object):
@@ -32,7 +33,7 @@ class TagQuery(TextQuery):
         self.tag = tag
 
     def matches_text(self, text):
-        return tu.has_tag(text, self.tag)
+        return has_tag(text, self.tag)
 
 
 # Logical operators
@@ -75,7 +76,7 @@ class TagOpQuery(TextQuery):
         self.right_side = right_side.strip() if right_side else ''
 
     def matches_text(self, text):
-        param = tu.get_tag_param(text, self.tag)
+        param = get_tag_param(text, self.tag)
         if param is None:
             return False
         return self.operation(param, self.right_side)
