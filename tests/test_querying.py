@@ -338,7 +338,8 @@ B:
 \t- Task 1
 """).filtered_by('not @done and type = task +d').are(
 """Project:
-\t- Task 1"""
+\t- Task 1
+"""
 )
 
     def test_source(self):

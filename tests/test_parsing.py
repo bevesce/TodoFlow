@@ -8,7 +8,7 @@ import unittest
 import todoflow.lexer as lexer
 import todoflow.parser as parser
 import todoflow.config
-from todoflow.compatibility import *
+from todoflow.compatibility import unicode
 
 
 class TestLexer(unittest.TestCase):

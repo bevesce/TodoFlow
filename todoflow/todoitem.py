@@ -2,7 +2,7 @@ from __future__ import absolute_import
 
 from . import textutils as tu
 from .printers import PlainPrinter
-from .compatibility import unicode, _str_
+from .compatibility import unicode
 
 
 class Todoitem(object):
@@ -47,7 +47,7 @@ class Todoitem(object):
         return PlainPrinter().convert_item(self)
 
     def __str__(self):
-        return _str_(self)
+        return self.__unicode__()
 
     def __repr__(self):
         return '<Todoitem: {} | "{}" | {}>'.format(

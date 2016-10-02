@@ -4,12 +4,13 @@ from collections import deque
 from .todoitem import Todoitem
 from .querying_parser import parse as parse_query
 from .printers import PlainPrinter
-from .compatibility import _str_
+from .compatibility import unicode
 
 
 class Todos(object):
     """Representation of taskpaper todos."""
     def __init__(self, todos_tree=None, source=None):
+        todos_tree = self._maybe_parse(todos_tree)
         self._todos_tree = todos_tree or Node()
         self._source = source
         self._todos_tree.source = source
@@ -18,10 +19,10 @@ class Todos(object):
         return self._todos_tree.iter_values()
 
     def __unicode__(self):
-        return PlainPrinter().unicode(self._todos_tree) if self._todos_tree else u''
+        return PlainPrinter().pformat(self._todos_tree) if self._todos_tree else u''
 
     def __str__(self):
-        return _str_(self)
+        return self.__unicode__()
 
     def __len__(self):
         return len(self._todos_tree)
@@ -31,8 +32,13 @@ class Todos(object):
 
     def __div__(self, query):
         """Filter todos by query"""
-        # I know it's inresponsible but is't so cool
         return self.filter(query)
+
+    def _maybe_parse(self, todos):
+        if isinstance(todos, unicode):
+            from .parser import parse
+            return parse(todos)._todos_tree
+        return todos
 
     def set_source(self, path):
         self._source = path
@@ -87,7 +93,7 @@ class Todos(object):
             query (text)
 
         Returns:
-            Firest `Todoitem` that matches query.
+            First `Todoitem` that matches query.
         """
         for i in self.search(query):
             return i
