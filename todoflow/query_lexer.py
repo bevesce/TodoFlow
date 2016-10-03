@@ -8,28 +8,34 @@ class LexerError(Exception):
 
 
 class QueryLexer:
-    def run(self, text):
+    def tokenize(self, text):
         self.chars = list(text)
         self.tokens = []
         while not self.is_eof():
-            c = self.pick()
-            if self.is_attribute_start(c):
-                self.read_attribute()
-            elif self.is_wild_card(c):
-                self.read_wild_card()
-            elif self.is_punctuation(c):
-                self.read_punctuationn()
-            elif self.is_axis_selector_start(c):
-                self.read_axis_selector()
-            elif self.is_quote(c):
-                self.read_search_term()
-            elif self.is_operator_start(c):
-                self.read_operator()
-            elif self.is_slice_or_modifier_start(c):
-                self.read_slice_or_modifier()
-            else:
-                self.read_search_term_word_operator_or_shortcut()
+            self.pick_and_read()
+        self.clean_up_tokens()
         return self.tokens
+
+    def pick_and_read(self):
+        c = self.pick()
+        if self.is_white_space(c):
+            self.pop()
+        elif self.is_attribute_start(c):
+            self.read_attribute()
+        elif self.is_wild_card(c):
+            self.read_wild_card()
+        elif self.is_punctuation(c):
+            self.read_punctuationn()
+        elif self.is_axis_selector_start(c):
+            self.read_axis_selector()
+        elif self.is_quote(c):
+            self.read_search_term()
+        elif self.is_operator_start(c):
+            self.read_operator()
+        elif self.is_slice_or_modifier_start(c):
+            self.read_slice_or_modifier()
+        else:
+            self.read_search_term_word_operator_or_shortcut()
 
     def pick(self):
         return self.chars[0]
@@ -50,10 +56,13 @@ class QueryLexer:
     def is_eof(self):
         return not self.chars
 
+    def is_white_space(self, c):
+        return c in ' \t\n'
+
     def is_word_break(self, c):
         if self.is_eof():
             return True
-        return c in '/@=!<>[]()"'
+        return c in '/@=!<>[]()" \t\n'
 
     def is_quote(self, c):
         return c == '"'
@@ -104,6 +113,15 @@ class QueryLexer:
             'and',
             'or',
             'not',
+        )
+
+    def is_relation_operator(self, text):
+        return text in (
+            'contains',
+            'beginswith',
+            'endswith',
+            'matches',
+            '=', '!=', '<', '>', '<=', '>=',
         )
 
     def is_relation_modifier(self, c):
@@ -160,7 +178,7 @@ class QueryLexer:
         for axis_selector in axis_selectors:
             if self.startswith(axis_selector):
                 self.pop_word(axis_selector)
-                self.add('axis', axis_selector)
+                self.add('operator', axis_selector)
 
     def read_punctuationn(self):
         self.add('punctuation', self.pop())
@@ -213,9 +231,89 @@ class QueryLexer:
         while not f(c):
             word += self.pop()
             if self.is_eof():
-                return word.strip()
+                return word
             c = self.pick()
-        return word.strip()
+        return word
 
     def add(self, type, value):
         self.tokens.append(Token(type, value))
+
+    def clean_up_tokens(self):
+        tokens = self.tokens
+        tokens = self.expand_shortcuts(tokens)
+        tokens = self.join_search_terms(tokens)
+        tokens = self.provide_default_operator(tokens)
+        tokens = self.provide_default_attribute(tokens)
+        tokens = self.provide_default_relation_modifier(tokens)
+        self.tokens = list(tokens)
+
+    def expand_shortcuts(self, tokens):
+        for i, t in enumerate(tokens):
+            if t.type != 'shortcut':
+                yield t
+            else:
+                yield Token('attribute', 'type')
+                yield Token('operator', '=')
+                yield Token('search term', t.value)
+                if i != len(tokens) - 1:
+                    yield Token('operator', 'and')
+
+    def join_search_terms(self, tokens):
+        cumulated = None
+        for t in tokens:
+            if t.type != 'search term':
+                if cumulated:
+                    yield cumulated
+                    cumulated = None
+                yield t
+            else:
+                if not cumulated:
+                    cumulated = t
+                else:
+                    cumulated = Token(
+                        'search term',
+                        cumulated.value + ' ' + t.value
+                    )
+        if cumulated:
+            yield cumulated
+
+
+    def provide_default_operator(self, tokens):
+        previous = None
+        for t in tokens:
+            if t.type != 'search term':
+                previous = t
+                yield t
+            else:
+                if (
+                    not previous or
+                    previous.type != 'operator' or
+                    not self.is_relation_operator(previous.value)
+                ):
+                    yield Token('operator', 'contains')
+                yield t
+
+    def provide_default_attribute(self, tokens):
+        previous = None
+        for t in tokens:
+            if t.type != 'operator' or not self.is_relation_operator(t.value):
+                previous = t
+                yield t
+            else:
+                if not previous or previous.type != 'attribute':
+                    yield Token('attribute', 'text')
+                yield t
+
+    def provide_default_relation_modifier(self, tokens):
+        previous = None
+        for t in tokens:
+            if previous and t.type != 'relation modifier':
+                yield Token('relation modifier', 'i')
+                previous = None
+            elif t.type == 'operator' and self.is_relation_operator(t.value):
+                previous = t
+            else:
+                previous = None
+            yield t
+        if previous:
+            yield Token('relation modifier', 'i')

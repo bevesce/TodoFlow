@@ -12,7 +12,7 @@ class TestTokens(unittest.TestCase):
         self.lex = QueryLexer()
 
     def tokens(self, text):
-        self.tokens = self.lex.run(text)
+        self.tokens = self.lex.tokenize(text)
         return self
 
     def are(self, tokens):
@@ -33,22 +33,61 @@ class TestTokens(unittest.TestCase):
 
     def test_shortcut(self):
         self.tokens('project').are([
-            ('shortcut', 'project')
+            ('attribute', 'type'),
+            ('operator', '='),
+            ('relation modifier', 'i'),
+            ('search term', 'project')
         ])
 
-    def test_word(self):
+    def test_shortcut_with_continuation(self):
+        self.tokens('project Test').are([
+            ('attribute', 'type'),
+            ('operator', '='),
+            ('relation modifier', 'i'),
+            ('search term', 'project'),
+            ('operator', 'and'),
+            ('attribute', 'text'),
+            ('operator', 'contains'),
+            ('relation modifier', 'i'),
+            ('search term', 'Test')
+        ])
+
+    def test_defaults(self):
         self.tokens('test').are([
-            ('search term', 'test')
+            ('attribute', 'text'),
+            ('operator', 'contains'),
+            ('relation modifier', 'i'),
+            ('search term', 'test'),
+        ])
+
+    def test_default_attribute(self):
+        self.tokens('= test').are([
+            ('attribute', 'text'),
+            ('operator', '='),
+            ('relation modifier', 'i'),
+            ('search term', 'test'),
+        ])
+
+    def test_joins_search_terms(self):
+        self.tokens('test test').are([
+            ('attribute', 'text'),
+            ('operator', 'contains'),
+            ('relation modifier', 'i'),
+            ('search term', 'test test'),
         ])
 
     def test_opeartor(self):
         self.tokens('<').are([
-            ('operator', '<')
+            ('attribute', 'text'),
+            ('operator', '<'),
+            ('relation modifier', 'i'),
         ])
 
     def test_two_char_opertor(self):
         self.tokens('<=').are([
-            ('operator', '<=')
+            ('attribute', 'text'),
+            ('operator', '<='),
+            ('relation modifier', 'i'),
         ])
 
     def test_relation_modifier(self):
@@ -63,6 +102,9 @@ class TestTokens(unittest.TestCase):
 
     def test_no_wild_card_in_search_term(self):
         self.tokens('r*r').are([
+            ('attribute', 'text'),
+            ('operator', 'contains'),
+            ('relation modifier', 'i'),
             ('search term', 'r*r')
         ])
 
@@ -88,31 +130,34 @@ class TestTokens(unittest.TestCase):
 
     def test_axis_direct(self):
         self.tokens('/').are([
-            ('axis', '/')
+            ('operator', '/')
         ])
 
     def test_axis_descendant(self):
         self.tokens('//').are([
-            ('axis', '//')
+            ('operator', '//')
         ])
 
     def test_axis_descendant_or_self(self):
         self.tokens('///').are([
-            ('axis', '///')
+            ('operator', '///')
         ])
 
     def test_axis_ancestor_or_self(self):
         self.tokens('/ancestor-or-self::').are([
-            ('axis', '/ancestor-or-self::')
+            ('operator', '/ancestor-or-self::')
         ])
 
     def test_axis_ancestor(self):
         self.tokens('/ancestor::').are([
-            ('axis', '/ancestor::')
+            ('operator', '/ancestor::')
         ])
 
     def test_quoted_search_term(self):
         self.tokens('"//and*=>"').are([
+            ('attribute', 'text'),
+            ('operator', 'contains'),
+            ('relation modifier', 'i'),
             ('search term', '//and*=>')
         ])
 
@@ -120,6 +165,7 @@ class TestTokens(unittest.TestCase):
         self.tokens('@text = test').are([
             ('attribute', 'text'),
             ('operator', '='),
+            ('relation modifier', 'i'),
             ('search term', 'test'),
         ])
 

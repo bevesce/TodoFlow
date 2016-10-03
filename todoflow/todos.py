@@ -2,7 +2,8 @@
 from collections import deque
 
 from .todoitem import Todoitem
-from .querying_parser import parse as parse_query
+from .query_parser import parse as parse_query
+from .query import Query
 from .printers import PlainPrinter
 from .compatibility import unicode
 
@@ -82,9 +83,11 @@ class Todos(object):
                     - task 1
                         - subtask 1
         """
-        filtered_tree = self._todos_tree.filter(
-            parse_query(query)
-        )
+        if isinstance(query, unicode):
+            q = parse_query(query)
+            print(q)
+            return q.filter(self)
+        filtered_tree = self._todos_tree.filter(query)
         return Todos(filtered_tree, source=self._source)
 
     def get_item(self, query):
@@ -196,6 +199,15 @@ class Node(object):
             return Node(children=self._children + [other])
         else:
             return Node(children=self._children + other._children)
+
+    def text(self):
+        return self._value.text
+
+    def get_tag_param(self, tag):
+        return self._value.get_tag_param(tag)
+
+    def type(self):
+        return self._value.get_type_name()
 
     def iter_values(self):
         """
@@ -333,3 +345,6 @@ class Node(object):
                 children=[c.change_children_of_node_with_value(new_value, value, change) for c in self.get_children()],
                 source=self.source
             )
+
+    def level(self):
+        return len(self.get_parents_values())
