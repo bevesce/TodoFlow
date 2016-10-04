@@ -4,3 +4,20 @@ Todos:
 Query:
 	- parse_date
 	- tests, tests, tests...
+
+
+2016-10-04 22:39
+jan - @q(2016-01-01)
+mon - @q(2016-10-03)
+next mon - @q(2016-10-10)
+last mon - @q(2016-09-26)
+last mon + 1day - @q(2016-09-27)
+@q =[d] 2016 - @q(2016-01-01)
+@q =[d] today 1day - @q(2016-10-05)
+@q =[d] today -1day - @q(2016-10-03)
+@q =[d] today 1year - @q(2017-10-04)
+@q =[d] 2016-05 -@q(2016-05-01)
+@q =[d] 2016-05-13years -@q(2016-05-13)
+@q = [d] today + 1 week - @q(2016-10-11)
+@q = [d] sun - @q(2016-10-02)
+@q = [d] fri - @q(2016-10-07)

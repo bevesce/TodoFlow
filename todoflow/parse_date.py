@@ -23,6 +23,9 @@ words = {
     'date': (
         'today', 'yesterday', 'tomorrow', 'now'
     ),
+    'time': (
+        'now'
+    ),
     'month': (
         'january', 'february', 'march', 'april', 'may', 'june',
         'july', 'august', 'september', 'october', 'november', 'december',
