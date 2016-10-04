@@ -7,7 +7,6 @@ import unittest
 
 import todoflow.lexer as lexer
 import todoflow.parser as parser
-import todoflow.config
 from todoflow.compatibility import unicode
 
 
@@ -69,21 +68,21 @@ class TestLexer(unittest.TestCase):
 class TestParser(unittest.TestCase):
     def todos_from(self, text):
         self.todos = parser.parse(text)
-        print(self.todos)
-        self.nodes = list(self.todos.node)
+        self.nodes = self.todos.subitems
         return self
 
     def main_node(self):
-        return self.node(0)
+        self._node = self.todos
+        return self
 
     def first_node(self):
-        return self.node(1)
+        return self.node(0)
 
     def second_node(self):
-        return self.node(2)
+        return self.node(1)
 
     def third_node(self):
-        return self.node(3)
+        return self.node(2)
 
     def node(self, index):
         self._node = self.nodes[index]
@@ -101,8 +100,12 @@ class TestParser(unittest.TestCase):
         self.assertTrue(self._node.todoitem.type == 'note')
         return self
 
+    def is_new_line(self):
+        self.assertTrue(self._node.todoitem.type == 'newline')
+        return self
+
     def has_subtasks(self, howmany):
-        self.assertEqual(len(list(self._node.get_children())), howmany)
+        self.assertEqual(len(list(self._node.subitems)), howmany)
         return self
 
     def doesnt_have_item(self):
@@ -131,7 +134,7 @@ class TestParser(unittest.TestCase):
 \t- task2"""
         )
         self.main_node().doesnt_have_item()
-        self.first_node().has_subtasks(2).second_node().has_subtasks(0)
+        self.first_node().has_subtasks(2)
 
     def test_tasks_at_0_level(self):
         self.todos_from(
@@ -140,52 +143,53 @@ class TestParser(unittest.TestCase):
 - task 3"""
         ).main_node().doesnt_have_item().has_subtasks(3)
 
-#     def test_tasks_at_0_level_with_empty_lines(self):
-#         self.todos_from(
-# """- task 1
-# - task 2
+    def test_tasks_at_0_level_with_empty_lines(self):
+        self.todos_from(
+"""- task 1
+- task 2
 
-# - task 3
-# """
-#         ).main_node().doesnt_have_item().has_subtasks(5)
+- task 3
+"""
+        ).main_node().doesnt_have_item().has_subtasks(5)
 
-#     def test_deep_indent(self):
-#         self.todos_from(
-# """project:
-# \t- task 1
-# \t\t- subtask 1
-# \t\t\t- subsubtask 1
-# \t\t\t- subsubtask 2
-# \t\t- subtask 2
-# \t- task 2
+    def test_deep_indent(self):
+        self.todos_from(
+"""project:
+\t- task 1
+\t\t- subtask 1
+\t\t\t- subsubtask 1
+\t\t\t- subsubtask 2
+\t\t- subtask 2
+\t- task 2
 
-# """
-#         )
-#         self.main_node().doesnt_have_item().has_subtasks(3)
-#         self.first_node().is_project().has_subtasks(2)
-#         self.second_node().is_task().has_subtasks(2)
-#         self.third_node().is_task().has_subtasks(2)
+"""
+        )
+        self.main_node().doesnt_have_item().has_subtasks(3)
+        self.first_node().is_project().has_subtasks(2)
+        self.second_node().is_new_line().has_subtasks(0)
 
-#     def test_deep_indent_with_empty_line_in_the_middle(self):
-#         self.todos_from(
-# """project:
-# \t- task 1
-# \t\t- subtask 1
-# \t\t\t- subsubtask 1
+    def test_deep_indent_with_empty_line_in_the_middle(self):
+        self.todos_from(
+"""project:
+\t- task 1
+\t\t- subtask 1
+\t\t\t- subsubtask 1
 
-# \t\t\t- subsubtask 2
-# \t\t- subtask 2
-# \t- task 2
+\t\t\t- subsubtask 2
+\t\t- subtask 2
+\t- task 2
 
-# """
-#         )
-#         self.main_node().doesnt_have_item().has_subtasks(3)
-#         self.first_node().is_project().has_subtasks(2)
-#         self.second_node().is_task().has_subtasks(2)
-#         self.third_node().is_task().has_subtasks(3)
+"""
+        )
+        self.main_node().doesnt_have_item().has_subtasks(3)
+        self.assertEqual(len(self.todos.subitems[0].subitems), 2)
+        self.assertEqual(len(self.todos.subitems[0].subitems[0].subitems), 2)
+        self.assertEqual(len(self.todos.subitems[0].subitems[0].subitems[0].subitems), 3)
+        self.assertEqual(len(self.todos.subitems[0].subitems[1].subitems), 0)
+        self.first_node().is_project().has_subtasks(2)
 
 
-class TestPlainPrinting(unittest.TestCase):
+class TestStr(unittest.TestCase):
     def text_after_parsing_is_the_same(self, text):
         todos = parser.parse(text)
         self.assertEqual(unicode(todos), text)
@@ -207,44 +211,44 @@ class TestPlainPrinting(unittest.TestCase):
 \t- task 2"""
         )
 
-#     def test_deep_indent(self):
-#         self.text_after_parsing_is_the_same(
-# """project:
-# \t- task 1
-# \t\t- task 2
-# \t\t\t- task 3"""
-#         )
+    def test_deep_indent(self):
+        self.text_after_parsing_is_the_same(
+"""project:
+\t- task 1
+\t\t- task 2
+\t\t\t- task 3"""
+        )
 
-#     def test_empty_line(self):
-#         self.text_after_parsing_is_the_same(
-# """- task 1
+    def test_empty_line(self):
+        self.text_after_parsing_is_the_same(
+"""- task 1
 
-# \t- task2
+\t- task2
+"""
+        )
+
+    def test_empty_line_at_end(self):
+        self.text_after_parsing_is_the_same(
+"""- task 1
+\t- task2
+"""
+        )
+
+    def test_empty_line_at_beginning(self):
+        self.text_after_parsing_is_the_same(
+"""
+- task 1
+\t- task2"""
+        )
+
+    def test_multiple_empty_lines_at_end(self):
+        self.text_after_parsing_is_the_same(
+"""- task 1
+\t- task2
+
+
 # """
-#         )
-
-#     def test_empty_line_at_end(self):
-#         self.text_after_parsing_is_the_same(
-# """- task 1
-# \t- task2
-# """
-#         )
-
-#     def test_empty_line_at_beginning(self):
-#         self.text_after_parsing_is_the_same(
-# """
-# - task 1
-# \t- task2"""
-#         )
-
-#     def test_multiple_empty_lines_at_end(self):
-#         self.text_after_parsing_is_the_same(
-# """- task 1
-# \t- task2
-
-
-# """
-#         )
+        )
 
 if __name__ == '__main__':
     unittest.main()

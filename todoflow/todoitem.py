@@ -1,7 +1,6 @@
 from __future__ import absolute_import
 
 from . import textutils as tu
-from .printers import PlainPrinter
 from .compatibility import unicode
 
 
@@ -12,7 +11,7 @@ class Todoitem(object):
 
     Note:
         `Todoitem` knows nothing about it's place in whole todos.
-        (For example it doesn't know which other item contains it)
+        `Todoitem` is mutable.
     """
     _id_counter = 1
 
@@ -39,6 +38,7 @@ class Todoitem(object):
         self.id = self._gen_id()
         self.text = tu.strip_formatting(text) if text else ''
         self.type = tu.get_type(text or '')
+        self.line_number = None
 
     def __unicode__(self):
         return self.get_text()
@@ -57,6 +57,18 @@ class Todoitem(object):
         elif self.type == 'project':
             return self.text + ':'
         return self.text
+
+    def get_id(self):
+        return self.id
+
+    def get_line_number(self):
+        return self.line_number
+
+    def get_tag_param(self, tag):
+        return self.todoitem.get_tag_param(tag)
+
+    def get_type(self):
+        return self.type
 
     def tag(self, tag_to_use, param=None):
         self.text = tu.add_tag(self.text, tag_to_use, param)
@@ -84,5 +96,5 @@ class Todoitem(object):
     def change_to_note(self):
         self.type = 'note'
 
-    def change_to_empty_line(self):
-        self.type = 'empty line'
+    def change_to_new_line(self):
+        self.type = 'newline'

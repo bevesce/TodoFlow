@@ -28,6 +28,8 @@ def is_note(text):
 
 
 def get_type(text):
+    if not text:
+        return 'newline'
     if is_task(text):
         return 'task'
     elif is_project(text):
