@@ -3,135 +3,201 @@ from __future__ import unicode_literals
 import unittest
 
 import todoflow
+from todoflow import Todos, Todoitem
 from todoflow.compatibility import unicode
 
 
 class TestTodoitem(unittest.TestCase):
     def test_task(self):
         task = todoflow.todoitem.Todoitem('- task')
-        self.assertTrue(task.is_task)
+        self.assertTrue(task.type == 'task')
         self.assertEqual('task', task.text)
         self.assertEqual('- task', unicode(task))
 
     def test_project(self):
         task = todoflow.todoitem.Todoitem('project:')
-        self.assertTrue(task.is_project)
+        self.assertTrue(task.type == 'project')
         self.assertEqual('project', task.text)
         self.assertEqual('project:', unicode(task))
 
     def test_note(self):
         task = todoflow.todoitem.Todoitem('note')
-        self.assertTrue(task.is_note)
+        self.assertTrue(task.type == 'note')
         self.assertEqual('note', task.text)
         self.assertEqual('note', unicode(task))
 
 
-class TestTodosArthmetics(unittest.TestCase):
-    def setUp(self):
-        self.t1 = todoflow.Todos('- task 1')
-        self.t2 = todoflow.Todos('- task 2')
-
-    def test_add_headless(self):
-        self.assertEqual(
-            unicode(self.t1 + self.t2),
-"""- task 1
-- task 2"""
-        )
-
-    def test_head_to_headless(self):
-        self.t1 = self.t1.as_subtodos_of('project 1:')
-        self.assertEqual(
-            unicode(self.t1 + self.t2),
-"""project 1:
-\t- task 1
-- task 2"""
-        )
-
-    def test_headless_to_head(self):
-        self.t1 = self.t1.as_subtodos_of('project 1:')
-        self.assertEqual(
-            unicode(self.t2 + self.t1),
-"""- task 2
-project 1:
-\t- task 1"""
-        )
-
-    def test_head_to_head(self):
-        self.t1 = self.t1.as_subtodos_of('project 1:')
-        self.t2 = self.t2.as_subtodos_of('project 2:')
-        self.assertEqual(
-            unicode(self.t1 + self.t2),
-"""project 1:
-\t- task 1
-project 2:
-\t- task 2"""
-        )
+class TodosAsStringTestCase(unittest.TestCase):
+    def assertTodos(self, todos, text):
+        self.assertEqual(str(todos), text)
 
 
-class TestTodosModification(unittest.TestCase):
-    def todos(self, text):
-        self._todos = todoflow.Todos(text)
-        return self
+class TestGetOtherTodos(TodosAsStringTestCase):
+    def test_get_parent(self):
+        todos = Todos("""a
+\tb
+\t\tc
+\t\t\td
+""")
+        self.assertTodos(todos.get_parent(), '')
+        self.assertTodos(todos.subitems[0].get_parent(), '')
+        self.assertTodos(todos.subitems[0].subitems[0].get_parent(), 'a')
+        self.assertTodos(todos.subitems[0].subitems[0].subitems[0].get_parent(), 'b')
+        self.assertTodos(todos.subitems[0].subitems[0].subitems[0].subitems[0].get_parent(), 'c')
 
-    def with_text(self, text):
-        self._text = text
-        return self
+    def test_get_ancestors(self):
+        todos = Todos("""a
+\tb
+\t\tc
+\t\t\td""")
+        self.assertTodos(todos.get_ancestors(), '')
+        self.assertTodos(todos.subitems[0].get_ancestors(), '')
+        self.assertTodos(todos.subitems[0].subitems[0].get_ancestors(), 'a')
+        self.assertTodos(todos.subitems[0].subitems[0].subitems[0].get_ancestors(), 'a\n\tb')
+        self.assertTodos(todos.subitems[0].subitems[0].subitems[0].subitems[0].get_ancestors(), 'a\n\tb\n\t\tc')
 
-    def appended_to_result_of_get(self, query):
-        item = self._todos.get_item(query)
-        self._todos = self._todos.by_appending(self._text, to_item=item)
-        return self
+    def test_get_children(self):
+        todos = Todos("""a
+\tb
+\t\tc
+\t\tc
+\t\tx
+\t\t\td""")
+        self.assertTodos(todos.get_children(), ('a'))
+        self.assertTodos(todos.subitems[0].get_children(), ('b'))
+        self.assertTodos(todos.subitems[0].subitems[0].get_children(), ('c\nc\nx'))
 
-    def prepend_to_result_of_get(self, query):
-        item = self._todos.get_item(query)
-        self._todos = self._todos.by_prepending(self._text, to_item=item)
-        return self
+    def test_get_descendants(self):
+        todos = Todos("""a
+\tb
+\t\tc
+\t\tc
+\t\tx
+\t\t\td""")
+        self.assertTodos(todos.get_descendants(), str(todos))
+        self.assertTodos(todos.subitems[0].get_descendants(), """b
+\tc
+\tc
+\tx
+\t\td""")
+        self.assertTodos(todos.subitems[0].subitems[0].get_descendants(), """c
+c
+x
+\td""")
 
-    def are(self, text):
-        self.assertEqual(unicode(self._todos), text)
-        return self
+    def test_get_siblings(self):
+        todos = Todos("""a
+\tb
+\t\tc
+\t\tc
+\t\tx
+\td""")
+        self.assertTodos(todos.get_siblings(), '')
+        self.assertTodos(todos.subitems[0].get_siblings(), 'a')
+        self.assertTodos(todos.subitems[0].subitems[0].get_siblings(), 'b\nd')
+        self.assertTodos(todos.subitems[0].subitems[0].subitems[0].get_siblings(), 'c\nc\nx')
 
-    def test_append(self):
-        self.todos(
-"""- 0
-p1:
-\t- 1
-- 2"""
-        ).with_text('- 1.1').appended_to_result_of_get('p1').are(
-"""- 0
-p1:
-\t- 1
-\t- 1.1
-- 2"""
-        ).with_text('- 2.1').appended_to_result_of_get('2').are(
-"""- 0
-p1:
-\t- 1
-\t- 1.1
-- 2
-\t- 2.1"""
-        )
+    def test_following_siblings(self):
+        todos = Todos("""a
+\tb
+\t\tc
+\t\tc
+\t\tx
+\td""")
+        self.assertTodos(todos.get_following_siblings(), '')
+        self.assertTodos(todos.subitems[0].get_following_siblings(), '')
+        self.assertTodos(todos.subitems[0].subitems[0].get_following_siblings(), 'd')
+        self.assertTodos(todos.subitems[0].subitems[0].subitems[0].get_following_siblings(), 'c\nx')
+        self.assertTodos(todos.subitems[0].subitems[0].subitems[1].get_following_siblings(), 'x')
+        self.assertTodos(todos.subitems[0].subitems[0].subitems[2].get_following_siblings(), '')
 
-    def test_prepend(self):
-        self.todos(
-"""- 0
-p1:
-\t- 1
-- 2"""
-        ).with_text('- 1.1').prepend_to_result_of_get('p1').are(
-"""- 0
-p1:
-\t- 1.1
-\t- 1
-- 2"""
-        ).with_text('- 2.1').prepend_to_result_of_get('2').are(
-"""- 0
-p1:
-\t- 1.1
-\t- 1
-- 2
-\t- 2.1"""
-        )
+    def test_preceding_siblings(self):
+        todos = Todos("""a
+\tb
+\t\tc
+\t\tc
+\t\tx
+\td""")
+        self.assertTodos(todos.get_preceding_siblings(), '')
+        self.assertTodos(todos.subitems[0].get_preceding_siblings(), '')
+        self.assertTodos(todos.subitems[0].subitems[0].get_preceding_siblings(), '')
+        self.assertTodos(todos.subitems[0].subitems[0].subitems[0].get_preceding_siblings(), '')
+        self.assertTodos(todos.subitems[0].subitems[0].subitems[1].get_preceding_siblings(), 'c')
+        self.assertTodos(todos.subitems[0].subitems[0].subitems[2].get_preceding_siblings(), 'c\nc')
+
+    def test_following(self):
+        todos = Todos("""a
+\tb
+\t\tc
+\t\tc
+\t\tx
+\td""")
+        self.assertTodos(todos.get_following(), '')
+        self.assertTodos(todos.subitems[0].get_following(), '')
+        self.assertTodos(todos.subitems[0].subitems[0].get_following(), 'a\n\td')
+        self.assertTodos(todos.subitems[0].subitems[0].subitems[0].get_following(), 'a\n\tb\n\t\tc\n\t\tx\n\td')
+        self.assertTodos(todos.subitems[0].subitems[0].subitems[1].get_following(), 'a\n\tb\n\t\tx\n\td')
+        self.assertTodos(todos.subitems[0].subitems[0].subitems[2].get_following(), 'a\n\tb\n\td')
+        self.assertTodos(todos.subitems[0].subitems[1].get_following(), 'a')
+
+    def test_preceding(self):
+        todos = Todos("""a
+\tb
+\t\tc
+\t\tc
+\t\tx
+\td""")
+        self.assertTodos(todos.get_preceding(), '')
+        self.assertTodos(todos.subitems[0].get_preceding(), '')
+        self.assertTodos(todos.subitems[0].subitems[0].get_preceding(), 'a')
+        self.assertTodos(todos.subitems[0].subitems[1].get_preceding(), 'a\n\tb\n\t\tc\n\t\tc\n\t\tx')
+        self.assertTodos(todos.subitems[0].subitems[0].subitems[0].get_preceding(), 'a\n\tb')
+        self.assertTodos(todos.subitems[0].subitems[0].subitems[1].get_preceding(), 'a\n\tb\n\t\tc')
+        self.assertTodos(todos.subitems[0].subitems[0].subitems[2].get_preceding(), 'a\n\tb\n\t\tc\n\t\tc')
+        self.assertTodos(todos.subitems[0].subitems[1].get_preceding(), 'a\n\tb\n\t\tc\n\t\tc\n\t\tx')
+
+
+class TestTodos(TodosAsStringTestCase):
+    def test_add_todos(self):
+        self.assertTodos(Todos('- t1') + Todos('- t2'), '- t1\n- t2')
+
+    def test_add_todos_1(self):
+        self.assertTodos(Todos('i:\n\t-q').subitems[0] + Todos('- t2'), 'i:\n\t-q\n- t2')
+
+    def test_add_todos_1(self):
+        self.assertTodos(Todos('- t2') + Todos('i:\n\t-q').subitems[0], '- t2\ni:\n\t-q')
+
+    def test_get(self):
+        todos = Todos('a\n\tb')
+        subtodos = todos.subitems[0].subitems[0]
+        self.assertEqual(todos[subtodos.todoitem], subtodos)
+
+    def test_filter(self):
+        todos = Todos("""a
+\tr
+\t\tq
+\tw
+\t\tr
+\te
+\t\te
+""").filter(lambda i: 'r' in i.text)
+        self.assertTodos(todos, 'a\n\tr\n\tw\n\t\tr')
+
+
+
+class TestContains(unittest.TestCase):
+    def test_1(self):
+        todos = Todos("""a:
+\tb
+\t\tc""")
+        self.assertFalse(Todoitem('b') in todos)
+        self.assertTrue(todos.subitems[0] in todos)
+        self.assertTrue(todos.subitems[0].todoitem in todos)
+        self.assertTrue(todos.subitems[0].subitems[0] in todos)
+        self.assertTrue(todos.subitems[0].subitems[0].todoitem in todos)
+        self.assertTrue(todos.subitems[0].subitems[0].subitems[0] in todos)
+        self.assertTrue(todos.subitems[0].subitems[0].subitems[0].todoitem in todos)
+
 
 if __name__ == '__main__':
     unittest.main()

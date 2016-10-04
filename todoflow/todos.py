@@ -10,33 +10,16 @@ from .compatibility import unicode
 class Todos(object):
     def __init__(self, todoitem=None, subitems=None, parent=None):
         """Representation of taskpaper todos."""
-        self.todoitem = todoitem
-        self.subitems = [Todos(c.todoitem, c.subitems, self) for c in subitems] if subitems else []
-        self.parent = parent
-
-    def __unicode__(self):
-        strings = [unicode(i) for i in self.subitems]
-        if self.todoitem:
-            strings = [unicode(self.get_text())] + strings
-        return '\n'.join(strings)
-
-    def __str__(self):
-        return self.__unicode__()
-
-    def __repr__(self):
-        return 'Todos("{}")'.format(self.get_text())
-
-    def __len__(self):
-        return 1
-
-    def __iter__(self):
-        yield self
-        for child in self.subitems:
-            for descendant in child:
-                yield descendant
-
-    def __contains__(self, node_or_todoitem):
-        pass  # TODO
+        if isinstance(todoitem, unicode):
+            from .parser import parse
+            node = parse(todoitem)
+            self.todoitem = None
+            self.subitems = node.subitems
+            self.parent = None
+        else:
+            self.todoitem = todoitem
+            self.subitems = [Todos(c.todoitem, c.subitems, self) for c in subitems] if subitems else []
+            self.parent = parent
 
     def __add__(self, other):
         self_value, other_value = self.todoitem, other.todoitem
@@ -48,6 +31,44 @@ class Todos(object):
             return Todos(subitems=self.subitems + [other])
         else:
             return Todos(subitems=self.subitems + other.subitems)
+
+    def __bool__(self):
+        return bool(self.todoitem or self.subitems)
+
+    def __contains__(self, node_or_todoitem):
+        for subitem in self:
+            if subitem is node_or_todoitem:
+                return True
+            if subitem.todoitem and subitem.todoitem is node_or_todoitem:
+                return True
+        return False
+
+    def __getitem__(self, todoitem):
+        for subitem in self:
+            if subitem.todoitem == todoitem:
+                return subitem
+        raise KeyError('{} not found in {}'.format(todoitem, self))
+
+    def __iter__(self):
+        yield self
+        for child in self.subitems:
+            for descendant in child:
+                yield descendant
+
+    def __len__(self):
+        return sum(len(i) for i in self.subitems) + (1 if self.todoitem else 0)
+
+    def __repr__(self):
+        return 'Todos("{}")'.format(self.get_text())
+
+    def __str__(self):
+        return self.__unicode__()
+
+    def __unicode__(self):
+        strings = [unicode(i) for i in self.subitems]
+        if self.todoitem:
+            strings = [unicode(self.get_text())] + strings
+        return '\n'.join(strings)
 
     def get_text(self):
         if not self.todoitem:
@@ -78,31 +99,80 @@ class Todos(object):
         return self.todoitem.get_type()
 
     def get_parent(self):
-        pass  # TODO
+        if self.parent:
+            return Todos(self.parent.todoitem)
+        return Todos()
 
     def get_ancestors(self):
-        pass  # TODO
+        if not self.parent:
+            return Todos()
+        node = self.parent
+        ancestors = []
+        while node.parent:
+            ancestors = [Todos(node.todoitem, subitems=ancestors)]
+            node = node.parent
+        if not ancestors:
+            return Todos()
+        return ancestors[0]
 
     def get_children(self):
-        pass  # TODO
+        return Todos(subitems=[Todos(c.todoitem) for c in self.subitems])
 
     def get_descendants(self):
-        pass  # TODO
+        return Todos(subitems=self.subitems)
 
     def get_siblings(self):
-        pass  # TODO
+        if not self.parent:
+            return Todos()
+        return self.parent.get_children()
 
     def get_following_siblings(self):
-        pass  # TODO
-
-    def get_following(self):
-        pass  # TODO
+        siblings = self.get_siblings()
+        if not siblings.subitems:
+            return Todos()
+        return Todos(
+            subitems=siblings.subitems[siblings.index(self.todoitem) + 1:]
+        )
 
     def get_preceding_siblings(self):
-        pass  # TODO
+        siblings = self.get_siblings()
+        if not siblings.subitems:
+            return Todos()
+        return Todos(
+            subitems=siblings.subitems[:siblings.index(self.todoitem)]
+        )
+
+    def get_following(self):
+        if not self.parent:
+            return Todos()
+        node = self
+        following = []
+        while node.parent:
+            index = node.parent.subitems.index(node)
+            following = [Todos(node.parent.todoitem, subitems=following + node.parent.subitems[index + 1:])]
+            node = node.parent
+        if not following:
+            return Todos()
+        return following[0]
 
     def get_preceding(self):
-        pass  # TODO
+        if not self.parent:
+            return Todos()
+        node = self
+        preceding = []
+        while node.parent:
+            index = node.parent.subitems.index(node)
+            preceding = [Todos(node.parent.todoitem, subitems=preceding + node.parent.subitems[:index])]
+            node = node.parent
+        if not preceding:
+            return Todos()
+        return preceding[0]
+
+    def index(self, todoitem):
+        for index, todos in enumerate(self.subitems):
+            if todos.todoitem == todoitem:
+                return index
+        raise ValueError('{} not found in {}'.format(todoitem, self))
 
     def append_child(self, child):
         if isinstance(child, Todoitem):
@@ -112,7 +182,22 @@ class Todos(object):
         self.subitems.append(node)
 
     def filter(self, query):
-        pass
+        if isinstance(query, unicode):
+            from .query_parser import parse
+            return parse(query).filter(self)
+        if isinstance(query, Query):
+            return query.filter(self)
+        subitems = [i for i in [i.filter(query) for i in self.subitems] if i]
+        if subitems or query(self.todoitem):
+            return Todos(self.todoitem, subitems=subitems)
+        return Todos()
 
     def search(self, query):
-        pass
+        if isinstance(query, unicode):
+            from .query_parser import parse
+            return parse(query).search(self)
+        if isinstance(query, Query):
+            return query.search(self)
+        for subitem in self:
+            if query(subitem.todoitem):
+                yield subitem.todoitem
