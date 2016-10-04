@@ -43,11 +43,13 @@ class Todos(object):
                 return True
         return False
 
-    def __getitem__(self, todoitem):
+    def __getitem__(self, index):
+        # TODO: slices
+        counter = -1
         for subitem in self:
-            if subitem.todoitem == todoitem:
+            if counter == index:
                 return subitem
-        raise KeyError('{} not found in {}'.format(todoitem, self))
+            counter += 1
 
     def __iter__(self):
         yield self
@@ -76,6 +78,12 @@ class Todos(object):
         if self.todoitem.get_type() == 'newline':
             return ''
         return '\t' * self.get_level() + self.todoitem.get_text()
+
+    def get_with_todoitem(self, todoitem):
+        for subitem in self:
+            if subitem.todoitem == todoitem:
+                return subitem
+        raise KeyError('{} not found in {}'.format(todoitem, self))
 
     def get_level(self):
         level = 0
@@ -113,7 +121,7 @@ class Todos(object):
             node = node.parent
         if not ancestors:
             return Todos()
-        return ancestors[0]
+        return Todos(subitems=ancestors)
 
     def get_children(self):
         return Todos(subitems=[Todos(c.todoitem) for c in self.subitems])
@@ -184,20 +192,20 @@ class Todos(object):
     def filter(self, query):
         if isinstance(query, unicode):
             from .query_parser import parse
-            return parse(query).filter(self)
+            query = parse(query)
         if isinstance(query, Query):
             return query.filter(self)
         subitems = [i for i in [i.filter(query) for i in self.subitems] if i]
-        if subitems or query(self.todoitem):
+        if subitems or query(self):
             return Todos(self.todoitem, subitems=subitems)
         return Todos()
 
     def search(self, query):
         if isinstance(query, unicode):
             from .query_parser import parse
-            return parse(query).search(self)
+            query = parse(query)
         if isinstance(query, Query):
             return query.search(self)
         for subitem in self:
-            if query(subitem.todoitem):
-                yield subitem.todoitem
+            if query(subitem):
+                yield subitem

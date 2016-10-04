@@ -2,6 +2,7 @@ from __future__ import absolute_import
 
 from .textutils import get_tag_param
 from .textutils import has_tag
+from .parse_date import parse_date
 
 
 class Query:
@@ -22,11 +23,21 @@ class SetOperation(Query):
         left_todos = self.left.filter(todos)
         right_todos = self.right.filter(todos)
         if self.operator == 'union':
-            return todos.filter(lambda i: i in left_todos or i in right_todos)
+            return todos.filter(lambda i: i.todoitem in left_todos or i.todoitem in right_todos)
         elif self.operator == 'intersect':
-            return todos.filter(lambda i: i in left_todos and i in right_todos)
+            return todos.filter(lambda i: i.todoitem in left_todos and i.todoitem in right_todos)
         elif self.operator == 'except':
-            return todos.filter(lambda i: i in left_todos and i not in right_todos)
+            return todos.filter(lambda i: i.todoitem in left_todos and i.todoitem not in right_todos)
+
+    def search(self, todos):
+        left_todos = self.left.search(todos)
+        right_todos = self.right.search(todos)
+        if self.operator == 'union':
+            return todos.search(lambda i: i.todoitem in left_todos or i.todoitem in right_todos)
+        elif self.operator == 'intersect':
+            return todos.search(lambda i: i.todoitem in left_todos and i.todoitem in right_todos)
+        elif self.operator == 'except':
+            return todos.search(lambda i: i.todoitem in left_todos and i.todoitem not in right_todos)
 
 
 class ItemsPath(Query):
@@ -47,29 +58,28 @@ class ItemsPath(Query):
         if self.left:
             left_side = self.left.filter(todos)
         else:
-            left_side = todos._todos_tree._children
-        print('L', left_side)
+            left_side = [None]
         right_side = self.right.filter(todos)
         if self.operator in ('/', '/child::'):
-            return right_side.filter(lambda i: i.get_parent()._value if i.get_parent() else None in left_side)
-        if self.operator in ('//', '/descendant-or-self::'):
-            return right_side.filter(lambda i: any(p in left_side for p in i.parents()))
-        if self.operator in ('///', '/descendant::'):
-            return right_side.filter(lambda i: i in left_size or any(p in left_side for p in i.parents()))
+            return right_side.filter(lambda i: i.get_parent().todoitem in left_side)
+        if self.operator in ('///', '/descendant-or-self::'):
+            return right_side.filter(lambda i: i.todoitem in left_side or any(p.todoitem in left_side for p in i.get_ancestors()))
+        if self.operator in ('//', '/descendant::'):
+            return right_side.filter(lambda i: any(p.todoitem in left_side for p in i.get_ancestors()))
         if self.operator == '/ancestor-or-self::':
-            return right_side.filter(lambda i: i in left_size or any(p in left_side for p in i.descendants()))
+            return right_side.filter(lambda i: i.todoitem in left_side or any(p.todoitem in left_side for p in i.get_descendants()))
         if self.operator == '/ancestor::':
-            return right_side.filter(lambda i: any(p in left_side for p in i.descendants()))
+            return right_side.filter(lambda i: any(p.todoitem in left_side for p in i.get_descendants()))
         if self.operator == '/parent::':
-            return right_side.filter(lambda i: any(p in left_side for p in i.children))
+            return right_side.filter(lambda i: any(p.todoitem in left_side for p in i.get_children()))
         if self.operator == '/following-sibling::':
-            return right_side.filter(lambda i: any(p in left_side for p in i.preceding_siblings()))
+            return right_side.filter(lambda i: any(p.todoitem in left_side for p in i.get_preceding_siblings()))
         if self.operator == '/following::':
-            return right_side.filter(lambda i: any(p in left_side for p in i.preceding()))
+            return right_side.filter(lambda i: any(p.todoitem in left_side for p in i.get_preceding()))
         if self.operator == '/preceding-sibling::':
-            return right_side.filter(lambda i: any(p in left_side for p in i.following_siblings()))
+            return right_side.filter(lambda i: any(p.todoitem in left_side for p in i.get_following_siblings()))
         if self.operator == '/preceding::':
-            return right_side.filter(lambda i: any(p in left_side for p in i.following()))
+            return right_side.filter(lambda i: any(p.todoitem in left_side for p in i.get_following()))
 
 
 class Slice(Query):
@@ -80,10 +90,10 @@ class Slice(Query):
         if slice and ':' not in slice:
             self.index = int(slice)
             self.slice_start = None
-            self.slice_end = None
+            self.slice_stop = None
         elif slice:
             self.index = None
-            self.slice_start, self.slice_end = [(int(i) if i else None) for i in slice.split(':')]
+            self.slice_start, self.slice_stop = [(int(i) if i else None) for i in slice.split(':')]
 
     def __str__(self):
         return '(<L>{} [{}]</L>)'.format(
@@ -97,12 +107,23 @@ class Slice(Query):
         elif not self.index is None:
             return left_side[self.index]
         else:
-            return left_side[self.slice_start:self.slice_end]
+            return left_side[self.slice_start:self.slice_stop]
+
+    def search(self, todos):
+        results = self.left.search(todos)
+        if self.slice == ':':
+            return results
+        if self.index is not None:
+            return list(results)[self.index]
+        return list(results)[self.slice_start:self.slice_stop]
 
 
 class MatchesQuery(Query):
     def filter(self, todos):
         return todos.filter(lambda i: self.matches(i))
+
+    def search(self, todos):
+        return todos.search(lambda i: self.matches(i))
 
 
 class BooleanExpression(MatchesQuery):
@@ -180,13 +201,13 @@ class Relation(MatchesQuery):
 
     def calculate_left(self, todoitem):
         if self.left.value == 'text':
-            left = todoitem.text()
+            left = todoitem.get_text()
         elif self.left.value == 'id':
             left = todoitem.id()
         elif self.left.value == 'line':
-            left = todoitem.line_number()
+            left = str(todoitem.get_line_number())
         elif self.left.value == 'type':
-            left = todoitem.type()
+            left = todoitem.get_type()
         else:
             left = todoitem.get_tag_param(self.left.value)
         return self.apply_modifier(left)

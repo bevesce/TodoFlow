@@ -48,7 +48,7 @@ class Todoitem(object):
 
     def __repr__(self):
         return '<Todoitem: {} | "{}" | {}>'.format(
-            self.uniqueid, self.text, self.get_type_name()
+            self.id, self.text, self.type
         )
 
     def get_text(self):

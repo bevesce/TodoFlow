@@ -170,7 +170,7 @@ class TestTodos(TodosAsStringTestCase):
     def test_get(self):
         todos = Todos('a\n\tb')
         subtodos = todos.subitems[0].subitems[0]
-        self.assertEqual(todos[subtodos.todoitem], subtodos)
+        self.assertEqual(todos.get_with_todoitem(subtodos.todoitem), subtodos)
 
     def test_filter(self):
         todos = Todos("""a
@@ -180,9 +180,8 @@ class TestTodos(TodosAsStringTestCase):
 \t\tr
 \te
 \t\te
-""").filter(lambda i: 'r' in i.text)
+""").filter(lambda i: 'r' in i.get_text())
         self.assertTodos(todos, 'a\n\tr\n\tw\n\t\tr')
-
 
 
 class TestContains(unittest.TestCase):

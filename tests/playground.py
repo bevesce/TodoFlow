@@ -24,3 +24,14 @@ if C(1):
 
 if C(2):
     print(2)
+
+
+from todoflow.parse_date import parse_date
+
+def pd(text):
+    print(' ' * (40 - len(text)), text, str(parse_date(text)))
+
+pd('today')
+pd('2016-10-04')
+pd('now')
+pd('today + 1 day')
