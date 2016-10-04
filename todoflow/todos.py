@@ -2,7 +2,6 @@
 from collections import deque
 
 from .todoitem import Todoitem
-from .query_parser import parse as parse_query
 from .query import Query
 from .printers import PlainPrinter
 from .compatibility import unicode
@@ -10,274 +9,154 @@ from .compatibility import unicode
 
 class Todos(object):
     """Representation of taskpaper todos."""
-    def __init__(self, todos_tree=None, source=None):
-        todos_tree = self._maybe_parse(todos_tree)
-        self._todos_tree = todos_tree or Node()
-        self._source = source
-        self._todos_tree.source = source
+    def __init__(self, todoitems):
+        if isinstance(todoitems, unicode):
+            from .parser import parse
+            self.node = parse(todoitems)
+        else:
+            self.node = todoitems
 
     def __iter__(self):
-        return self._todos_tree.iter_values()
+        for node in self.node:
+            yield node.todoitem
 
     def __unicode__(self):
-        return PlainPrinter().pformat(self._todos_tree) if self._todos_tree else u''
+        return str(self.node)
 
     def __str__(self):
         return self.__unicode__()
 
     def __len__(self):
-        return len(self._todos_tree)
+        return sum(len(n) for n in self.node)
 
     def __add__(self, other):
-        return Todos(self._todos_tree + other._todos_tree)
+        return Todos(self.node + other.node)
 
     def __div__(self, query):
         """Filter todos by query"""
         return self.filter(query)
 
-    def _maybe_parse(self, todos):
-        if isinstance(todos, unicode):
-            from .parser import parse
-            return parse(todos)._todos_tree
-        return todos
-
-    def set_source(self, path):
-        self._source = path
-        self._todos_tree.source = path
-
-    def get_source(self):
-        if self._source:
-            return self._source
-        else:
-            return self._todos_tree.source
-
-    def search(self, query):
-        """
-        Args:
-            query (text)
-
-        Returns:
-            Iterator of `Todoitem`s that match query.
-        """
-        return self._todos_tree.search(parse_query(query))
+    def iter_nodes(self):
+        for node in self.node:
+            yield node
 
     def filter(self, query):
-        """
-        Args:
-            query (text)
-
-        Returns:
-            New `Todos` with only items that match query and their parents.
-            Analogous to filter from Taskpaper.app.
-
-        Example:
-            Filtering todos::
-                project 1:
-                    - task 1
-                        - subtask 1
-                    - task 2
-                project 2:
-                    - task 3
-            with query 'subtask 1' gives::
-                project 1:
-                    - task 1
-                        - subtask 1
-        """
         if isinstance(query, unicode):
+            from .query_parser import parse as parse_query
             q = parse_query(query)
-            print(q)
             return q.filter(self)
-        filtered_tree = self._todos_tree.filter(query)
-        return Todos(filtered_tree, source=self._source)
+        filtered_nodes = self.nodes.filter(query)
+        return Todos(filtered_nodes)
 
-    def get_item(self, query):
-        """
-        Args:
-            query (text)
-
-        Returns:
-            First `Todoitem` that matches query.
-        """
-        for i in self.search(query):
-            return i
-
-    def as_subtodos_of(self, text):
-        if self._todos_tree.get_value():
-            children = [self._todos_tree]
-        else:
-            children = self._todos_tree.get_children()
-        return Todos(
-            Node(
-                value=Todoitem(text),
-                children=children
-            ),
-            source=self._source
-        )
-
-    def by_appending(self, text, to_item):
-        item = Todoitem(text)
-        return Todos(
-            self._todos_tree.append_child_to_node_with_value(item, value=to_item),
-            source=self.get_source()
-        )
-
-    def by_prepending(self, text, to_item):
-        item = Todoitem(text)
-        return Todos(
-            self._todos_tree.prepend_child_to_node_with_value(item, value=to_item),
-            source=self.get_source()
-        )
-
-    def iter_sourced(self):
-        """
-        Yield new Todos that contain only items that were read from some file
-        and their subitems.
-        """
-        for node in self._todos_tree:
-            if node.source:
-                yield Todos(
-                    Node(children=node.get_children()),
-                    source=node.source
-                )
+    def search(self, query):
+        pass
 
 
 class Node(object):
-    """Internal representation of todos.
-
-    Todos are represented as ordered Forest. `Node` holds this structure.
-
-    - `Node` can be a Forest when _value is None, then _children are set of Trees.
-    - `Node` also can a single Tree, then it holds `Todoitem` in _value and Tree of subitems in _children.
-
-    Attributes:
-        _value (object): item stored in node
-        _parent (Node, optional): None when this is the root `Node`
-        _children (ordered collection of `Node`): subtrees
-        source (text, optional): path to file from which this todos were read
-
-    Note:
-        `Node` doesn't depend on that it stores `Todoitem`, this can be reused as
-        Forest/Tree of other types of values.
-    """
-
-    def __init__(self, value=None, children=None, parent=None, source=None):
+    def __init__(self, todoitem=None, children=None, parent=None):
         """
         Args:
-            value ()
+            todoitem ()
             children (iterable of `Node`)
             parent (`Node`)
             source (text)
         """
-        self._value = value
-        self._parent = parent
-        self._children = None
-        self.set_children(children)
-        self.source = source
+        self.todoitem = todoitem
+        self.children = [Node(c.todoitem, c.children, self) for c in children] if children else []
+        self.parent = parent
+
+    def __unicode__(self):
+        rest = ''
+        self_string = self.get_text()
+        children_string = '\n'.join(c.get_text() for c in self.children)
+        if not self.todoitem:
+            return children_string
+        if self.children:
+            return self_string + '\n' + children_string
+        return self_string
+
+    def __str__(self):
+        return self.__unicode__()
 
     def __len__(self):
-        return len(self.get_values())
+        return 1 + len(list(self.get_descendants()))
 
     def __iter__(self):
-        """
-        Yield nodes in order from top to down.
-
-        Imagine that this tree is in .taskpaper file,
-        then nodes are yielded in order same as lines in this file.
-        """
         yield self
-        for child in self._children:
-            for grandchild in child:
-                yield grandchild
+        for child in self.children:
+            for descendant in child:
+                yield descendant
 
     def __add__(self, other):
-        self_value, other_value = self.get_value(), other.get_value()
+        self_value, other_value = self.todoitem, other.todoitem
         if self_value and other_value:
             return Node(children=[self, other])
         elif self_value:
-            return Node(children=[self] + other._children)
+            return Node(children=[self] + other.children)
         elif other_value:
-            return Node(children=self._children + [other])
+            return Node(children=self.children + [other])
         else:
-            return Node(children=self._children + other._children)
+            return Node(children=self.children + other.children)
 
-    def text(self):
-        return self._value.text
-
-    def get_tag_param(self, tag):
-        return self._value.get_tag_param(tag)
-
-    def type(self):
-        return self._value.get_type_name()
-
-    def iter_values(self):
-        """
-        Yield `Todoitem`s in order from top to down.
-
-        Imagine that this tree is in .taskpaper file,
-        then items are yielded in order same as lines in this file.
-        """
-        return (n.get_value() for n in self if n.get_value())
-
-    def set_children(self, children):
-        """
-        Args:
-            children (iterable of `Node`)
-        """
-        self._children = list(children) if children else []
-        for c in self._children:
-            c._parent = self
-
-    def get_value(self):
-        return self._value
-
-    def get_values(self):
-        return tuple(self.iter_values())
-
-    def set_value(self, value):
-        self._value = value
-
-    def append(self, value):
-        new_node = self._creat_new_node(value)
-        self.append_child(new_node)
-
-    def append_child(self, child):
-        child._parent = self
-        self._children.append(child)
-
-    def prepend(self, value):
-        new_node = self._creat_new_node(value)
-        self.prepend_child(new_node)
-
-    def prepend_child(self, child):
-        child._parent = self
-        self._children.insert(0, child)
-
-    def _creat_new_node(self, value):
-        return Node(value=value, parent=self)
-
-    def get_parent(self):
-        return self._parent
-
-    def get_children(self):
-        return self._children
-
-    def iter_parents(self):
-        node = self
-        while node._parent:
-            yield node._parent
-            node = node._parent
-
-    def get_parents(self):
-        return tuple(self.iter_parents())
+    def get_text(self):
+        if not self.todoitem:
+            return ''
+        return '\t' * self.get_level() + self.todoitem.get_text()
 
     def get_level(self):
-        return len(self.get_parents())
+        return len(list(self.get_ancestors())) - 1
 
-    def iter_parents_values(self):
-        return (p.get_value() for p in self.iter_parents() if p.get_value())
+    def get_id(self):
+        return self.todoitem.id
 
-    def get_parents_values(self):
-        return tuple(self.iter_parents_values())
+    def get_line_number(self):
+        return self.todoitem.line_number
+
+    def get_tag_param(self, tag):
+        return self.todoitem.get_tag_param(tag)
+
+    def get_type(self):
+        return self.todoitem.type
+
+    def get_parent(self):
+        return self.parent
+
+    def get_ancestors(self):
+        node = self
+        while node.parent:
+            yield node.parent
+            node = node.parent
+
+    def get_children(self):
+        for child in self.children:
+            yield child
+
+    def get_descendants(self):
+        for child in self.children:
+            yield child
+            for descendant in child.get_descendants():
+                yield descendant
+
+    def get_siblings(self):
+        if not self.parent:
+            return []
+        return self.parent.children
+
+    def get_following_siblings(self):
+        siblings = self.get_siblings()
+        index = siblings.index(self)
+        for node in siblings[index + 1:]:
+            yield node
+
+    def get_preceding_siblings(self):
+        siblings = self.get_siblings()
+        index = siblings.index(self)
+        for node in siblings[:index]:
+            yield node
+
+    def append_child(self, node):
+        child = Node(node.todoitem, node.children, self)
+        self.children.append(child)
 
     def filter(self, query):
         """
@@ -291,10 +170,10 @@ class Node(object):
         new_node = None
         if children_result:
             new_node = Node(
-                value=self.get_value(), children=children_result, source=self.source
+                todoitem=self.get_value(), children=children_result, source=self.source
             )
         elif query(self):
-            new_node = Node(value=self.get_value(), source=self.source)
+            new_node = Node(todoitem=self.get_value(), source=self.source)
         return new_node
 
     def _filter_children(self, query):
@@ -310,41 +189,3 @@ class Node(object):
             Iterator of `Todoitem`s in this `Node` that match query.
         """
         return (n.get_value() for n in self if n.get_value() and query(n))
-
-    def find(self, value):
-        """
-        Args:
-            value (`Todoitem`)
-        Returns
-            `Node` that contains given value.
-        """
-        for node in self:
-            if node.get_value() == value:
-                return node
-
-    def append_child_to_node_with_value(self, new_value, value):
-        """Returns new Node"""
-        def append(node, new_value):
-            return list(node.get_children()) + [Node(value=new_value)]
-        return self.change_children_of_node_with_value(new_value, value, append)
-
-    def prepend_child_to_node_with_value(self, new_value, value):
-        """Returns new Node"""
-        def append(node, new_value):
-            return [Node(value=new_value)] + list(node.get_children())
-        return self.change_children_of_node_with_value(new_value, value, append)
-
-    def change_children_of_node_with_value(self, new_value, value, change):
-        """Returns new Node"""
-        v = self.get_value()
-        if v == value:
-            return Node(value=v, children=change(self, new_value), source=self.source)
-        else:
-            return Node(
-                value=v,
-                children=[c.change_children_of_node_with_value(new_value, value, change) for c in self.get_children()],
-                source=self.source
-            )
-
-    def level(self):
-        return len(self.get_parents_values())

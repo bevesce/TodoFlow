@@ -27,6 +27,14 @@ def is_note(text):
     return not (is_task(text) or is_project(text))
 
 
+def get_type(text):
+    if is_task(text):
+        return 'task'
+    elif is_project(text):
+        return 'project'
+    elif is_note(text):
+        return 'note'
+
 # Tags
 
 def _fix_tag(tag):
