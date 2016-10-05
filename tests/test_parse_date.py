@@ -1,15 +1,13 @@
 import unittest
 import datetime
 
-from freezegun import freeze_time
-
 from todoflow.parse_date import parse_date
 
 
 date = datetime.datetime(2016, 10, 4, 22, 39)
 
 
-class TestParseDatE(unittest.TestCase):
+class TestParseDate(unittest.TestCase):
     def assertDate(self, date, date_string):
         self.assertEqual(date.strftime('%F'), date_string)
 
@@ -99,6 +97,9 @@ class TestParseDatE(unittest.TestCase):
 
     def test_27(self):
         self.assertDatetime(parse_date('last min', date), '2016-10-04 22:38')
+
+    def test_28(self):
+        self.assertDatetime(parse_date('', date), '2016-10-04 22:39')
 
 
 if __name__ == '__main__':
