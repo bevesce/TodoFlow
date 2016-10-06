@@ -48,7 +48,7 @@ def _fix_tag(tag):
 def _create_tag_pattern(tag, include_suffix_space=False):
     tag = _fix_tag(tag)
     escaped_tag = re.escape(tag)
-    pattern = r'(?:^|\s)' + escaped_tag + r'(\(([^)]*)\)(?:\s|$)|(?=\s)|$)'
+    pattern = r'(?:^|\s)' + escaped_tag + r'(\(((\\\)|[^)])*)\)(?:\s|$)|(?=\s)|$)'
     if include_suffix_space:
         pattern += '\s*'
     return re.compile(
@@ -70,7 +70,7 @@ def get_tag_param(text, tag):
     pure_param = params[0][1]
     if not param_with_parenthesis:
         return None
-    return pure_param
+    return pure_param.replace('\)', ')')
 
 
 def remove_tag(text, tag):
