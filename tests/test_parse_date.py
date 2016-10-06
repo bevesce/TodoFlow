@@ -74,9 +74,6 @@ class TestParseDate(unittest.TestCase):
     def test_20(self):
         self.assertDate(parse_date('next may', date), '2017-05-01')
 
-    def test_20(self):
-        self.assertDate(parse_date('last may', date), '2015-05-01')
-
     def test_21(self):
         self.assertDate(parse_date('next day', date), '2016-10-05')
 
@@ -101,6 +98,9 @@ class TestParseDate(unittest.TestCase):
     def test_28(self):
         self.assertDatetime(parse_date('', date), '2016-10-04 22:39')
 
+    def test_29(self):
+        self.assertDate(parse_date('last may', date), '2015-05-01')
+
     def test_30(self):
         self.assertDatetime(parse_date('10:35 am', date), '2016-10-04 10:35')
 
@@ -115,6 +115,11 @@ class TestParseDate(unittest.TestCase):
 
     def test_34(self):
         self.assertDatetime(parse_date('12 am', date), '2016-10-04 00:00')
+
+    def test_35(self):
+        self.assertDatetime(parse_date('2016-10-06 21:17', date), '2016-10-06 21:17')
+
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -89,19 +89,6 @@ Test
 Inbox:""")
 
 
-    def test_007(self):
-        self.filtering("""
-Inbox:
-\tR:
-\tT:
-Test
-""").by('//*').gives("""
-Inbox:
-\tR:
-\tT:
-Test
-""")
-
     def test_008(self):
         self.filtering("""
 r 0
@@ -183,6 +170,84 @@ r
 \tt
 \t\tt
 """)
+
+    def test_014(self):
+        self.filtering("""
+- r 0
+- q 1
+- r 1
+- q 2
+\t- r 3
+\t- r 4
+- r 5
+""").by('r[0:3]').gives("""
+- r 0
+- r 1
+- q 2
+\t- r 3
+""")
+
+    def test_015(self):
+        self.filtering("""
+d:
+\ta @q
+\tc
+\tb @q
+\td
+dd:
+\ta
+\tx @q
+""").by('/d/@q[0]').gives("""
+d:
+\ta @q
+dd:
+\tx @q
+""")
+
+    def test_016(self):
+        self.filtering("""
+Inbox:
+\tR:
+\tT:
+Test
+""").by('//*').gives("""
+Inbox:
+\tR:
+\tT:
+Test
+""")
+
+    def test_017(self):
+        self.filtering("""
+Inbox:
+\tR:
+\tT:
+Test
+""").by('/*').gives("""
+Inbox:
+Test
+""")
+
+    def test_018(self):
+        self.filtering("""
+r
+\tw
+\tq
+\tw
+\t\tr
+\t\tq
+\tq
+\t\tr
+\t\t\tw
+""").by('r/w').gives("""
+r
+\tw
+\tw
+\tq
+\t\tr
+\t\t\tw
+""")
+
 
 if __name__ == '__main__':
     unittest.main()

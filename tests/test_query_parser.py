@@ -131,5 +131,10 @@ class TestParser(unittest.TestCase):
             '(<I> (<I> (<L>(<R> @text contains [i] t </R>) [:]</L>) / (<L>(<R> @text contains [i] w </R>) [:]</L>) </I>) / (<L>(<R> @text contains [i] q </R>) [:]</L>) </I>)'
         )
 
+    def test_024(self):
+        self.parsing('/d/@q[0]').gives(
+            '(<I> (<I>  / (<L>(<R> @text contains [i] d </R>) [:]</L>) </I>) / (<L>q [0]</L>) </I>)'
+        )
+
 if __name__ == '__main__':
     unittest.main()

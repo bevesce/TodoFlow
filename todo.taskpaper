@@ -1,7 +1,6 @@
 - redo queries using distinction between filter and search
-- parse_date
-	- 12:15 am, 14:30 pm
-	- ISO date format parsing using strptime
+- parse_date @done(2016-10-06)
+	- 12:15 am, 14:30 pm @done(2016-10-06)
 
 
 # examples of slices:

@@ -80,7 +80,9 @@ class QueryParser:
     def parse(self, text):
         self.text = text
         self.tokens = QueryLexer().tokenize(text)
-        return self.parse_set_operation(None, 0)
+        query = self.parse_set_operation(None, 0)
+        print(query)
+        return query
 
     def pick(self):
         return self.tokens[0]
@@ -164,7 +166,9 @@ class QueryParser:
             token = self.pop()
             current_precedence = QueryParser.PRECEDENCE[token.value]
             right = self.parse_items_path(None, current_precedence)
-            return ItemsPath(None, token.value, right)
+            return self.parse_items_path(
+                ItemsPath(None, token.value, right), 0
+            )
         if not left:
             left = self.parse_slice(None, 0)
         if self.is_items_path_operator():

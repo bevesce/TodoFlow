@@ -153,7 +153,6 @@ class QueryLexer:
             'project', 'note', 'task'
         )
 
-
     def read_attribute(self):
         self.pop()
         value = self.read_while_not(self.is_word_break)
@@ -277,7 +276,6 @@ class QueryLexer:
         if cumulated:
             yield cumulated
 
-
     def provide_default_operator(self, tokens):
         previous = None
         for t in tokens:
@@ -285,10 +283,14 @@ class QueryLexer:
                 previous = t
                 yield t
             else:
-                if (
+                if previous and previous.type == 'relation modifier':
+                    pass
+                elif (
                     not previous or
-                    previous.type != 'operator' or
-                    not self.is_relation_operator(previous.value)
+                    (
+                        previous.type != 'operator' or
+                        not self.is_relation_operator(previous.value)
+                    )
                 ):
                     yield Token('operator', 'contains')
                 yield t

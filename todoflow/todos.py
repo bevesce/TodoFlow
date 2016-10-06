@@ -72,6 +72,9 @@ class Todos(object):
             strings = [unicode(self.get_text())] + strings
         return '\n'.join(strings)
 
+    def by_removing_children(self):
+        return Todos(self.todoitem)
+
     def get_text(self):
         if not self.todoitem:
             return ''
@@ -95,15 +98,28 @@ class Todos(object):
         return level
 
     def get_id(self):
+        if not self.todoitem:
+            return None
         return self.todoitem.get_id()
 
     def get_line_number(self):
+        if not self.todoitem:
+            return None
         return self.todoitem.get_line_number()
 
     def get_tag_param(self, tag):
+        if not self.todoitem:
+            return None
         return self.todoitem.get_tag_param(tag)
 
+    def has_tag(self, tag):
+        if not self.todoitem:
+            return None
+        return self.todoitem.has_tag(tag)
+
     def get_type(self):
+        if not self.todoitem:
+            return None
         return self.todoitem.get_type()
 
     def get_parent(self):
@@ -114,7 +130,12 @@ class Todos(object):
     def get_ancestors(self):
         if not self.parent:
             return Todos()
-        node = self.parent
+        return self.parent.get_ancestors_and_self()
+
+    def get_ancestors_and_self(self):
+        if not self.parent:
+            return Todos()
+        node = self
         ancestors = []
         while node.parent:
             ancestors = [Todos(node.todoitem, subitems=ancestors)]
@@ -128,6 +149,9 @@ class Todos(object):
 
     def get_descendants(self):
         return Todos(subitems=self.subitems)
+
+    def get_descendants_and_self(self):
+        return self
 
     def get_siblings(self):
         if not self.parent:
