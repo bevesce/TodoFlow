@@ -80,6 +80,19 @@ words = {
     'duration': ('minute', 'hour', 'day', 'week', 'month', 'year'),
 }
 
+second_0 = {
+    'microsecond': 0,
+    'second': 0,
+}
+minute_0 = dict(second_0.items())
+minute_0.update({'minute': 0})
+hour_0 = dict(minute_0.items())
+hour_0.update({'hour': 0})
+day_1 = dict(hour_0.items())
+day_1.update({'day': 1})
+month_1 = dict(day_1.items())
+month_1.update({'month': 1})
+
 
 class Lexer:
     def tokenize(self, text):
@@ -139,7 +152,7 @@ empty_token = Token(None, None)
 class Parser:
     def __init__(self, now=None):
         self.now = now or datetime.now()
-        self.today = self.now.replace(hour=0, minute=0, second=0, microsecond=0)
+        self.today = self.now.replace(**hour_0)
 
     def parse(self, text, now=None):
         self.tokens = Lexer().tokenize(text)
@@ -259,11 +272,11 @@ class Parser:
         duration = self.pop().value
         if duration == 'year':
             self.add_modification(
-                lambda d: d.replace(year=d.year + sign, month=1, day=1, hour=0, second=0, microsecond=0)
+                lambda d: d.replace(year=d.year + sign, **month_1)
             )
         elif duration == 'month':
             self.add_modification(
-                lambda d: add_months(d, sign).replace(day=1, hour=0, second=0, microsecond=0)
+                lambda d: add_months(d, sign).replace(**day_1)
             )
         elif duration == 'week':
             self.add_modification(
@@ -271,15 +284,15 @@ class Parser:
             )
         elif duration == 'day':
             self.add_modification(
-                lambda d: (d + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
+                lambda d: (d + timedelta(days=1)).replace(**hour_0)
             )
         elif duration == 'hour':
             self.add_modification(
-                lambda d: (d + timedelta(hours=sign)).replace(minute=0, second=0, microsecond=0)
+                lambda d: (d + timedelta(hours=sign)).replace(**minute_0)
             )
         elif duration == 'minute':
             self.add_modification(
-                lambda d: (d + timedelta(minutes=sign)).replace(second=0, microsecond=0)
+                lambda d: (d + timedelta(minutes=sign)).replace(**second_0)
             )
 
     def parse_punctuation(self):
@@ -332,23 +345,34 @@ class Parser:
         self.maybe_parse_minute_after_hour(hour)
         return True
 
-    def maybe_parse_minute_after_hour(self):
+    def maybe_parse_minute_after_hour(self, hour):
         if self.pick().type != 'number':
             return False
         minute = self.pop().value
+        if self.maybe_parse_ampm_after_hour_minute(hour, minute):
+            return True
         self.add_modification(
-            lambda d: d.replace(hour=number, minute=minute)
+            lambda d: d.replace(hour=hour, minute=minute)
+        )
+        return True
+
+    def maybe_parse_ampm_after_hour_minute(self, hour, minute):
+        if self.pick().type != 'ampm':
+            return False
+        ampm = self.pop().value
+        hour = convert_hour_to_24_clock(hour, ampm)
+        self.add_modification(
+            lambda d: d.replace(hour=hour, minute=minute)
         )
         return True
 
     def maybe_parse_ampm_after_number(self, number):
         if self.pick().type != 'ampm':
             return False
-        am_or_pm = self.pop().value
-        if am_or_pm.value == 'pm':
-            number += 12
+        ampm = self.pop().value
+        number = convert_hour_to_24_clock(number, ampm)
         self.add_modification(
-            lambda d: d.replace(hour=number)
+            lambda d: d.replace(hour=number, **minute_0)
         )
         return True
 
@@ -397,6 +421,14 @@ class Parser:
 def find_weekday_in_week_of_date(weekday, date):
     day_number = weekdays[weekday]
     return date + timedelta(days=-date.weekday() + day_number)
+
+
+def convert_hour_to_24_clock(hour, ampm):
+    if hour == 12 and ampm == 'am':
+        return 0
+    if hour == 12 and ampm == 'pm':
+        return 12
+    return hour if ampm == 'am' else hour + 12
 
 
 def add_to_date(date, number, duration):

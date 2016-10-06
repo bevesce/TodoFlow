@@ -101,6 +101,20 @@ class TestParseDate(unittest.TestCase):
     def test_28(self):
         self.assertDatetime(parse_date('', date), '2016-10-04 22:39')
 
+    def test_30(self):
+        self.assertDatetime(parse_date('10:35 am', date), '2016-10-04 10:35')
+
+    def test_31(self):
+        self.assertDatetime(parse_date('10:35 pm', date), '2016-10-04 22:35')
+
+    def test_32(self):
+        self.assertDatetime(parse_date('12:00 pm', date), '2016-10-04 12:00')
+
+    def test_33(self):
+        self.assertDatetime(parse_date('12:05 am', date), '2016-10-04 00:05')
+
+    def test_34(self):
+        self.assertDatetime(parse_date('12 am', date), '2016-10-04 00:00')
 
 if __name__ == '__main__':
     unittest.main()
