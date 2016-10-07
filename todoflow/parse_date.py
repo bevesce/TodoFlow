@@ -1,7 +1,6 @@
 from collections import namedtuple
 from datetime import datetime, timedelta
 import calendar
-import parsedatetime
 
 
 def parse_date(text='', now=None):

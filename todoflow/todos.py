@@ -59,6 +59,9 @@ class Todos(object):
     def __str__(self):
         return self.__unicode__()
 
+    def __div__(self, query):
+        return self.filter(query)
+
     def __unicode__(self):
         strings = [unicode(i) for i in self.subitems]
         if self.todoitem:
@@ -199,7 +202,9 @@ class Todos(object):
             from .query_parser import parse
             query = parse(query)
         if isinstance(query, Query):
-            return query.search(self)
-        for subitem in self:
-            if query(subitem):
-                yield subitem
+            for item in query.search(self):
+                yield item
+            return
+        for item in self:
+            if query(item):
+                yield item

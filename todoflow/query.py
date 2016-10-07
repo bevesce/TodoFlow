@@ -51,16 +51,18 @@ class ItemsPath(Query):
         )
 
     def search(self, todos):
-        left_side = self.get_left_side(todos)
+        left_side = list(self.get_left_side(todos))
         for item in left_side:
-            axes = self.get_axes_for_operator(item)
+            axes = list(self.get_axes_for_operator(item))
             for subitem in self.right.search(axes):
                 yield subitem
 
     def get_left_side(self, todos):
         if self.left:
             return self.left.search(todos)
-        return [todos]
+        if self.operator in ('/', '/child::'):
+            return [todos]
+        return list(todos)
 
     def get_axes_for_operator(self, todos):
         if self.operator in ('/', '/child::'):
@@ -69,13 +71,20 @@ class ItemsPath(Query):
             return todos.yield_descendants()
         elif self.operator in ('///', '/descendant-or-self::'):
             return todos.yield_descendants_and_self()
-        # if self.operator == '/ancestor-or-self::':
-        # if self.operator == '/ancestor::':
-        # if self.operator == '/parent::':
-        # if self.operator == '/following-sibling::':
-        # if self.operator == '/following::':
-        # if self.operator == '/preceding-sibling::':
-        # if self.operator == '/preceding::':
+        elif self.operator == '/ancestor-or-self::':
+            return todos.yield_ancestors_and_self()
+        elif self.operator == '/ancestor::':
+            return todos.yield_ancestors()
+        elif self.operator == '/parent::':
+            return todos.yield_parent()
+        elif self.operator == '/following-sibling::':
+            return todos.yield_following_siblings()
+        elif self.operator == '/following::':
+            return todos.yield_following()
+        elif self.operator == '/preceding-sibling::':
+            return todos.yield_preceding_siblings()
+        elif self.operator == '/preceding::':
+            return todos.yield_preceding()
 
 
 class Slice(Query):
@@ -147,7 +156,7 @@ class Unary(MatchesQuery):
         return '(<U> {} {} </U>)'.format(self.operator, self.right)
 
     def matches(self, todoitem):
-        matches_right = right.matches(todoitem)
+        matches_right = self.right.matches(todoitem)
         return not matches_right
 
 

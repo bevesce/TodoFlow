@@ -215,7 +215,6 @@ Test
 Inbox:
 \tR:
 \tT:
-Test
 """)
 
     def test_017(self):
@@ -307,19 +306,235 @@ q @d
 r @d
 """)
 
-#     def test_024(self):
-#         self.filtering("""
-# w
-# \t\tq
-# \t\t\tr
-# \t\tq
-# \tw
-# """).by('/ancestor-or-self::r').gives("""
-# w
-# \tr
-# \t\tq
-# \t\t\tr
-# """)
+    def test_024(self):
+        self.filtering("""
+w
+\tr
+\t\tr
+\t\tb
+\tq
+\t\tr
+\t\ta
+""").by('w//*/ancestor-or-self::r').gives("""
+w
+\tr
+\t\tr
+\tq
+\t\tr
+""")
+
+    def test_025(self):
+        self.filtering("""
+w
+\tq
+\tr
+\t\tx
+\t\t\ty
+\tq
+\t\tx
+""").by('w//y/ancestor::r').gives("""
+w
+\tr
+""")
+
+    def test_026(self):
+        self.filtering("""
+w
+\tq
+\tr
+\t\tq
+""").by('w//q/parent::r').gives("""
+w
+\tr
+""")
+
+    def test_027(self):
+        self.filtering("""
+w
+q
+r 1
+x
+r 2
+""").by('w/following-sibling::r').gives("""
+r 1
+r 2
+""")
+
+    def test_028(self):
+        self.filtering("""
+r 0
+x
+\tw
+\t\tr 1
+\tr 2
+q
+r 3
+q
+""").by('w/following::r').gives("""
+x
+\tr 2
+r 3
+""")
+
+    def test_029(self):
+        self.filtering("""
+r 1
+q
+r 2
+w
+""").by('w/preceding-sibling::r').gives("""
+r 1
+r 2
+""")
+
+    def test_030(self):
+        self.filtering("""
+r 0
+x
+\tr 1
+\t\tq
+\t\tr 2
+\t\tw
+x
+\ty
+""").by('w/preceding::r').gives("""
+r 0
+x
+\tr 1
+\t\tr 2
+""")
+
+    def test_031(self):
+        self.filtering("""
+r
+q
+\tr
+""").by('/ancestor-or-self::r').gives("""
+r
+q
+\tr
+""")
+
+    def test_032(self):
+        self.filtering("""
+r 1
+q
+\tr
+r 2
+\tq
+""").by('/ancestor::r').gives("""
+r 2
+""")
+
+    def test_033(self):
+        self.filtering("""
+r 1
+q
+\tr 2
+r 3
+\t q
+q
+\tr 4
+\t\tq
+\tw
+""").by('/parent::r').gives("""
+r 3
+q
+\tr 4
+""")
+
+    def test_034(self):
+        self.filtering("""
+r 1
+q
+r 2
+w
+\tq
+\tr 3
+""").by('/following-sibling::r').gives("""
+r 1
+r 2
+w
+\tr 3
+""")
+
+    def test_035(self):
+        self.filtering("""
+q
+r 1
+w
+\tq
+\tr 2
+""").by('/following::r').gives("""
+r 1
+w
+\tr 2
+""")
+
+    def test_036(self):
+        self.filtering("""
+q
+r 1
+w
+\tq
+\tr 2
+\tq
+e
+\tq
+\tr 3
+""").by('/preceding-sibling::r').gives("""
+r 1
+w
+\tr 2
+""")
+
+    def test_037(self):
+        self.filtering("""
+r 1
+w
+\tr 2
+\tq
+e
+\tr 4
+""").by('/preceding::r').gives("""
+r 1
+w
+\tr 2
+""")
+
+    def test_038(self):
+        self.filtering("""
+todo:
+\tp
+to:
+\tto
+\tto
+\tko:
+""").by('project *').gives("""
+todo:
+to:
+\tko:
+""")
+
+    def test_038b(self):
+        print('38b')
+        t = Todos("""todo:
+\tp
+to:
+\tto
+\tto
+\tko:
+""").search('project *')
+        print(list(t))
+
+    def test_039(self):
+        self.filtering("""
+1 @working
+2 @workign @done
+3 @done
+""").by('@working and not @done').gives("""
+1 @working
+""")
 
 if __name__ == '__main__':
     unittest.main()

@@ -81,7 +81,6 @@ class QueryParser:
         self.text = text
         self.tokens = QueryLexer().tokenize(text)
         query = self.parse_set_operation(None, 0)
-        print(query)
         return query
 
     def pick(self):
