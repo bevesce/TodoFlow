@@ -6,8 +6,7 @@ from .parse_date import parse_date
 
 
 class Query:
-    def filter(self, todos):
-        return todos.filter(lambda i: i.todoitem in [i.todoitem for i in self.search(todos)])
+    pass
 
 
 class SetOperation(Query):
@@ -24,11 +23,17 @@ class SetOperation(Query):
         left_side = list(self.left.search(todos))
         right_side = list(self.right.search(todos))
         if self.operator == 'union':
-            return todos.search(lambda i: i in left_side or i in right_side)
+            for item in todos:
+                if item in left_side or item in right_side:
+                    yield item
         elif self.operator == 'intersect':
-            return todos.search(lambda i: i in left_side and i in right_side)
+            for item in todos:
+                if item in left_side and item in right_side:
+                    yield item
         elif self.operator == 'except':
-            return todos.search(lambda i: i in left_side and i not in right_side)
+            for item in todos:
+                if item in left_side and item not in right_side:
+                    yield item
 
 
 class ItemsPath(Query):
@@ -46,25 +51,24 @@ class ItemsPath(Query):
         )
 
     def search(self, todos):
-        if self.left:
-            left_side = self.left.search(todos)
-        else:
-            left_side = [todos]
+        left_side = self.get_left_side(todos)
         for item in left_side:
-            right_side = [i.todoitem for i in self.right.search(item)]
-            for subitem in self.get_neighbours_for_operator(item):
-                if subitem.todoitem in right_side:
-                    yield subitem
+            axes = self.get_axes_for_operator(item)
+            for subitem in self.right.search(axes):
+                yield subitem
 
-    def get_neighbours_for_operator(self, todos):
+    def get_left_side(self, todos):
+        if self.left:
+            return self.left.search(todos)
+        return [todos]
+
+    def get_axes_for_operator(self, todos):
         if self.operator in ('/', '/child::'):
-            print('s', todos.subitems)
-            print('g', todos.get_children().subitems)
-            return todos.subitems
+            return todos.yield_children()
         elif self.operator in ('//', '/descendant::'):
-            return todos.get_descendants()
-
-        # if self.operator in ('///', '/descendant-or-self::'):
+            return todos.yield_descendants()
+        elif self.operator in ('///', '/descendant-or-self::'):
+            return todos.yield_descendants_and_self()
         # if self.operator == '/ancestor-or-self::':
         # if self.operator == '/ancestor::':
         # if self.operator == '/parent::':
@@ -95,18 +99,21 @@ class Slice(Query):
     def search(self, todos):
         left_side = list(self.left.search(todos))
         if self.slice == ':':
-            return left_side
+            for item in left_side:
+                yield item
+            return
         if self.index is not None:
-            return list(left_side)[self.index]
-        return list(left_side)[self.slice_start:self.slice_stop]
+            yield list(left_side)[self.index]
+            return
+        for item in list(left_side)[self.slice_start:self.slice_stop]:
+            yield item
 
 
 class MatchesQuery(Query):
-    def filter(self, todos):
-        return todos.filter(lambda i: self.matches(i))
-
     def search(self, todos):
-        return todos.search(lambda i: self.matches(i))
+        for item in todos:
+            if self.matches(item):
+                yield item
 
 
 class BooleanExpression(MatchesQuery):
@@ -131,17 +138,17 @@ class BooleanExpression(MatchesQuery):
 
 
 class Unary(MatchesQuery):
-    def __init__(self, operator, expression):
+    def __init__(self, operator, right):
         self.type = 'unary'
         self.operator = operator
-        self.expression = expression
+        self.right = right
 
     def __str__(self):
-        return '(<U> {} {} </U>)'.format(self.operator, self.expression)
+        return '(<U> {} {} </U>)'.format(self.operator, self.right)
 
     def matches(self, todoitem):
-        matches_expression = expression.matches(todoitem)
-        return not matches_expression
+        matches_right = right.matches(todoitem)
+        return not matches_right
 
 
 class Relation(MatchesQuery):
@@ -150,8 +157,8 @@ class Relation(MatchesQuery):
         self.operator = operator
         self.left = left
         self.right = right
-        self.calculated_right = None
         self.modifier = modifier
+        self.calculated_right = None
 
     def __str__(self):
         return '(<R> @{} {} [{}] {} </R>)'.format(
@@ -161,8 +168,8 @@ class Relation(MatchesQuery):
     def matches(self, todoitem):
         if not todoitem:
             return False
-        left_side = self.calculate_left(todoitem)
-        right_side = self.calculate_right()
+        left_side = self.calculate_left_side(todoitem)
+        right_side = self.calculate_right_side()
         if self.operator == '=':
             return left_side == right_side
         elif self.operator == '<=':
@@ -184,7 +191,7 @@ class Relation(MatchesQuery):
         elif self.operator == 'matches':
             return re.match(right_side, left_side)
 
-    def calculate_left(self, todoitem):
+    def calculate_left_side(self, todoitem):
         if self.left.value == 'text':
             left = todoitem.get_text()
         elif self.left.value == 'id':
@@ -197,7 +204,7 @@ class Relation(MatchesQuery):
             left = todoitem.get_tag_param(self.left.value)
         return self.apply_modifier(left)
 
-    def calculate_right(self):
+    def calculate_right_side(self):
         if not self.calculated_right:
             self.calculated_right = self.apply_modifier(self.right.value)
         return self.calculated_right
@@ -230,6 +237,6 @@ class Atom(MatchesQuery):
         if self.type == 'attribute':
             return todoitem.has_tag(self.value)
         elif self.type == 'search term':
-            return self.value in todoitem.text
+            return self.value in todoitem.get_text()
         else:
             return True

@@ -13,11 +13,12 @@ class TestQuery(unittest.TestCase):
         return self
 
     def by(self, query):
+        self.query = '\n\nq:' + query
         self.filtered = self.todos.filter(query)
         return self
 
     def gives(self, text):
-        self.assertEqual(str(self.filtered).strip(), text.strip())
+        self.assertEqual(str(self.filtered).strip(), text.strip(), self.query)
 
     def test_001(self):
         self.filtering("""
@@ -248,6 +249,77 @@ r
 \t\t\tw
 """)
 
+    def test_019(self):
+        self.filtering("""
+r
+\tq
+\t\tw
+\tq
+w
+""").by('r//w').gives("""
+r
+\tq
+\t\tw
+""")
+
+    def test_020(self):
+        self.filtering("""
+r
+\tq
+\t\tw
+\tq
+w
+""").by('r///w').gives("""
+r
+\tq
+\t\tw
+""")
+
+    def test_021(self):
+        self.filtering("""
+r
+\tq 1
+\tq 2
+r
+\tq 3
+\tq 4
+""").by('r/q[0]').gives("""
+r
+\tq 1
+r
+\tq 3
+""")
+
+    def test_022(self):
+        self.filtering("""
+r
+r @d
+""").by('r except @d').gives("""
+r
+""")
+
+    def test_023(self):
+        self.filtering("""
+r
+r @d
+q @d
+""").by('r intersect @d').gives("""
+r @d
+""")
+
+#     def test_024(self):
+#         self.filtering("""
+# w
+# \t\tq
+# \t\t\tr
+# \t\tq
+# \tw
+# """).by('/ancestor-or-self::r').gives("""
+# w
+# \tr
+# \t\tq
+# \t\t\tr
+# """)
 
 if __name__ == '__main__':
     unittest.main()

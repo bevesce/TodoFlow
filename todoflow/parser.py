@@ -34,10 +34,10 @@ class Parser(object):
         new_item = Todos(Todoitem.from_token(token))
         if self.items_in_parsing:
             for nl in self.newlines:
-                self.items_in_parsing[-1].append_child(nl)
+                self.items_in_parsing[-1].append(nl)
             self.newlines = []
             try:
-                self.items_in_parsing[-1].append_child(new_item)
+                self.items_in_parsing[-1].append(new_item)
             except AttributeError:
                 raise ParserError('Error in parsing: {}'.format(self.items_in_parsing))
         else:

@@ -27,75 +27,75 @@ class TestTodoitem(unittest.TestCase):
         self.assertEqual('note', unicode(task))
 
 
-class TodosAsStringTestCase(unittest.TestCase):
+
+class TodosAssTestCase(unittest.TestCase):
     def assertTodos(self, todos, text):
-        self.assertEqual(str(todos), text)
+        self.assertEqual('\n'.join(t.get_text() for t in todos), text)
 
-
-class TestGetOtherTodos(TodosAsStringTestCase):
-    def test_get_parent(self):
+class TestGetOtherTodos(TodosAssTestCase):
+    def test_parent(self):
         todos = Todos("""a
 \tb
 \t\tc
 \t\t\td
 """)
-        self.assertTodos(todos.get_parent(), '')
-        self.assertTodos(todos.subitems[0].get_parent(), '')
-        self.assertTodos(todos.subitems[0].subitems[0].get_parent(), 'a')
-        self.assertTodos(todos.subitems[0].subitems[0].subitems[0].get_parent(), 'b')
-        self.assertTodos(todos.subitems[0].subitems[0].subitems[0].subitems[0].get_parent(), 'c')
+        self.assertTodos(todos.yield_parent(), '')
+        self.assertTodos(todos.subitems[0].yield_parent(), '')
+        self.assertTodos(todos.subitems[0].subitems[0].yield_parent(), 'a')
+        self.assertTodos(todos.subitems[0].subitems[0].subitems[0].yield_parent(), '\tb')
+        self.assertTodos(todos.subitems[0].subitems[0].subitems[0].subitems[0].yield_parent(), '\t\tc')
 
-    def test_get_ancestors(self):
+    def test_ancestors(self):
         todos = Todos("""a
 \tb
 \t\tc
 \t\t\td""")
-        self.assertTodos(todos.get_ancestors(), '')
-        self.assertTodos(todos.subitems[0].get_ancestors(), '')
-        self.assertTodos(todos.subitems[0].subitems[0].get_ancestors(), 'a')
-        self.assertTodos(todos.subitems[0].subitems[0].subitems[0].get_ancestors(), 'a\n\tb')
-        self.assertTodos(todos.subitems[0].subitems[0].subitems[0].subitems[0].get_ancestors(), 'a\n\tb\n\t\tc')
+        self.assertTodos(todos.yield_ancestors(), '')
+        self.assertTodos(todos.subitems[0].yield_ancestors(), '')
+        self.assertTodos(todos.subitems[0].subitems[0].yield_ancestors(), 'a\n')
+        self.assertTodos(todos.subitems[0].subitems[0].subitems[0].yield_ancestors(), '\tb\na\n')
+        self.assertTodos(todos.subitems[0].subitems[0].subitems[0].subitems[0].yield_ancestors(), '\t\tc\n\tb\na\n')
 
-    def test_get_children(self):
-        todos = Todos("""a
-\tb
-\t\tc
-\t\tc
-\t\tx
-\t\t\td""")
-        self.assertTodos(todos.get_children(), ('a'))
-        self.assertTodos(todos.subitems[0].get_children(), ('b'))
-        self.assertTodos(todos.subitems[0].subitems[0].get_children(), ('c\nc\nx'))
-
-    def test_get_descendants(self):
+    def test_yield_children(self):
         todos = Todos("""a
 \tb
 \t\tc
 \t\tc
 \t\tx
 \t\t\td""")
-        self.assertTodos(todos.get_descendants(), str(todos))
-        self.assertTodos(todos.subitems[0].get_descendants(), """b
-\tc
-\tc
-\tx
-\t\td""")
-        self.assertTodos(todos.subitems[0].subitems[0].get_descendants(), """c
-c
-x
+        self.assertTodos(todos.yield_children(), ('a'))
+        self.assertTodos(todos.subitems[0].yield_children(), ('\tb'))
+        self.assertTodos(todos.subitems[0].subitems[0].yield_children(), ('\t\tc\n\t\tc\n\t\tx'))
+
+    def test_yield_descendants(self):
+        todos = Todos("""a
+\tb
+\t\tc
+\t\tc
+\t\tx
+\t\t\td""")
+        self.assertTodos(todos.yield_descendants(), str(todos))
+        self.assertTodos(todos.subitems[0].yield_descendants(), """\tb
+\t\tc
+\t\tc
+\t\tx
+\t\t\td""")
+        self.assertTodos(todos.subitems[0].subitems[0].yield_descendants(), """\t\tc
+\t\tc
+\t\tx
+\t\t\td""")
+
+    def test_yield_siblings(self):
+        todos = Todos("""a
+\tb
+\t\tc
+\t\tc
+\t\tx
 \td""")
-
-    def test_get_siblings(self):
-        todos = Todos("""a
-\tb
-\t\tc
-\t\tc
-\t\tx
-\td""")
-        self.assertTodos(todos.get_siblings(), '')
-        self.assertTodos(todos.subitems[0].get_siblings(), 'a')
-        self.assertTodos(todos.subitems[0].subitems[0].get_siblings(), 'b\nd')
-        self.assertTodos(todos.subitems[0].subitems[0].subitems[0].get_siblings(), 'c\nc\nx')
+        self.assertTodos(todos.yield_siblings(), '')
+        self.assertTodos(todos.subitems[0].yield_siblings(), 'a')
+        self.assertTodos(todos.subitems[0].subitems[0].yield_siblings(), '\tb\n\td')
+        self.assertTodos(todos.subitems[0].subitems[0].subitems[0].yield_siblings(), '\t\tc\n\t\tc\n\t\tx')
 
     def test_following_siblings(self):
         todos = Todos("""a
@@ -104,12 +104,12 @@ x
 \t\tc
 \t\tx
 \td""")
-        self.assertTodos(todos.get_following_siblings(), '')
-        self.assertTodos(todos.subitems[0].get_following_siblings(), '')
-        self.assertTodos(todos.subitems[0].subitems[0].get_following_siblings(), 'd')
-        self.assertTodos(todos.subitems[0].subitems[0].subitems[0].get_following_siblings(), 'c\nx')
-        self.assertTodos(todos.subitems[0].subitems[0].subitems[1].get_following_siblings(), 'x')
-        self.assertTodos(todos.subitems[0].subitems[0].subitems[2].get_following_siblings(), '')
+        self.assertTodos(todos.yield_following_siblings(), '')
+        self.assertTodos(todos.subitems[0].yield_following_siblings(), '')
+        self.assertTodos(todos.subitems[0].subitems[0].yield_following_siblings(), '\td')
+        self.assertTodos(todos.subitems[0].subitems[0].subitems[0].yield_following_siblings(), '\t\tc\n\t\tx')
+        self.assertTodos(todos.subitems[0].subitems[0].subitems[1].yield_following_siblings(), '\t\tx')
+        self.assertTodos(todos.subitems[0].subitems[0].subitems[2].yield_following_siblings(), '')
 
     def test_preceding_siblings(self):
         todos = Todos("""a
@@ -118,12 +118,12 @@ x
 \t\tc
 \t\tx
 \td""")
-        self.assertTodos(todos.get_preceding_siblings(), '')
-        self.assertTodos(todos.subitems[0].get_preceding_siblings(), '')
-        self.assertTodos(todos.subitems[0].subitems[0].get_preceding_siblings(), '')
-        self.assertTodos(todos.subitems[0].subitems[0].subitems[0].get_preceding_siblings(), '')
-        self.assertTodos(todos.subitems[0].subitems[0].subitems[1].get_preceding_siblings(), 'c')
-        self.assertTodos(todos.subitems[0].subitems[0].subitems[2].get_preceding_siblings(), 'c\nc')
+        self.assertTodos(todos.yield_preceding_siblings(), '')
+        self.assertTodos(todos.subitems[0].yield_preceding_siblings(), '')
+        self.assertTodos(todos.subitems[0].subitems[0].yield_preceding_siblings(), '')
+        self.assertTodos(todos.subitems[0].subitems[0].subitems[0].yield_preceding_siblings(), '')
+        self.assertTodos(todos.subitems[0].subitems[0].subitems[1].yield_preceding_siblings(), '\t\tc')
+        self.assertTodos(todos.subitems[0].subitems[0].subitems[2].yield_preceding_siblings(), '\t\tc\n\t\tc')
 
     def test_following(self):
         todos = Todos("""a
@@ -132,13 +132,13 @@ x
 \t\tc
 \t\tx
 \td""")
-        self.assertTodos(todos.get_following(), '')
-        self.assertTodos(todos.subitems[0].get_following(), '')
-        self.assertTodos(todos.subitems[0].subitems[0].get_following(), 'a\n\td')
-        self.assertTodos(todos.subitems[0].subitems[0].subitems[0].get_following(), 'a\n\tb\n\t\tc\n\t\tx\n\td')
-        self.assertTodos(todos.subitems[0].subitems[0].subitems[1].get_following(), 'a\n\tb\n\t\tx\n\td')
-        self.assertTodos(todos.subitems[0].subitems[0].subitems[2].get_following(), 'a\n\tb\n\td')
-        self.assertTodos(todos.subitems[0].subitems[1].get_following(), 'a')
+        self.assertTodos(todos.yield_following(), '')
+        self.assertTodos(todos.subitems[0].yield_following(), '')
+        self.assertTodos(todos.subitems[0].subitems[0].yield_following(), '\td')
+        self.assertTodos(todos.subitems[0].subitems[0].subitems[0].yield_following(), '\t\tc\n\t\tx\n\td')
+        self.assertTodos(todos.subitems[0].subitems[0].subitems[1].yield_following(), '\t\tx\n\td')
+        self.assertTodos(todos.subitems[0].subitems[0].subitems[2].yield_following(), '\td')
+        self.assertTodos(todos.subitems[0].subitems[1].yield_following(), '')
 
     def test_preceding(self):
         todos = Todos("""a
@@ -147,14 +147,19 @@ x
 \t\tc
 \t\tx
 \td""")
-        self.assertTodos(todos.get_preceding(), '')
-        self.assertTodos(todos.subitems[0].get_preceding(), '')
-        self.assertTodos(todos.subitems[0].subitems[0].get_preceding(), 'a')
-        self.assertTodos(todos.subitems[0].subitems[1].get_preceding(), 'a\n\tb\n\t\tc\n\t\tc\n\t\tx')
-        self.assertTodos(todos.subitems[0].subitems[0].subitems[0].get_preceding(), 'a\n\tb')
-        self.assertTodos(todos.subitems[0].subitems[0].subitems[1].get_preceding(), 'a\n\tb\n\t\tc')
-        self.assertTodos(todos.subitems[0].subitems[0].subitems[2].get_preceding(), 'a\n\tb\n\t\tc\n\t\tc')
-        self.assertTodos(todos.subitems[0].subitems[1].get_preceding(), 'a\n\tb\n\t\tc\n\t\tc\n\t\tx')
+        self.assertTodos(todos.yield_preceding(), '')
+        self.assertTodos(todos.subitems[0].yield_preceding(), '')
+        self.assertTodos(todos.subitems[0].subitems[0].yield_preceding(), '')
+        self.assertTodos(todos.subitems[0].subitems[1].yield_preceding(), '\tb')
+        self.assertTodos(todos.subitems[0].subitems[0].subitems[0].yield_preceding(), '')
+        self.assertTodos(todos.subitems[0].subitems[0].subitems[1].yield_preceding(), '\t\tc')
+        self.assertTodos(todos.subitems[0].subitems[0].subitems[2].yield_preceding(), '\t\tc\n\t\tc')
+        self.assertTodos(todos.subitems[0].subitems[1].yield_preceding(), '\tb')
+
+
+class TodosAsStringTestCase(unittest.TestCase):
+    def assertTodos(self, todos, text):
+        self.assertEqual(str(todos), text)
 
 
 class TestTodos(TodosAsStringTestCase):

@@ -12,9 +12,9 @@ class Todos(object):
         """Representation of taskpaper todos."""
         if isinstance(todoitem, unicode):
             from .parser import parse
-            node = parse(todoitem)
+            todos = parse(todoitem)
             self.todoitem = None
-            self.subitems = node.subitems
+            self.subitems = todos.subitems
             self.parent = None
         else:
             self.todoitem = todoitem
@@ -35,24 +35,17 @@ class Todos(object):
     def __bool__(self):
         return bool(self.todoitem or self.subitems)
 
-    def __contains__(self, node_or_todoitem):
+    def __contains__(self, todos_or_todoitem):
         for subitem in self:
-            if subitem is node_or_todoitem:
+            if subitem is todos_or_todoitem:
                 return True
-            if subitem.todoitem and subitem.todoitem is node_or_todoitem:
+            if subitem.todoitem and subitem.todoitem is todos_or_todoitem:
                 return True
         return False
 
-    def __getitem__(self, index):
-        # TODO: slices
-        counter = -1
-        for subitem in self:
-            if counter == index:
-                return subitem
-            counter += 1
-
     def __iter__(self):
-        yield self
+        if self.todoitem:
+            yield self
         for child in self.subitems:
             for descendant in child:
                 yield descendant
@@ -72,9 +65,6 @@ class Todos(object):
             strings = [unicode(self.get_text())] + strings
         return '\n'.join(strings)
 
-    def by_removing_children(self):
-        return Todos(self.todoitem)
-
     def get_text(self):
         if not self.todoitem:
             return ''
@@ -90,11 +80,11 @@ class Todos(object):
 
     def get_level(self):
         level = 0
-        node = self
-        while node.parent:
-            if node.parent.todoitem:
+        todos = self
+        while todos.parent:
+            if todos.parent.todoitem:
                 level += 1
-            node = node.parent
+            todos = todos.parent
         return level
 
     def get_id(self):
@@ -107,6 +97,11 @@ class Todos(object):
             return None
         return self.todoitem.get_line_number()
 
+    def get_type(self):
+        if not self.todoitem:
+            return None
+        return self.todoitem.get_type()
+
     def get_tag_param(self, tag):
         if not self.todoitem:
             return None
@@ -114,111 +109,86 @@ class Todos(object):
 
     def has_tag(self, tag):
         if not self.todoitem:
-            return None
+            return False
         return self.todoitem.has_tag(tag)
 
-    def get_type(self):
-        if not self.todoitem:
-            return None
-        return self.todoitem.get_type()
-
-    def get_parent(self):
+    def yield_parent(self):
         if self.parent:
-            return Todos(self.parent.todoitem)
-        return Todos()
+            yield self.parent
 
-    def get_ancestors(self):
-        if not self.parent:
-            return Todos()
-        return self.parent.get_ancestors_and_self()
+    def yield_ancestors(self):
+        for parent in self.yield_parent():
+            for ancestor in parent.yield_ancestors_and_self():
+                yield ancestor
 
-    def get_ancestors_and_self(self):
-        if not self.parent:
-            return Todos()
-        node = self
-        ancestors = []
-        while node.parent:
-            ancestors = [Todos(node.todoitem, subitems=ancestors)]
-            node = node.parent
-        if not ancestors:
-            return Todos()
-        return Todos(subitems=ancestors)
+    def yield_ancestors_and_self(self):
+        ancestor_or_self = self
+        while ancestor_or_self:
+            yield ancestor_or_self
+            ancestor_or_self = ancestor_or_self.parent
 
-    def get_children(self):
-        return Todos(subitems=[Todos(c.todoitem) for c in self.subitems])
+    def yield_children(self):
+        for child in self.subitems:
+            yield child
 
-    def get_descendants(self):
-        return Todos(subitems=self.subitems)
+    def yield_descendants(self):
+        for child in self.subitems:
+            for descendant in child:
+                yield descendant
 
-    def get_descendants_and_self(self):
-        return self
+    def yield_descendants_and_self(self):
+        for descendant_or_self in self:
+            yield descendant_or_self
 
-    def get_siblings(self):
-        if not self.parent:
-            return Todos()
-        return self.parent.get_children()
+    def yield_siblings(self):
+        for parent in self.yield_parent():
+            for sibling in parent.yield_children():
+                yield sibling
 
-    def get_following_siblings(self):
-        siblings = self.get_siblings()
-        if not siblings.subitems:
-            return Todos()
-        return Todos(
-            subitems=siblings.subitems[siblings.index(self.todoitem) + 1:]
-        )
+    def yield_following_siblings(self):
+        started = False
+        for sibling in self.yield_siblings():
+            if started:
+                yield sibling
+            elif sibling is self:
+                started = True
 
-    def get_preceding_siblings(self):
-        siblings = self.get_siblings()
-        if not siblings.subitems:
-            return Todos()
-        return Todos(
-            subitems=siblings.subitems[:siblings.index(self.todoitem)]
-        )
+    def yield_preceding_siblings(self):
+        finished = False
+        for sibling in self.yield_siblings():
+            if sibling is self:
+                finished = True
+            if not finished:
+                yield sibling
 
-    def get_following(self):
-        if not self.parent:
-            return Todos()
-        node = self
-        following = []
-        while node.parent:
-            index = node.parent.subitems.index(node)
-            following = [Todos(node.parent.todoitem, subitems=following + node.parent.subitems[index + 1:])]
-            node = node.parent
-        if not following:
-            return Todos()
-        return following[0]
+    def yield_following(self):
+        for ancestor in self.yield_ancestors_and_self():
+            for sibling in ancestor.yield_following_siblings():
+                yield sibling
 
-    def get_preceding(self):
-        if not self.parent:
-            return Todos()
-        node = self
-        preceding = []
-        while node.parent:
-            index = node.parent.subitems.index(node)
-            preceding = [Todos(node.parent.todoitem, subitems=preceding + node.parent.subitems[:index])]
-            node = node.parent
-        if not preceding:
-            return Todos()
-        return preceding[0]
+    def yield_preceding(self):
+        for ancestor in self.yield_ancestors_and_self():
+            for sibling in ancestor.yield_preceding_siblings():
+                yield sibling
 
-    def index(self, todoitem):
-        for index, todos in enumerate(self.subitems):
-            if todos.todoitem == todoitem:
-                return index
-        raise ValueError('{} not found in {}'.format(todoitem, self))
+    def append(self, subitem):
+        self.subitems.append(self.maybe_make_todos(subitem))
 
-    def append_child(self, child):
+    def insert(self, index, subitem):
+        self.subitems.insert(index, self.maybe_make_todos(subitem))
+
+    def maybe_make_todos(self, child):
         if isinstance(child, Todoitem):
-            node = Todos(todoitem, [], self)
-        else:
-            node = child
-        self.subitems.append(node)
+            return Todos(todoitem, [], self)
+        return child
 
     def filter(self, query):
         if isinstance(query, unicode):
             from .query_parser import parse
             query = parse(query)
         if isinstance(query, Query):
-            return query.filter(self)
+            matching = list(query.search(self))
+            query = lambda i: i in matching
         subitems = [i for i in [i.filter(query) for i in self.subitems] if i]
         if subitems or query(self):
             return Todos(self.todoitem, subitems=subitems)
