@@ -2,23 +2,17 @@
 
 ![](icon.png)
 
-TodoFlow is Python module that provides functions to parse, filter, search, modify and save todo lists stored in plain text files with TaskPaper syntax.
+TodoFlow is Python module that provides functions to parse, filter, search and modify todo lists stored in plain text files with TaskPaper syntax.
 
 ## Changelog
 
+- 2016-10-08 - 5.0.0
+    + update to [TaskPaper 3](https://www.taskpaper.com) queries!
+    + removal of separation between `Node`s and `Todos`
+    + removal of printers and file reading methods
 - 2015-10-02 - 4.0.2 
-    - Removal of ply pickle file so TodoFlow can work with ply 3.6 with no errors
-    - Release on PyPI
 - 2015-04-24 - Removal of workflows
 - 2014-10-24 - Release of version 4
-    - **this version removes some features and introduces breaking changes** 
-    - new code base
-    - queries are now parsed with [ply](https://github.com/dabeaz/ply)
-    - for now removes support for [Editorial.app](http://omz-software.com/editorial/)
-    - workflows start from zero
-    - new icons
-    - setup.py
-    - python3 compatiblity
 
 ## Installation
 
@@ -26,92 +20,85 @@ TodoFlow is Python module that provides functions to parse, filter, search, modi
 
 ## Overview
 
-### Loading todos
+TodoFlow is based on two classes: `Todos` and `Todoitem`.
 
-Load and parse todos using one of this functions:
+### Todos
 
-- `todos = todoflow.from_text(text)`
-- `todos = todoflow.from_path(path)`
-- `todos = todoflow.from_paths(paths)` - todos from several files are joined into one
-- `todos = todoflow.from_dir(path, extension='.taskpaper')` - every todo file in given direcotry is joined into one todos
+`Todos` is a tree-like collection of todo items. `Todos` have list of `subitems` and one `todoitem` (except tree root that doesn't have one).
 
-```
-    todos = todoflow.from_text("""
-    project 1:
-        - task 1
-        - task 2 @today
-    """)
-```
+#### Creating todos
 
-### Saving todos
-
-- `todoflow.to_path(todos, path)` - save todos to file
-- `todoflow.to_sources(todos)` - when todos are loaded from file (using `from_path`, `from_paths` or `from_dir`) they store path to source file so they can be saved to it later
-
-#### Todos
-
-Todos - collection of todo items.
-Todos are immutable.
-
-- `todos.filter(query)` - returns new Todos, with only those that match query or their parents, analogous to searching in Taskpaper.app
-- `todos.search(query)` - returns iterator of Todoitems that match query (and only them).
+You can create todos from string:
 
 ```
-    print(todos.filter('not @today'))
-
-    >>> project 1:
-    >>>     - task 1
-
-    print(tuple(todos.search('task')))
-
-    >>> (<Todoitem: 2 | "task 1" | task>, <Todoitem: 3 | "task 2 @done" | task>)
+from todoflow import Todos
+todos = todoflow.Todos("""
+project 1:
+    - task 1
+    - task 2 @today
+""")
 ```
 
-#### Queries
+#### Saving todos
 
-Subset with few additions of query syntax of Taskpaper.app is supported:
+You can stringify todos in order to write them to a file:
 
-- searching by text
-- searching by @tag
-- searching by tag parameter: @tag *op* text
-- searching by project: project *op* text
-- searching by type: `type = task`, `type = note`, `type = "project"`
-- including subitems: `+d`
-- narrowing to only first items that match query: `+f`
-- *op*s: `=`, `<=`, `<`, `>`, `>=`, `!=`, `->` (in), `<-` (contains)
-- logical operators: `and`, `or`, `not`
-- parentheses: `(`, `)`...
+```
+>>> print(todos)
+project 1:
+    - task 1
+    - task 2 @today
+project 2:
+    - task 3
+```
 
-### Todo item
+#### Filtering todos
 
-Todo items are mutable, their changes are visible in all todos that contain them.
+TodoFlow tries to provide the same queries as [TaskPaper 3](https://guide.taskpaper.com/formatting_queries.html). If something doesn't work the same way please create an Issue.
+
+```
+>>> today = todos.filter('/*/@today')
+>>> print(today)
+project 1:
+    - task 2 @today
+```
+
+- `todos.filter(query)` - Returns new `Todos`, with items, that match given query, or are parent of one. It's analogous to how TaskPaper app works.
+- `todos.search(query)` - Returns iterator of `Todos` that match query (and only them).
+
+### Todoitem
+
+`Todoitem`s belong to `Todos` and have methods to modify them and to retrive data from them:
 
 - `tag(tag_to_use, param=None)`
 - `remove_tag(tag_to_remove)`
 - `has_tag(tag)`
 - `get_tag_param(tag)`
+- `get_type(tag)`
+- `get_text()`
+- `get_line_number()`
+- `get_line_id()`
 - `edit(new_text)`
 - `change_to_task()`
 - `change_to_project()`
 - `change_to_note()`
-- `change_to_empty_line()`
+
+They can be mutaded, then and those changes are visible in every `Todos` that they belong to.
 
 ```
-    for item in todos.search('@today'):
-        item.tag('@done', '2014-10-24')
-        item.remove_tag('@today')
-    print(todos)
-
-    >>> project 1:
-    >>>    - task 1
-    >>>    - task 2 @done(2014-10-24)
+>>> for item in todos.search('@today'):
+>>>     item.tag('@done', '2016-10-08')
+>>>     item.remove_tag('@today')
+>>> print(todos)
+project 1:
+   - task 1
+   - task 2 @done(2014-10-24)
 ```
 
 ## textutils
 
 Module `todoflow.textutils` provides functions
-that operate on text and are used internally in todoflow but can be
-useful outside of it:
+that operate on strings and are used internally in TodoFlow but can be useful outside of it:
 
 - `is_task(text)`
 - `is_project(text)`

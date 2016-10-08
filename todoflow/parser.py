@@ -1,11 +1,11 @@
 from __future__ import absolute_import
 
 from .lexer import Lexer
-from .todos import Todos, Node
+from .todos import Todos
 from .todoitem import Todoitem
 
 
-class TodolistParserError(Exception):
+class ParserError(Exception):
     pass
 
 
@@ -20,7 +20,7 @@ class Parser(object):
         new_item = None
         for token in self.lexer.tokens:
             if token.is_newline:
-                self.newlines.append(Node(Todoitem.from_token(token)))
+                self.newlines.append(Todos(Todoitem.from_token(token)))
             elif token.is_text:
                 new_item = self._handle_text(token)
             elif token.is_indent:
@@ -31,15 +31,15 @@ class Parser(object):
                 return self._handle_end()
 
     def _handle_text(self, token):
-        new_item = Node(Todoitem.from_token(token))
+        new_item = Todos(Todoitem.from_token(token))
         if self.items_in_parsing:
             for nl in self.newlines:
-                self.items_in_parsing[-1].append_child(nl)
+                self.items_in_parsing[-1].append(nl)
             self.newlines = []
             try:
-                self.items_in_parsing[-1].append_child(new_item)
+                self.items_in_parsing[-1].append(new_item)
             except AttributeError:
-                raise TodolistParserError('Error in parsing: {}'.format(self.items_in_parsing))
+                raise ParserError('Error in parsing: {}'.format(self.items_in_parsing))
         else:
             self.parsed_items += self.newlines
             self.newlines = []
@@ -47,7 +47,7 @@ class Parser(object):
         return new_item
 
     def _handle_end(self):
-        todos = Todos(Node(children=self.parsed_items + self.newlines))
+        todos = Todos(subitems=self.parsed_items + self.newlines)
         return todos
 
 

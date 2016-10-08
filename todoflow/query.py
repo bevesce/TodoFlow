@@ -2,164 +2,250 @@ from __future__ import absolute_import
 
 from .textutils import get_tag_param
 from .textutils import has_tag
+from .parse_date import parse_date
 
 
-class AbstractQuery(object):
-    def matches(self, todonode):
-        raise NotImplementedError
-
-    def __call__(self, todonode):
-        return self.matches(todonode)
+class Query:
+    pass
 
 
-# Basic
-class TextQuery(AbstractQuery):
-    def matches(self, todonode):
-        item = todonode.get_value()
-        if item:
-            return self.matches_text(item.text)
+class SetOperation(Query):
+    def __init__(self, left, operator, right):
+        self.type = 'set operation'
+        self.operator = operator
+        self.left = left
+        self.right = right
+
+    def __str__(self):
+        return '(<S> {} {} {} </S>)'.format(self.left, self.operator, self.right)
+
+    def search(self, todos):
+        left_side = list(self.left.search(todos))
+        right_side = list(self.right.search(todos))
+        if self.operator == 'union':
+            for item in todos:
+                if item in left_side or item in right_side:
+                    yield item
+        elif self.operator == 'intersect':
+            for item in todos:
+                if item in left_side and item in right_side:
+                    yield item
+        elif self.operator == 'except':
+            for item in todos:
+                if item in left_side and item not in right_side:
+                    yield item
 
 
-class SubstringQuery(TextQuery):
-    def __init__(self, text):
-        self.text = text.lower()
+class ItemsPath(Query):
+    def __init__(self, left, operator, right):
+        self.type = 'items path'
+        self.operator = operator
+        self.left = left
+        self.right = right
 
-    def matches_text(self, text):
-        return self.text in text.lower()
+    def __str__(self):
+        return '(<I> {} {} {} </I>)'.format(
+            self.left if self.left else '',
+            self.operator if self.operator else '',
+            self.right
+        )
+
+    def search(self, todos):
+        left_side = list(self.get_left_side(todos))
+        for item in left_side:
+            axes = list(self.get_axes_for_operator(item))
+            for subitem in self.right.search(axes):
+                yield subitem
+
+    def get_left_side(self, todos):
+        if self.left:
+            return self.left.search(todos)
+        # if self.operator in ('/', '/child::'):
+        return [todos]
+        # return list(todos)
+
+    def get_axes_for_operator(self, todos):
+        if self.operator in ('/', '/child::'):
+            return todos.yield_children()
+        elif self.operator in ('//', '/descendant::'):
+            return todos.yield_descendants()
+        elif self.operator in ('///', '/descendant-or-self::'):
+            return todos.yield_descendants_and_self()
+        elif self.operator == '/ancestor-or-self::':
+            return todos.yield_ancestors_and_self()
+        elif self.operator == '/ancestor::':
+            return todos.yield_ancestors()
+        elif self.operator == '/parent::':
+            return todos.yield_parent()
+        elif self.operator == '/following-sibling::':
+            return todos.yield_following_siblings()
+        elif self.operator == '/following::':
+            return todos.yield_following()
+        elif self.operator == '/preceding-sibling::':
+            return todos.yield_preceding_siblings()
+        elif self.operator == '/preceding::':
+            return todos.yield_preceding()
 
 
-class TagQuery(TextQuery):
-    def __init__(self, tag):
-        self.tag = tag
+class Slice(Query):
+    def __init__(self, left, slice):
+        self.type = 'slice'
+        self.left = left
+        self.slice = slice or ':'
+        if slice and ':' not in slice:
+            self.index = int(slice)
+            self.slice_start = None
+            self.slice_stop = None
+        elif slice:
+            self.index = None
+            self.slice_start, self.slice_stop = [(int(i) if i else None) for i in slice.split(':')]
 
-    def matches_text(self, text):
-        return has_tag(text, self.tag)
+    def __str__(self):
+        return '(<L>{} [{}]</L>)'.format(
+            self.left, self.slice
+        )
 
-
-# Logical operators
-class NotQuery(AbstractQuery):
-    def __init__(self, query):
-        self.query = query
-
-    def matches(self, todonode):
-        return not self.query.matches(todonode)
-
-    def matches_text(self, text):
-        return not self.query.matches_text(text)
-
-
-class AbstractBinaryQuery(AbstractQuery):
-    def __init__(self, query1, query2):
-        self.query1 = query1
-        self.query2 = query2
-
-    def matches(self, todonode):
-        return self.operation(self.query1.matches(todonode), self.query2.matches(todonode))
-
-    def matches_text(self, text):
-        return self.operation(self.query1.matches_text(text), self.query2.matches_text(text))
-
-
-class AndQuery(AbstractBinaryQuery):
-    operation = lambda _, a, b: a and b  # self is on first place
+    def search(self, todos):
+        left_side = list(self.left.search(todos))
+        if self.slice == ':':
+            for item in left_side:
+                yield item
+            return
+        if self.index is not None:
+            yield list(left_side)[self.index]
+            return
+        for item in list(left_side)[self.slice_start:self.slice_stop]:
+            yield item
 
 
-class OrQuery(AbstractBinaryQuery):
-    operation = lambda _, a, b: a or b  # self is on first place
+class MatchesQuery(Query):
+    def search(self, todos):
+        for item in todos:
+            if self.matches(item):
+                yield item
 
 
-# ops
-class TagOpQuery(TextQuery):
-    def __init__(self, tag, operation=None, right_side=None):
-        self.tag = tag
-        self.operation = operation
-        self.right_side = right_side.strip() if right_side else ''
+class BooleanExpression(MatchesQuery):
+    def __init__(self, left, operator, right):
+        self.type = 'boolean expression'
+        self.operator = operator
+        self.left = left
+        self.right = right
 
-    def matches_text(self, text):
-        param = get_tag_param(text, self.tag)
-        if param is None:
+    def __str__(self):
+        return '(<B> {} {} {} </B>)'.format(
+            self.left, self.operator, self.right
+        )
+
+    def matches(self, todoitem):
+        matches_left = self.left.matches(todoitem)
+        matches_right = self.right.matches(todoitem)
+        if self.operator == 'and':
+            return matches_left and matches_right
+        elif self.operator == 'or':
+            return matches_left or matches_right
+
+
+class Unary(MatchesQuery):
+    def __init__(self, operator, right):
+        self.type = 'unary'
+        self.operator = operator
+        self.right = right
+
+    def __str__(self):
+        return '(<U> {} {} </U>)'.format(self.operator, self.right)
+
+    def matches(self, todoitem):
+        matches_right = self.right.matches(todoitem)
+        return not matches_right
+
+
+class Relation(MatchesQuery):
+    def __init__(self, left, operator, right, modifier):
+        self.type = 'relation'
+        self.operator = operator
+        self.left = left
+        self.right = right
+        self.modifier = modifier
+        self.calculated_right = None
+
+    def __str__(self):
+        return '(<R> @{} {} [{}] {} </R>)'.format(
+            self.left, self.operator, self.modifier, self.right
+        )
+
+    def matches(self, todoitem):
+        if not todoitem:
             return False
-        return self.operation(param, self.right_side)
+        left_side = self.calculate_left_side(todoitem)
+        right_side = self.calculate_right_side()
+        if self.operator == '=':
+            return left_side == right_side
+        elif self.operator == '<=':
+            return left_side <= right_side
+        elif self.operator == '<':
+            return left_side < right_side
+        elif self.operator == '>':
+            return left_side > right_side
+        elif self.operator == '>=':
+            return left_side >= right_side
+        elif self.operator == '!=':
+            return left_side != right_side
+        elif self.operator == 'contains':
+            return right_side in left_side
+        elif self.operator == 'beginswith':
+            return left_side.startswith(right_side)
+        elif self.operator == 'endswith':
+            return left_side.endswith(right_side)
+        elif self.operator == 'matches':
+            return re.match(right_side, left_side)
 
+    def calculate_left_side(self, todoitem):
+        if self.left.value == 'text':
+            left = todoitem.get_text()
+        elif self.left.value == 'id':
+            left = todoitem.id()
+        elif self.left.value == 'line':
+            left = str(todoitem.get_line_number())
+        elif self.left.value == 'type':
+            left = todoitem.get_type()
+        else:
+            left = todoitem.get_tag_param(self.left.value)
+        return self.apply_modifier(left)
 
-class PredefinedLeftOpQuery(AbstractQuery):
-    def __init__(self, operation=None, right_side=None):
-        self.operation = operation
-        self.right_side = right_side.strip() if right_side else ''
+    def calculate_right_side(self):
+        if not self.calculated_right:
+            self.calculated_right = self.apply_modifier(self.right.value)
+        return self.calculated_right
 
-
-class ProjectOpQuery(PredefinedLeftOpQuery):
-    def matches(self, todonode):
-        for n in [todonode] + list(todonode.get_parents()):
-            v = n.get_value()
-            if v and v.is_project and self.operation(v.text, self.right_side):
-                return True
-
-
-class LinenumOpQuery(PredefinedLeftOpQuery):
-    def matches(self, todonode):
-        v = todonode.get_value()
-        if not v:
-            return False
-        return self.operation(str(v.linenum), self.right_side)
-
-
-class SourceOpQuery(PredefinedLeftOpQuery):
-    def matches(self, todonode):
-        for n in [todonode] + list(todonode.get_parents()):
-            if self.operation(n.source, self.right_side):
-                return True
-        return False
-
-
-# whole list
-class PlusDescendants(AbstractQuery):
-    def __init__(self, query):
-        self.query = query
-
-    def matches(self, todonode):
-        for n in [todonode] + list(todonode.get_parents()):
-            if self.query(n):
-                return True
-
-
-class OnlyFirst(AbstractQuery):
-    def __init__(self, query):
-        self.query = query
-
-    def matches(self, todonode):
-        if not todonode.get_parent():
-            return True
-        todos = todonode.get_parent()
-        if not todos.get_children():
-            return True
-        return self._is_node_first_that_matches(todos.get_children(), todonode)
-
-    def _is_node_first_that_matches(self, items, todonode):
-        matching_items = [n for n in items if self.query.matches(n)]
-        return matching_items[0] == todonode if matching_items else False
-
-
-class TypeOpQuery(AbstractQuery):
-    def __init__(self, operation=None, right_side=None):
-        self.operation = operation
-        self.right_side = right_side
-
-    def matches(self, todonode):
-        value = todonode.get_value()
+    def apply_modifier(self, value):
         if not value:
-            return False
-        return {
-            'task': value.is_task,
-            'note': value.is_note,
-            'project': value.is_project,
-        }.get(self.right_side, False)
+            return value
+        if self.modifier == 'i':
+            return value.lower()
+        elif self.modifier == 's':
+            return value
+        elif self.modifier == 'n':
+            try:
+                return int(value)
+            except ValueError:
+                return None
+        elif self.modifier == 'd':
+            return parse_date(value)
 
 
-class UniqueidOpQuery(AbstractQuery):
-    def __init__(self, operation=None, right_side=None):
-        self.operation = operation
-        self.right_side = right_side
+class Atom(MatchesQuery):
+    def __init__(self, token):
+        self.type = token.type
+        self.value = token.value
 
-    def matches(self, todonode):
-        return self.operation(todonode.get_value().uniqueid, self.right_side)
+    def __str__(self):
+        return self.value
+
+    def matches(self, todoitem):
+        if self.type == 'attribute':
+            return todoitem.has_tag(self.value)
+        elif self.type == 'search term':
+            return self.value in todoitem.get_text()
+        else:
+            return True

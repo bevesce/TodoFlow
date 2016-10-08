@@ -7,8 +7,7 @@ import unittest
 
 import todoflow.lexer as lexer
 import todoflow.parser as parser
-import todoflow.config
-from todoflow.compatibility import *
+from todoflow.compatibility import unicode
 
 
 class TestLexer(unittest.TestCase):
@@ -69,43 +68,48 @@ class TestLexer(unittest.TestCase):
 class TestParser(unittest.TestCase):
     def todos_from(self, text):
         self.todos = parser.parse(text)
-        self.nodes = list(self.todos._todos_tree)
+        self.nodes = self.todos.subitems
         return self
 
     def main_node(self):
-        return self.node(0)
+        self._node = self.todos
+        return self
 
     def first_node(self):
-        return self.node(1)
+        return self.node(0)
 
     def second_node(self):
-        return self.node(2)
+        return self.node(1)
 
     def third_node(self):
-        return self.node(3)
+        return self.node(2)
 
     def node(self, index):
         self._node = self.nodes[index]
         return self
 
     def is_task(self):
-        self.assertTrue(self._node.get_value().is_task)
+        self.assertTrue(self._node.todoitem.type == 'task')
         return self
 
     def is_project(self):
-        self.assertTrue(self._node.get_value().is_project)
+        self.assertTrue(self._node.todoitem.type == 'project')
         return self
 
     def is_note(self):
-        self.assertTrue(self._node.get_value().is_note)
+        self.assertTrue(self._node.todoitem.type == 'note')
+        return self
+
+    def is_new_line(self):
+        self.assertTrue(self._node.todoitem.type == 'newline')
         return self
 
     def has_subtasks(self, howmany):
-        self.assertEqual(len(self._node.get_children()), howmany)
+        self.assertEqual(len(list(self._node.subitems)), howmany)
         return self
 
     def doesnt_have_item(self):
-        self.assertEqual(self._node.get_value(), None)
+        self.assertEqual(self._node.todoitem, None)
         return self
 
     def test_single_task(self):
@@ -130,7 +134,7 @@ class TestParser(unittest.TestCase):
 \t- task2"""
         )
         self.main_node().doesnt_have_item()
-        self.first_node().has_subtasks(2).second_node().has_subtasks(0)
+        self.first_node().has_subtasks(2)
 
     def test_tasks_at_0_level(self):
         self.todos_from(
@@ -162,8 +166,7 @@ class TestParser(unittest.TestCase):
         )
         self.main_node().doesnt_have_item().has_subtasks(3)
         self.first_node().is_project().has_subtasks(2)
-        self.second_node().is_task().has_subtasks(2)
-        self.third_node().is_task().has_subtasks(2)
+        self.second_node().is_new_line().has_subtasks(0)
 
     def test_deep_indent_with_empty_line_in_the_middle(self):
         self.todos_from(
@@ -179,12 +182,14 @@ class TestParser(unittest.TestCase):
 """
         )
         self.main_node().doesnt_have_item().has_subtasks(3)
+        self.assertEqual(len(self.todos.subitems[0].subitems), 2)
+        self.assertEqual(len(self.todos.subitems[0].subitems[0].subitems), 2)
+        self.assertEqual(len(self.todos.subitems[0].subitems[0].subitems[0].subitems), 3)
+        self.assertEqual(len(self.todos.subitems[0].subitems[1].subitems), 0)
         self.first_node().is_project().has_subtasks(2)
-        self.second_node().is_task().has_subtasks(2)
-        self.third_node().is_task().has_subtasks(3)
 
 
-class TestPlainPrinting(unittest.TestCase):
+class TestStr(unittest.TestCase):
     def text_after_parsing_is_the_same(self, text):
         todos = parser.parse(text)
         self.assertEqual(unicode(todos), text)
@@ -242,7 +247,7 @@ class TestPlainPrinting(unittest.TestCase):
 \t- task2
 
 
-"""
+# """
         )
 
 if __name__ == '__main__':
