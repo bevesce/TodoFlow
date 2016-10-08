@@ -66,17 +66,24 @@ synonyms = {
     'weeks': 'week',
     'w': 'week',
     'months': 'month',
-    'm': 'month',
+    'oc': 'month',
+    'c': 'month',
     'years': 'year',
     'y': 'year',
+    'sec': 'second',
+    'su': 'second',
+    'quarters': 'quarter',
+    'q': 'quarter',
 }
 words = {
     'ampm': ('am', 'pm'),
     'date': ('today', 'yesterday', 'tomorrow', 'now'),
     'month': list(months.keys()),
     'weekday': list(weekdays.keys()),
-    'modifier': ('next', 'last'),
-    'duration': ('minute', 'hour', 'day', 'week', 'month', 'year'),
+    'modifier': ('next', 'last', 'this'),
+    'duration': (
+        'second', 'minute', 'hour', 'day', 'week', 'month', 'quarter', 'year'
+    ),
 }
 
 second_0 = {
@@ -238,7 +245,7 @@ class Parser:
     def parse_modifier(self):
         modifier = self.pop().value
         next = self.pick()
-        sign = 1 if modifier == 'next' else -1
+        sign = self.convert_modifier_to_sign(modifier)
 
         if self.maybe_parse_weekday_after_modifier(sign):
             return
@@ -272,6 +279,10 @@ class Parser:
         if duration == 'year':
             self.add_modification(
                 lambda d: d.replace(year=d.year + sign, **month_1)
+            )
+        elif duration == 'quarter':
+            self.add_modification(
+                lambda d: add_months(find_begining_of_quarter(d), sign * 3)
             )
         elif duration == 'month':
             self.add_modification(
@@ -416,10 +427,17 @@ class Parser:
         )
         return True
 
+    def convert_modifier_to_sign(self, modifier):
+        if modifier == 'next':
+            return 1
+        elif modifier == 'last':
+            return -1
+        return 0
+
 
 def find_weekday_in_week_of_date(weekday, date):
     day_number = weekdays[weekday]
-    return date + timedelta(days=-date.weekday() + day_number)
+    return date.replace(**hour_0) + timedelta(days=-date.weekday() + day_number)
 
 
 def convert_hour_to_24_clock(hour, ampm):
@@ -441,6 +459,8 @@ def add_to_date(date, number, duration):
         return date + timedelta(days=number * 7)
     if duration == 'month':
         return add_months(date, number)
+    if duration == 'quarter':
+        return add_months(date, 3 * number)
     if duration == 'year':
         return date.replace(year=date.year + number)
 
@@ -453,4 +473,10 @@ def add_months(date, number):
     day = min(date.day, calendar.monthrange(year, month)[1])
     return datetime(
         year, month, day, date.hour, date.minute, date.second, date.microsecond
+    )
+
+
+def find_begining_of_quarter(date):
+    return datetime(
+        date.year, 1 + 3 * (date.month - 1) // 3, 1
     )

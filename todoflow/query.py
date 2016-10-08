@@ -60,9 +60,9 @@ class ItemsPath(Query):
     def get_left_side(self, todos):
         if self.left:
             return self.left.search(todos)
-        if self.operator in ('/', '/child::'):
-            return [todos]
-        return list(todos)
+        # if self.operator in ('/', '/child::'):
+        return [todos]
+        # return list(todos)
 
     def get_axes_for_operator(self, todos):
         if self.operator in ('/', '/child::'):

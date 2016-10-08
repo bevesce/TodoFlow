@@ -6,19 +6,13 @@ import colors
 
 from todoflow.query_parser import QueryParser
 
-counter = 1
 
 class TestParser(unittest.TestCase):
     def setUp(self):
         self.parser = QueryParser()
 
     def parsing(self, text):
-        global counter
         self.parsed = self.parser.parse(text)
-        print(colors.on_blue(counter), text)
-        print(colors.on_blue(counter), colors.on_blue(self.parsed))
-        counter += 1
-        print()
         return self
 
     def gives(self, text):

@@ -132,9 +132,9 @@ class TestGetOtherTodos(TodosAssTestCase):
 \t\tc
 \t\tx
 \td""")
-        self.assertTodos(todos.yield_following(), '')
-        self.assertTodos(todos.subitems[0].yield_following(), '')
-        self.assertTodos(todos.subitems[0].subitems[0].yield_following(), '\td')
+        self.assertTodos(todos.yield_following(), 'a\n\tb\n\t\tc\n\t\tc\n\t\tx\n\td')
+        self.assertTodos(todos.subitems[0].yield_following(), '\tb\n\t\tc\n\t\tc\n\t\tx\n\td')
+        self.assertTodos(todos.subitems[0].subitems[0].yield_following(), '\t\tc\n\t\tc\n\t\tx\n\td')
         self.assertTodos(todos.subitems[0].subitems[0].subitems[0].yield_following(), '\t\tc\n\t\tx\n\td')
         self.assertTodos(todos.subitems[0].subitems[0].subitems[1].yield_following(), '\t\tx\n\td')
         self.assertTodos(todos.subitems[0].subitems[0].subitems[2].yield_following(), '\td')

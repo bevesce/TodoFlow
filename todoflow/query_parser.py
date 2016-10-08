@@ -18,7 +18,7 @@ def parse(text):
     return QueryParser().parse(text)
 
 
-class ParserError(Exception):
+class QueryParserError(Exception):
     pass
 
 
@@ -84,10 +84,16 @@ class QueryParser:
         return query
 
     def pick(self):
-        return self.tokens[0]
+        try:
+            return self.tokens[0]
+        except IndexError:
+            raise_parse('unexpected end')
 
     def pop(self):
-        return self.tokens.pop(0)
+        try:
+            return self.tokens.pop(0)
+        except IndexError:
+            raise_parse('unexpected end')
 
     def pop_close(self):
         return self.pop()
@@ -243,6 +249,6 @@ class QueryParser:
 
 
 def raise_parse(text, message):
-    raise ParserError(
+    raise QueryParserError(
         "can't parse '{}': {}".format(text, message)
     )

@@ -119,7 +119,26 @@ class TestParseDate(unittest.TestCase):
     def test_35(self):
         self.assertDatetime(parse_date('2016-10-06 21:17', date), '2016-10-06 21:17')
 
+    def test_36(self):
+        self.assertDatetime(parse_date('this month', date), '2016-10-01 00:00')
 
+    def test_37(self):
+        self.assertDatetime(parse_date('this week', date), '2016-10-03 00:00')
+
+    def test_38(self):
+        self.assertDatetime(parse_date('this year', date), '2016-01-01 00:00')
+
+    def test_39(self):
+        self.assertDatetime(parse_date('this quarter', date), '2016-10-01 00:00')
+
+    def test_40(self):
+        self.assertDatetime(parse_date('last quarter', date), '2016-07-01 00:00')
+
+    def test_41(self):
+        self.assertDatetime(parse_date('next quarter', date), '2017-01-01 00:00')
+
+    def test_42(self):
+        self.assertDate(parse_date('today - 1q', date), '2016-07-04')
 
 if __name__ == '__main__':
     unittest.main()

@@ -165,6 +165,8 @@ class Todos(object):
                 yield sibling
 
     def yield_following(self):
+        for child in self.yield_descendants():
+            yield child
         for ancestor in self.yield_ancestors_and_self():
             for sibling in ancestor.yield_following_siblings():
                 yield sibling

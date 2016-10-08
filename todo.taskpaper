@@ -1,19 +1,38 @@
+Not done @search(not @done)
+
+- New icons @done(2016-10-08)
+- pip update
+- Sublime readme
+- Error handling in query parser
+- python 2 tests @done(2016-10-08)
+- update dependencies in SublimeTodoflow
+- readme - changelog & update doc
+- Clean up finanse query code
+- Adapt todo flow query language to longtime
+- Many word joined by and in finanse
+- Maybe @ attributes in logtime
+- Editorial?
+- blog post about tf5/tp3
+
 - redo queries using distinction between filter and search @done(2016-10-07)
-- parse_date @done(2016-10-06)
+- parse_date @done(2016-10-08)
 	- 12:15 am, 14:30 pm @done(2016-10-06)
-- check tests with TP3 app
-	- test_016
-	- test_024
-	- test_025
-	- test_026
-	- test_027
-	- test_028
-	- test_029
-	- test_030
-	- test_031
-	- test_032
-	- test_033
-	- test_034
-	- test_035
-	- test_036
-	- test_037
+	- this (like next, last) @done(2016-10-08)
+	- quarters @done(2016-10-08)
+- check tests with TP3 app @done(2016-10-08)
+	- test_016 @done(2016-10-07)
+	- test_024 @done(2016-10-07)
+	- test_025 @done(2016-10-07)
+	- test_026 @done(2016-10-07)
+	- test_027 @done(2016-10-07)
+	- test_028 @done(2016-10-08)
+	- test_029 @done(2016-10-07)
+	- test_030 @done(2016-10-07)
+	- test_031 @done(2016-10-07)
+	- test_032 @done(2016-10-07)
+	- test_033 @done(2016-10-07)
+	- test_034 @done(2016-10-07)
+	- test_035 @done(2016-10-08)
+	- test_036 @done(2016-10-07)
+	- test_037 @done(2016-10-07)
+- Check items path tests @done(2016-10-08)

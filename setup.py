@@ -11,7 +11,5 @@ setup(
     author_email='wilczynski.pi@gmail.com',
     url='https://github.com/bevesce/TodoFlow',
     packages=['todoflow'],
-    install_requires=[
-        "ply",
-    ],
+    install_requires=[],
 )
