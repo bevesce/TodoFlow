@@ -3,14 +3,14 @@ from collections import deque
 
 from .todoitem import Todoitem
 from .query import Query
-from .compatibility import unicode
+from .compatibility import unicode, is_string
 
 
 
 class Todos(object):
     def __init__(self, todoitem=None, subitems=None, parent=None):
         """Representation of taskpaper todos."""
-        if isinstance(todoitem, unicode):
+        if is_string(todoitem):
             from .parser import parse
             todos = parse(todoitem)
             self.todoitem = None
@@ -188,7 +188,7 @@ class Todos(object):
         return child
 
     def filter(self, query):
-        if isinstance(query, unicode):
+        if is_string(query):
             from .query_parser import parse
             query = parse(query)
         if isinstance(query, Query):
@@ -200,7 +200,7 @@ class Todos(object):
         return Todos()
 
     def search(self, query):
-        if isinstance(query, unicode):
+        if is_string(query):
             from .query_parser import parse
             query = parse(query)
         if isinstance(query, Query):

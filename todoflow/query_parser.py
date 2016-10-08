@@ -248,7 +248,7 @@ class QueryParser:
         return result
 
 
-def raise_parse(text, message):
+def raise_parse(text, message=None):
     raise QueryParserError(
-        "can't parse '{}': {}".format(text, message)
+        "can't parse - {}{}".format(text, ': ' + message if message else '')
     )
