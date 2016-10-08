@@ -7,9 +7,10 @@ TodoFlow is Python module that provides functions to parse, filter, search and m
 ## Changelog
 
 - 2016-10-08 - 5.0.0
-    + update to [TaskPaper 3](https://www.taskpaper.com) queries!
-    + removal of separation between `Node`s and `Todos`
-    + removal of printers and file reading methods
+    + updates to [TaskPaper 3](https://www.taskpaper.com) queries!
+    + drops dependency on [ply](https://github.com/dabeaz/ply)
+    + removes separation between `Node`s and `Todos`
+    + removes printers and file reading methods
 - 2015-10-02 - 4.0.2 
 - 2015-04-24 - Removal of workflows
 - 2014-10-24 - Release of version 4
