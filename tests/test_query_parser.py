@@ -130,5 +130,21 @@ class TestParser(unittest.TestCase):
             '(<I> (<I>  / (<L>(<R> @text contains [i] d </R>) [:]</L>) </I>) / (<L>q [0]</L>) </I>)'
         )
 
+    def test_025(self):
+        self.parsing('not (@done or @waiting)').gives(
+            '(<L>(<U> not (<B> done or waiting </B>) </U>) [:]</L>)'
+        )
+
+    def test_026(self):
+        self.parsing('@today and not (@done or @waiting)').gives(
+            '(<L>(<B> today and (<U> not (<B> done or waiting </B>) </U>) </B>) [:]</L>)'
+        )
+
+    def test_026(self):
+        self.parsing('@today and not @done)').gives(
+            '(<L>(<B> today and (<U> not done </U>) </B>) [:]</L>)'
+        )
+
+
 if __name__ == '__main__':
     unittest.main()
