@@ -125,7 +125,7 @@ class QueryLexer:
         )
 
     def is_relation_modifier(self, c):
-        return c in 'isnd'
+        return c in ('i', 'n', 'd', 's', 'l', 'sl', 'ls')
 
     def is_punctuation(self, c):
         return c in '()'

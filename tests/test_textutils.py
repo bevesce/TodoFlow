@@ -136,6 +136,9 @@ class TestTagsFinding(TestTags):
     def test_get_tag_param_at_end(self):
         self.text('some txet @done(01-14)').has_tag('@done').with_param('01-14')
 
+    def test_get_tag_param_with_list(self):
+        self.text('some text @p(1,2)').has_tag('@p').with_param('1,2')
+
     def test_get_tag_param_with_escaped_closing_paren(self):
         self.text('some txet @search(fsd \) ffs) and then some').has_tag('@search').with_param('fsd ) ffs')
 

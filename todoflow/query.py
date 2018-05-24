@@ -192,7 +192,7 @@ class Relation(MatchesQuery):
         elif self.operator == '!=':
             return left_side != right_side
         elif self.operator == 'contains':
-            return right_side in left_side
+            return contains(right_side, left_side)
         elif self.operator == 'beginswith':
             return left_side.startswith(right_side)
         elif self.operator == 'endswith':
@@ -211,14 +211,14 @@ class Relation(MatchesQuery):
             left = todoitem.get_type()
         else:
             left = todoitem.get_tag_param(self.left.value)
-        return self.apply_modifier(left)
+        return self.apply_modifier(left, 'left')
 
     def calculate_right_side(self):
         if not self.calculated_right:
-            self.calculated_right = self.apply_modifier(self.right.value)
+            self.calculated_right = self.apply_modifier(self.right.value, 'right')
         return self.calculated_right
 
-    def apply_modifier(self, value):
+    def apply_modifier(self, value, side):
         if not value:
             return value
         if self.modifier == 'i':
@@ -232,6 +232,10 @@ class Relation(MatchesQuery):
                 return None
         elif self.modifier == 'd':
             return parse_date(value)
+        elif self.modifier == 'l':
+            return value.lower().split(',')
+        elif self.modifier == 'sl':
+            return value.split(',')
 
 
 class Atom(MatchesQuery):
@@ -249,3 +253,11 @@ class Atom(MatchesQuery):
             return self.value in todoitem.get_text()
         else:
             return True
+
+
+def contains(subset, superset):
+    if not superset:
+        return False
+    if type(subset) == list and type(superset) == list:
+        return all(e in superset for e in subset)
+    return subset in superset

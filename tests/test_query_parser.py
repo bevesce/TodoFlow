@@ -2,7 +2,6 @@ from __future__ import unicode_literals
 
 import unittest
 import datetime as dt
-import colors
 
 from todoflow.query_parser import QueryParser
 

@@ -521,5 +521,23 @@ to:
 1 @working
 """)
 
+    def test_039(self):
+        self.filtering("""
+test @p(eric)
+test @p(john,graham)
+test @p(graham,eric)
+""").by('@p contains[l] john').gives("""
+test @p(john,graham)
+""")
+
+    def test_039s(self):
+        self.filtering("""
+test @p(john,graham)
+test @p(John,graham)
+""").by('@p contains[sl] John').gives("""
+test @p(John,graham)
+""")
+
+
 if __name__ == '__main__':
     unittest.main()
