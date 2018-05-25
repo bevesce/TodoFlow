@@ -226,17 +226,23 @@ class Relation(MatchesQuery):
         elif self.modifier == 's':
             return value
         elif self.modifier == 'n':
-            try:
-                return int(value)
-            except ValueError:
-                return None
+            return safe_int(value)
         elif self.modifier == 'd':
             return parse_date(value)
-        elif self.modifier == 'l':
-            return value.lower().split(',')
+        elif self.modifier == 'l' or self.modifier == 'il':
+            return [s.strip() for s in value.lower().split(',')]
         elif self.modifier == 'sl':
-            return value.split(',')
+            return [s.strip() for s in value.split(',')]
+        elif self.modifier == 'nl':
+            return [safe_int(s) for s in value.split(',')]
+        elif self.modifier == 'dl':
+            return [parse_date(s) for s in value.split(',')]
 
+def safe_int(value):
+    try:
+        return int(value)
+    except ValueError:
+        return None
 
 class Atom(MatchesQuery):
     def __init__(self, token):

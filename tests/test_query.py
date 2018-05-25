@@ -538,6 +538,41 @@ test @p(John,graham)
 test @p(John,graham)
 """)
 
+    def test_040(self):
+        self.filtering("""
+test @p(eric)
+test @p(john,graham)
+test @p(graham,eric)
+""").by('@p contains[l] john,graham').gives("""
+test @p(john,graham)
+""")
+
+    def test_041(self):
+        self.filtering("""
+test @p(eric)
+test @p(john,graham)
+test @p(graham,eric)
+""").by('@p contains[l] graham,john').gives("""
+test @p(john,graham)
+""")
+
+    def test_042(self):
+        self.filtering("""
+test @p(eric)
+test @p(john, graham)
+test @p(graham,eric)
+""").by('@p contains[l] graham, john').gives("""
+test @p(john, graham)
+""")
+
+    def test_043(self):
+        self.filtering("""
+test @p(john, graham)
+test @p(graham,john)
+""").by('@p =[l] john, graham').gives("""
+test @p(john, graham)
+""")
+
 
 if __name__ == '__main__':
     unittest.main()
