@@ -70,7 +70,7 @@ def get_tag_param(text, tag):
     pure_param = params[0][1]
     if not param_with_parenthesis:
         return None
-    return pure_param.replace('\)', ')')
+    return pure_param.replace('\)', ')').replace('\(', '(')
 
 
 def remove_tag(text, tag):

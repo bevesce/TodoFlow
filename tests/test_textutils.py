@@ -142,6 +142,9 @@ class TestTagsFinding(TestTags):
     def test_get_tag_param_with_escaped_closing_paren(self):
         self.text('some txet @search(fsd \) ffs) and then some').has_tag('@search').with_param('fsd ) ffs')
 
+    def test_get_tag_param_with_escaped_parens(self):
+        self.text('some txet @search(fsd \(abc\) ffs) and then some').has_tag('@search').with_param('fsd (abc) ffs')
+
     def test_empty_param(self):
         self.text('@empty()').has_tag('empty').with_param('')
 
