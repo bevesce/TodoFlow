@@ -60,9 +60,9 @@ class ItemsPath(Query):
     def get_left_side(self, todos):
         if self.left:
             return self.left.search(todos)
-        # if self.operator in ('/', '/child::'):
-        return [todos]
-        # return list(todos)
+        if self.operator in ('/', '/child::'):
+            return [todos]
+        return list(todos)
 
     def get_axes_for_operator(self, todos):
         if self.operator in ('/', '/child::'):
@@ -179,26 +179,29 @@ class Relation(MatchesQuery):
             return False
         left_side = self.calculate_left_side(todoitem)
         right_side = self.calculate_right_side()
-        if self.operator == '=':
-            return left_side == right_side
-        elif self.operator == '<=':
-            return left_side <= right_side
-        elif self.operator == '<':
-            return left_side < right_side
-        elif self.operator == '>':
-            return left_side > right_side
-        elif self.operator == '>=':
-            return left_side >= right_side
-        elif self.operator == '!=':
-            return left_side != right_side
-        elif self.operator == 'contains':
-            return contains(right_side, left_side)
-        elif self.operator == 'beginswith':
-            return left_side.startswith(right_side)
-        elif self.operator == 'endswith':
-            return left_side.endswith(right_side)
-        elif self.operator == 'matches':
-            return re.match(right_side, left_side)
+        try:
+            if self.operator == '=':
+                return left_side == right_side
+            elif self.operator == '<=':
+                return left_side <= right_side
+            elif self.operator == '<':
+                return left_side < right_side
+            elif self.operator == '>':
+                return left_side > right_side
+            elif self.operator == '>=':
+                return left_side >= right_side
+            elif self.operator == '!=':
+                return left_side != right_side
+            elif self.operator == 'contains':
+                return contains(right_side, left_side)
+            elif self.operator == 'beginswith':
+                return left_side.startswith(right_side)
+            elif self.operator == 'endswith':
+                return left_side.endswith(right_side)
+            elif self.operator == 'matches':
+                return re.match(right_side, left_side)
+        except TypeError:
+            return False
 
     def calculate_left_side(self, todoitem):
         if self.left.value == 'text':

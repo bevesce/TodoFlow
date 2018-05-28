@@ -215,7 +215,6 @@ Test
 Inbox:
 \tR:
 \tT:
-Test
 """)
 
     def test_017(self):
@@ -413,6 +412,9 @@ r
 q
 \tr
 """).by('/ancestor-or-self::r').gives("""
+r
+q
+\tr
 """)
 
     def test_032(self):
@@ -423,6 +425,7 @@ q
 r 2
 \tq
 """).by('/ancestor::r').gives("""
+r 2
 """)
 
     def test_033(self):
@@ -437,6 +440,9 @@ q
 \t\tq
 \tw
 """).by('/parent::r').gives("""
+r 3
+q
+\tr 4
 """)
 
     def test_034(self):
@@ -448,6 +454,10 @@ w
 \tq
 \tr 3
 """).by('/following-sibling::r').gives("""
+r 1
+r 2
+w
+\tr 3
 """)
 
     def test_035(self):
@@ -475,6 +485,9 @@ e
 \tq
 \tr 3
 """).by('/preceding-sibling::r').gives("""
+r 1
+w
+\tr 2
 """)
 
     def test_037(self):
@@ -486,6 +499,9 @@ w
 e
 \tr 4
 """).by('/preceding::r').gives("""
+r 1
+w
+\tr 2
 """)
 
     def test_038(self):
